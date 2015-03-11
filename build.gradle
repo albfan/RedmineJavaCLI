@@ -38,7 +38,8 @@ dependencies {
 }
 
 checkstyle {
-  ignoreFailures = true
+  showViolations false
+  ignoreFailures true
 }
 
 jacocoTestReport {
