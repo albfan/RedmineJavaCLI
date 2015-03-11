@@ -37,6 +37,10 @@ dependencies {
   testCompile 'org.assertj:assertj-core:2.0.0'
 }
 
+checkstyle {
+  ignoreFailures = true
+}
+
 jacocoTestReport {
   reports {
     xml.enabled = true // coveralls plugin depends on xml format report
