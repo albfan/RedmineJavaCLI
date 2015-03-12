@@ -27,7 +27,7 @@ reset                      Reset the current configuration.
 
 **Note:** There is also a per-command help available, just type `redmine help connect` for example.
 
-Before querying a Redmine instance we need connect to a server beforehand:
+Before querying a Redmine instance we need to connect to a server beforehand:
 ```shell
 >redmine connect http://localhost:8080/redmine f92db342be05601b7ce84e98a829bd5d6a65db21
 Successfully connected user 'admin' to server 'http://localhost:8080/redmine'.
