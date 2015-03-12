@@ -5,6 +5,9 @@ import de.ad.tools.redmine.cli.Configuration;
 import java.io.PrintStream;
 
 public class ResetCommand extends Command {
+  static final String RESET_SUCCESS_MESSAGE =
+      "Successfully reset configuration.";
+
   private static final String NAME = "reset";
   private static final String DESCRIPTION =
       "Reset the current configuration.";
@@ -18,6 +21,6 @@ public class ResetCommand extends Command {
   public void process(String[] arguments) {
     configuration.reset();
 
-    println("Successfully reset configuration.");
+    println(RESET_SUCCESS_MESSAGE);
   }
 }
