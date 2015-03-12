@@ -3,7 +3,9 @@ package de.ad.tools.redmine.cli.command;
 import com.taskadapter.redmineapi.ProjectManager;
 import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.bean.Project;
+import com.taskadapter.redmineapi.bean.ProjectFactory;
 import de.ad.tools.redmine.cli.Configuration;
+import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -40,21 +42,30 @@ public class ProjectsCommandTest {
   }
 
   @Test
-  @Ignore
   public void testCommand() throws Exception {
     String[] arguments = new String[0];
 
-    List<Project> projects = createDummyProjects();
+    List<Project> projects = createDummyProjects(2);
 
     when(redmineManager.getProjectManager()).thenReturn(projectManager);
     when(projectManager.getProjects()).thenReturn(projects);
 
     command.process(arguments);
 
-    //verify(out).println();
+    verify(out).println("Project 1  project-1  ");
+    verify(out).println("Project 2  project-2  ");
   }
 
-  private List<Project> createDummyProjects() {
-    return null;
+  private List<Project> createDummyProjects(int count) {
+    List<Project> projects = new ArrayList<>();
+
+    for (int i = 0; i < count; i++) {
+      String name = String.format("Project %d", i+1);
+      String identifier = String.format("project-%d", i+1);
+
+      projects.add(ProjectFactory.create(name, identifier));
+    }
+
+    return projects;
   }
 }
