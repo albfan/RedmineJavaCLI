@@ -31,7 +31,7 @@ public class IssuesCommand extends RedmineCommand {
     IssueManager issueManager = redmineManager.getIssueManager();
 
     //Parameter spec: http://www.redmine.org/projects/redmine/wiki/Rest_Issues
-    //Currently not worling, see issue:
+    //Currently not working, see issue:
     //https://github.com/taskadapter/redmine-java-api/issues/181
     Map<String, String> parameters = new HashMap<String, String>();
     parameters.put("offset", "0");
