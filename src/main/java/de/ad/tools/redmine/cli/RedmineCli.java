@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public final class RedmineCli {
+public class RedmineCli {
   static final String INVALID_ARGUMENT_MESSAGE =
       "No arguments supplied. Call 'help' to see available commands.";
   public static final String INVALID_COMMAND_MESSAGE =
