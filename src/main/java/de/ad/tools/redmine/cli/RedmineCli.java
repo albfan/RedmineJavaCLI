@@ -38,7 +38,8 @@ public class RedmineCli {
     }
 
     Command help = new HelpCommand(configuration, out, commands);
-    Command connect = new ConnectCommand(configuration, out);
+    Command connect = new ConnectCommand(configuration, out,
+        new ConnectCommand.RedmineManagerFactory());
     Command projects =
         new ProjectsCommand(configuration, out, redmineManager);
     Command project =
