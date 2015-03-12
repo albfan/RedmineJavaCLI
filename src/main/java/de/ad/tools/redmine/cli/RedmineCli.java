@@ -47,7 +47,8 @@ public final class RedmineCli {
     Command issue = new IssueCommand(configuration, out, redmineManager);
     Command history =
         new HistoryCommand(configuration, out, redmineManager);
-    Command open = new OpenCommand(configuration, out, redmineManager);
+    Command open = new OpenCommand(configuration, out, redmineManager,
+        new OpenCommand.Browser());
     Command reset = new ResetCommand(configuration, out);
 
     commands.put(help.getName(), help);

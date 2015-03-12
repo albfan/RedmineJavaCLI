@@ -4,10 +4,14 @@ import com.taskadapter.redmineapi.RedmineManager;
 import de.ad.tools.redmine.cli.Configuration;
 
 import java.awt.*;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URI;
 
 public class OpenCommand extends RedmineCommand {
+
+  static final String NO_DESKTOP_SUPPORT_MESSAGE =
+      "Cannot open issue '%s' in default browser.";
 
   private static final String NAME = "open";
   private static final String DESCRIPTION = "Open issue in default browser.";
@@ -15,9 +19,13 @@ public class OpenCommand extends RedmineCommand {
       new Argument[] {
           new Argument("id", "The ID of the issue to open.", false) };
 
+  private Browser browser;
+
   public OpenCommand(Configuration configuration, PrintStream out,
-      RedmineManager redmineManager) {
+      RedmineManager redmineManager, Browser browser) {
     super(NAME, DESCRIPTION, ARGUMENTS, configuration, out, redmineManager);
+
+    this.browser = browser;
   }
 
   @Override
@@ -26,13 +34,30 @@ public class OpenCommand extends RedmineCommand {
 
     String id = getArguments()[0].getValue();
 
-    if (!Desktop.isDesktopSupported()) {
-      println("Cannot open issue '%s' in default browser.", id);
-      return;
-    }
+    assertBrowserIsSupported(id);
 
     String uri =
         String.format("%s/issues/%s", configuration.getServer(), id);
-    Desktop.getDesktop().browse(new URI(uri));
+    browser.browse(new URI(uri));
+  }
+
+  private void assertBrowserIsSupported(String id) throws Exception {
+    if (!browser.isSupported()) {
+      throw new Exception(String.format(NO_DESKTOP_SUPPORT_MESSAGE, id));
+    }
+  }
+
+  /**
+   * Wraps static calls to Desktop for a better testability.
+   */
+  public static class Browser{
+
+    public boolean isSupported() {
+      return Desktop.isDesktopSupported();
+    }
+
+    public void browse(URI uri) throws IOException {
+      Desktop.getDesktop().browse(uri);
+    }
   }
 }
