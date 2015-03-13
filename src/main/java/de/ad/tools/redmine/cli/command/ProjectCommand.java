@@ -41,10 +41,6 @@ public class ProjectCommand extends RedmineCommand {
     println();
 
     printMembershipDetails(key);
-
-    //omitted for a better performance
-    //printIssueDetails(key);
-
   }
 
   private void printMembershipDetails(String projectKey)
@@ -87,35 +83,5 @@ public class ProjectCommand extends RedmineCommand {
     println("Members\n¯¯¯¯¯¯¯");
     printTable(membershipDetails);
     println();
-  }
-
-  private void printIssueDetails(String projectKey) throws RedmineException {
-    IssueManager issueManager = redmineManager.getIssueManager();
-
-    List<Issue> issues = issueManager.getIssues(projectKey, null);
-    LinkedHashMap<Tracker, List<Issue>> issuesPerTracker =
-        new LinkedHashMap<Tracker, List<Issue>>();
-    for (Issue issue : issues) {
-      if (issuesPerTracker.containsKey(issue.getTracker())) {
-        issuesPerTracker.get(issue.getTracker()).add(issue);
-      } else {
-        List<Issue> issuePerTracker = new ArrayList<Issue>();
-        issuePerTracker.add(issue);
-
-        issuesPerTracker.put(issue.getTracker(), issuePerTracker);
-      }
-    }
-
-    String[][] issueDetails = new String[issuesPerTracker.size()][2];
-    int i = 0;
-    for (Map.Entry<Tracker, List<Issue>> issuePerTracker : issuesPerTracker
-        .entrySet()) {
-      issueDetails[i++] =
-          new String[] { issuePerTracker.getKey().getName() + ":",
-              "" + issuePerTracker.getValue().size() };
-    }
-
-    println("Issues\n¯¯¯¯¯¯");
-    printTable(issueDetails);
   }
 }
