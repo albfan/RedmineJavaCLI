@@ -1,0 +1,12 @@
+Bug #1
+Subject of #1
+Added by John Doe a few moments ago. 
+
+Status  Priority  Assignee        
+¯¯¯¯¯¯  ¯¯¯¯¯¯¯¯  ¯¯¯¯¯¯¯¯        
+null    null      (not assigned)  
+
+Description
+¯¯¯¯¯¯¯¯¯¯¯
+Description of #1
+
