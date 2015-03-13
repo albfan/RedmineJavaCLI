@@ -1,9 +1,8 @@
 package de.ad.tools.redmine.cli.command;
 
-import com.taskadapter.redmineapi.RedmineManager;
 import de.ad.tools.redmine.cli.Configuration;
+import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.junit.Before;
@@ -11,6 +10,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import static de.ad.tools.redmine.cli.test.TestHelper.resourceToByteArray;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -18,6 +19,7 @@ import static org.mockito.Mockito.when;
 public class HelpCommandTest {
   private Configuration configuration;
   private PrintStream out;
+  private ByteArrayOutputStream stream;
 
   private HelpCommand command;
 
@@ -29,7 +31,8 @@ public class HelpCommandTest {
     configuration = mock(Configuration.class);
     when(configuration.isConnected()).thenReturn(true);
 
-    out = mock(PrintStream.class);
+    stream = new ByteArrayOutputStream();
+    out = new PrintStream(stream);
   }
 
   @Test
@@ -44,10 +47,11 @@ public class HelpCommandTest {
 
     command.process(arguments);
 
-    verify(out).println("usage: redmine <command> [<args>]");
-    verify(out).println();
-    verify(out).println("test1  <mandatory>    This is a test command.        ");
-    verify(out).println("test2  [<optional>]   This is another test command.  ");
+    String actual = new String(stream.toByteArray());
+    String expected =
+        new String(resourceToByteArray("/HelpCommandOutput1.txt"));
+
+    assertThat(actual).isEqualTo(expected);
   }
 
   @Test
@@ -61,12 +65,11 @@ public class HelpCommandTest {
 
     command.process(arguments);
 
-    verify(out).println("command: test1");
-    verify(out).println("description: This is a test command.");
-//    verify(out).println();
-    verify(out).println("usage: redmine test1 <mandatory> ");
-//    verify(out).println();
-    verify(out).println("<mandatory>  A mandatory argument.  ");
+    String actual = new String(stream.toByteArray());
+    String expected =
+        new String(resourceToByteArray("/HelpCommandOutput2.txt"));
+
+    assertThat(actual).isEqualTo(expected);
   }
 
   private static class TestCommand1 extends Command {

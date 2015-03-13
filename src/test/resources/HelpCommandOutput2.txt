@@ -1,0 +1,6 @@
+command: test1
+description: This is a test command.
+
+usage: redmine test1 <mandatory> 
+
+<mandatory>  A mandatory argument.  

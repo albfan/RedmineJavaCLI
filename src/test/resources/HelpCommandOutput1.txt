@@ -1,0 +1,4 @@
+usage: redmine <command> [<args>]
+
+test1  <mandatory>    This is a test command.        
+test2  [<optional>]   This is another test command.  
