@@ -30,4 +30,28 @@ public class Configuration implements Serializable {
     server = null;
     apiKey = null;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Configuration)) return false;
+
+    Configuration that = (Configuration) o;
+
+    if (apiKey != null ? !apiKey.equals(that.apiKey) : that.apiKey != null) {
+      return false;
+    }
+    if (server != null ? !server.equals(that.server) : that.server != null) {
+      return false;
+    }
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = server != null ? server.hashCode() : 0;
+    result = 31 * result + (apiKey != null ? apiKey.hashCode() : 0);
+    return result;
+  }
 }

@@ -1,11 +1,13 @@
 package de.ad.tools.redmine.cli;
 
+import de.ad.tools.redmine.cli.util.FileUtil;
 import java.io.PrintStream;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -23,6 +25,8 @@ public class ApplicationTest {
 
   @Rule
   public ExpectedException exception = ExpectedException.none();
+  @Rule
+  public TemporaryFolder tmpFolder = new TemporaryFolder();
 
   @Before
   public void setUp() throws Exception {
@@ -73,6 +77,22 @@ public class ApplicationTest {
     application.run();
 
     verify(out).println(message);
+  }
+
+  @Test
+  public void testLoadConfiguration() throws Exception {
+    Application.ConfigurationManager configurationManager =
+        new Application.ConfigurationManager(
+            Application.LOCAL_CONFIGURATION_FILE_NAME);
+
+    FileUtil.setBaseDir(tmpFolder.getRoot());
+    
+    Configuration expected = new Configuration();
+    configurationManager.persistConfiguration(expected);
+    
+    Configuration actual = configurationManager.loadConfiguration();
+    
+    assertThat(actual).isEqualTo(expected);
   }
 
   @Test
