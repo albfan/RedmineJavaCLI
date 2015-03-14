@@ -58,4 +58,20 @@ public class ConfigurationTest {
     assertThat(configuration.getServer()).isNull();
     assertThat(configuration.getApiKey()).isNull();
   }
+
+  @Test
+  public void testEquals() throws Exception {
+    Configuration configuration1 = new Configuration();
+    Configuration configuration2 = new Configuration();
+
+    assertThat(configuration1.equals(configuration2)).isTrue();
+  }
+
+  @Test
+  public void testHashCode() throws Exception {
+    Configuration configuration1 = new Configuration();
+    Configuration configuration2 = new Configuration();
+
+    assertThat(configuration1.hashCode()).isEqualTo(configuration2.hashCode());
+  }
 }

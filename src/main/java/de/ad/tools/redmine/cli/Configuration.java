@@ -1,6 +1,8 @@
 package de.ad.tools.redmine.cli;
 
 import java.io.Serializable;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class Configuration implements Serializable {
   private String server;
@@ -33,25 +35,11 @@ public class Configuration implements Serializable {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof Configuration)) return false;
-
-    Configuration that = (Configuration) o;
-
-    if (apiKey != null ? !apiKey.equals(that.apiKey) : that.apiKey != null) {
-      return false;
-    }
-    if (server != null ? !server.equals(that.server) : that.server != null) {
-      return false;
-    }
-
-    return true;
+    return EqualsBuilder.reflectionEquals(this, o, true);
   }
 
   @Override
   public int hashCode() {
-    int result = server != null ? server.hashCode() : 0;
-    result = 31 * result + (apiKey != null ? apiKey.hashCode() : 0);
-    return result;
+    return HashCodeBuilder.reflectionHashCode(this, true);
   }
 }
