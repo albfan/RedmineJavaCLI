@@ -78,6 +78,9 @@ public class ProjectCommandTest {
     User user2 = mock(User.class);
     when(user2.getFullName()).thenReturn("John Doe");
 
+    User user3 = mock(User.class);
+    when(user3.getFullName()).thenReturn("Jason Doe");
+
     Project project = mock(Project.class);
     when(project.getName()).thenReturn("Project 1");
     when(project.getDescription()).thenReturn("Description");
@@ -89,13 +92,17 @@ public class ProjectCommandTest {
     when(developerRole.getName()).thenReturn("Developer");
 
     Membership manager = mock(Membership.class);
-    Membership developer = mock(Membership.class);
+    Membership developer1 = mock(Membership.class);
+    Membership developer2 = mock(Membership.class);
     when(manager.getRoles()).thenReturn(Arrays.asList(managerRole));
     when(manager.getUser()).thenReturn(user1);
-    when(developer.getRoles()).thenReturn(Arrays.asList(developerRole));
-    when(developer.getUser()).thenReturn(user2);
+    when(developer1.getRoles()).thenReturn(Arrays.asList(developerRole));
+    when(developer1.getUser()).thenReturn(user2);
+    when(developer2.getRoles()).thenReturn(Arrays.asList(developerRole));
+    when(developer2.getUser()).thenReturn(user3);
 
-    List<Membership> memberships = Arrays.asList(manager, developer);
+    List<Membership> memberships =
+        Arrays.asList(manager, developer1, developer2);
 
     when(membershipManager.getMemberships(key)).thenReturn(memberships);
 
