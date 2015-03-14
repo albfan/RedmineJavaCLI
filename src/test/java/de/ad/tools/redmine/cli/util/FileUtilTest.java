@@ -16,7 +16,7 @@ public class FileUtilTest {
 
   @Before
   public void setUp() throws Exception {
-    FileUtil.baseDir = tmpFolder.getRoot();
+    FileUtil.setBaseDir(tmpFolder.getRoot());
   }
 
   @Test

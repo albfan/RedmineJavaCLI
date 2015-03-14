@@ -4,7 +4,7 @@ import java.io.*;
 
 public final class FileUtil {
 
-  static File baseDir = new File(".");
+  private static File baseDir = new File(".");
   
   private FileUtil() {
   }
@@ -26,5 +26,9 @@ public final class FileUtil {
     FileOutputStream fout = new FileOutputStream(output);
     ObjectOutputStream oos = new ObjectOutputStream(fout);
     oos.writeObject(object);
+  }
+  
+  public static void setBaseDir(File baseDir){
+    FileUtil.baseDir = baseDir;
   }
 }
