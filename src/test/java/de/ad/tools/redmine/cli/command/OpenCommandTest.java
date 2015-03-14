@@ -4,6 +4,7 @@ import com.taskadapter.redmineapi.ProjectManager;
 import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.bean.Project;
 import de.ad.tools.redmine.cli.Configuration;
+import java.awt.Desktop;
 import java.io.PrintStream;
 import java.net.URI;
 import java.util.List;
@@ -12,7 +13,9 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import sun.security.krb5.internal.crypto.Des;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -58,7 +61,7 @@ public class OpenCommandTest {
 
   @Test
   public void testCommand() throws Exception {
-    String[] arguments = new String[]{"id"};
+    String[] arguments = new String[] { "id" };
 
     String server = "http://test.redmine.com";
     when(configuration.getServer()).thenReturn(server);
@@ -68,5 +71,26 @@ public class OpenCommandTest {
 
     String url = String.format("%s/issues/%s", server, arguments[0]);
     verify(browser).browse(new URI(url));
+  }
+
+  @Test
+  public void testBrowserIsSupported() throws Exception {
+    boolean expected = true;
+    OpenCommand.Browser browser = new OpenCommand.Browser(expected, null);
+
+    boolean actual = browser.isSupported();
+
+    assertThat(actual).isEqualTo(expected);
+  }
+
+  @Test
+  public void testBrowserBrowse() throws Exception {
+    Desktop desktop = mock(Desktop.class);
+    OpenCommand.Browser browser = new OpenCommand.Browser(false, desktop);
+
+    URI uri = URI.create("http://test.redmine.com");
+    browser.browse(uri);
+
+    verify(desktop).browse(uri);
   }
 }

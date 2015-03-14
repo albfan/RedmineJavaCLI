@@ -52,12 +52,25 @@ public class OpenCommand extends RedmineCommand {
    */
   public static class Browser{
 
+    private final boolean isSupported;
+    private final Desktop desktop;
+
+    public Browser(){
+      isSupported = Desktop.isDesktopSupported();
+      desktop = Desktop.getDesktop();
+    }
+    
+    public Browser(boolean isSupported, Desktop desktop){
+      this.isSupported = isSupported;
+      this.desktop = desktop;
+    }
+    
     public boolean isSupported() {
-      return Desktop.isDesktopSupported();
+      return isSupported;
     }
 
     public void browse(URI uri) throws IOException {
-      Desktop.getDesktop().browse(uri);
+      desktop.browse(uri);
     }
   }
 }
