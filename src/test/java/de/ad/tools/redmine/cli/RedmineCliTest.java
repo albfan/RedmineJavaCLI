@@ -7,12 +7,14 @@ import org.junit.rules.ExpectedException;
 
 import java.io.PrintStream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class RedmineCliTest {
   private Configuration configuration;
   private PrintStream out;
+  private RedmineCli.RedmineManagerFactory redmineManagerFactory;
 
   private RedmineCli redmineCli;
 
@@ -27,8 +29,10 @@ public class RedmineCliTest {
     when(configuration.getApiKey()).thenReturn("1234567890");
 
     out = mock(PrintStream.class);
+    
+    redmineManagerFactory = mock(RedmineCli.RedmineManagerFactory.class);
 
-    redmineCli = new RedmineCli(configuration, out);
+    redmineCli = new RedmineCli(configuration, out, redmineManagerFactory);
   }
 
   @Test
@@ -36,7 +40,7 @@ public class RedmineCliTest {
     configuration = mock(Configuration.class);
     when(configuration.isConnected()).thenReturn(false);
 
-    redmineCli = new RedmineCli(configuration, out);
+    redmineCli = new RedmineCli(configuration, out, redmineManagerFactory);
   }
 
   @Test
@@ -75,5 +79,25 @@ public class RedmineCliTest {
     String[] arguments = { command };
 
     redmineCli.handleCommand(arguments);
+  }
+
+  @Test
+  public void testEquals() throws Exception {
+    RedmineCli redmineCli1 = new RedmineCli(configuration, out,
+        redmineManagerFactory);
+    RedmineCli redmineCli2 = new RedmineCli(configuration, out,
+        redmineManagerFactory);
+
+    assertThat(redmineCli1.equals(redmineCli2)).isTrue();
+  }
+
+  @Test
+  public void testHashCode() throws Exception {
+    RedmineCli redmineCli1 = new RedmineCli(configuration, out,
+        redmineManagerFactory);
+    RedmineCli redmineCli2 = new RedmineCli(configuration, out,
+        redmineManagerFactory);
+
+    assertThat(redmineCli1.hashCode()).isEqualTo(redmineCli2.hashCode());
   }
 }

@@ -11,17 +11,21 @@ public class Application {
 
   static Application instance =
       new Application(new ConfigurationManager(LOCAL_CONFIGURATION_FILE_NAME),
-          new RedmineCliFactory(), System.out);
+          new RedmineCliFactory(), System.out,
+          new RedmineCli.RedmineManagerFactory());
 
   private ConfigurationManager configurationManager;
   private RedmineCliFactory redmineCliFactory;
   private PrintStream out;
+  private RedmineCli.RedmineManagerFactory redmineManagerFactory;
 
   Application(ConfigurationManager configurationManager,
-      RedmineCliFactory redmineCliFactory, PrintStream out) {
+      RedmineCliFactory redmineCliFactory, PrintStream out,
+      RedmineCli.RedmineManagerFactory redmineManagerFactory) {
     this.configurationManager = configurationManager;
     this.redmineCliFactory = redmineCliFactory;
     this.out = out;
+    this.redmineManagerFactory = redmineManagerFactory;
   }
 
   public static void main(String... args) {
@@ -31,7 +35,8 @@ public class Application {
   void run(String... args) {
     Configuration configuration = configurationManager.loadConfiguration();
 
-    RedmineCli redmineCli = redmineCliFactory.produce(configuration, out);
+    RedmineCli redmineCli = redmineCliFactory.produce(configuration, out,
+        redmineManagerFactory);
 
     try {
       redmineCli.handleCommand(args);
@@ -73,8 +78,9 @@ public class Application {
   }
 
   static class RedmineCliFactory {
-    public RedmineCli produce(Configuration configuration, PrintStream out) {
-      return new RedmineCli(configuration, out);
+    public RedmineCli produce(Configuration configuration, PrintStream out,
+        RedmineCli.RedmineManagerFactory redmineManagerFactory) {
+      return new RedmineCli(configuration, out, redmineManagerFactory);
     }
   }
 }

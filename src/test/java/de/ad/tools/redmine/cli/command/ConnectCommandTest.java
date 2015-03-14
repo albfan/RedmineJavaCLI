@@ -5,6 +5,7 @@ import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.UserManager;
 import com.taskadapter.redmineapi.bean.User;
 import de.ad.tools.redmine.cli.Configuration;
+import de.ad.tools.redmine.cli.RedmineCli;
 import java.io.PrintStream;
 import org.junit.Before;
 import org.junit.Rule;
@@ -23,7 +24,7 @@ public class ConnectCommandTest {
 
   private ConnectCommand command;
 
-  private ConnectCommand.RedmineManagerFactory redmineManagerFactory;
+  private RedmineCli.RedmineManagerFactory redmineManagerFactory;
 
   @Rule
   public ExpectedException exception = ExpectedException.none();
@@ -34,7 +35,7 @@ public class ConnectCommandTest {
 
     out = mock(PrintStream.class);
 
-    redmineManagerFactory = mock(ConnectCommand.RedmineManagerFactory.class);
+    redmineManagerFactory = mock(RedmineCli.RedmineManagerFactory.class);
 
     command = new ConnectCommand(configuration, out, redmineManagerFactory);
   }

@@ -3,6 +3,7 @@ package de.ad.tools.redmine.cli.command;
 import com.taskadapter.redmineapi.RedmineAuthenticationException;
 import com.taskadapter.redmineapi.RedmineManager;
 import de.ad.tools.redmine.cli.Configuration;
+import de.ad.tools.redmine.cli.RedmineCli;
 import java.io.PrintStream;
 
 public class ConnectCommand extends Command {
@@ -22,10 +23,10 @@ public class ConnectCommand extends Command {
       new Argument("apiKey", "The API key to use for authentication.",
           false) };
 
-  private RedmineManagerFactory redmineManagerFactory;
+  private RedmineCli.RedmineManagerFactory redmineManagerFactory;
 
   public ConnectCommand(Configuration configuration, PrintStream out,
-      RedmineManagerFactory redmineManagerFactory) {
+      RedmineCli.RedmineManagerFactory redmineManagerFactory) {
     super(NAME, DESCRIPTION, ARGUMENTS, configuration, out);
 
     this.redmineManagerFactory = redmineManagerFactory;
@@ -53,17 +54,6 @@ public class ConnectCommand extends Command {
       println(SUCCESS_MESSAGE, login, url);
     } catch (RedmineAuthenticationException e) {
       println(FAILURE_MESSAGE, url);
-    }
-  }
-
-  /**
-   * Wraps static calls to RedmineManagerFactory for a better testability.
-   */
-  public static class RedmineManagerFactory {
-
-    public RedmineManager createWithApiKey(String url, String apiKey) {
-      return com.taskadapter.redmineapi.RedmineManagerFactory.createWithApiKey(
-          url, apiKey);
     }
   }
 }

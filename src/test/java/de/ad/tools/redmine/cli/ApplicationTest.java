@@ -3,7 +3,6 @@ package de.ad.tools.redmine.cli;
 import de.ad.tools.redmine.cli.util.FileUtil;
 import java.io.PrintStream;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -20,9 +19,10 @@ public class ApplicationTest {
 
   private Application.ConfigurationManager configurationManager;
   private Application.RedmineCliFactory redmineCliFactory;
+  private RedmineCli.RedmineManagerFactory redmineManagerFactory;
   private PrintStream out;
-  private RedmineCli redmineCli;
 
+  private RedmineCli redmineCli;
   @Rule
   public ExpectedException exception = ExpectedException.none();
   @Rule
@@ -36,9 +36,11 @@ public class ApplicationTest {
         Application.RedmineCliFactory.class);
     out = mock(PrintStream.class);
     redmineCli = mock(RedmineCli.class);
+    redmineManagerFactory = mock(RedmineCli.RedmineManagerFactory.class);
 
     when(redmineCliFactory.produce(any(Configuration.class),
-        any(PrintStream.class))).thenReturn(redmineCli);
+        any(PrintStream.class), any(RedmineCli.RedmineManagerFactory.class))).
+        thenReturn(redmineCli);
   }
 
   @Test
@@ -56,7 +58,7 @@ public class ApplicationTest {
   @Test
   public void testRun() throws Exception {
     Application application = new Application(configurationManager,
-        redmineCliFactory, out);
+        redmineCliFactory, out, redmineManagerFactory);
 
     String[] arguments = new String[] { "arg1", "arg2" };
 
@@ -68,7 +70,7 @@ public class ApplicationTest {
   @Test
   public void testRunWithException() throws Exception {
     Application application = new Application(configurationManager,
-        redmineCliFactory, out);
+        redmineCliFactory, out, redmineManagerFactory);
 
     String message = "Exception";
     doThrow(new Exception(message)).when(redmineCli)
@@ -86,26 +88,27 @@ public class ApplicationTest {
             Application.LOCAL_CONFIGURATION_FILE_NAME);
 
     FileUtil.setBaseDir(tmpFolder.getRoot());
-    
+
     Configuration expected = new Configuration();
     configurationManager.persistConfiguration(expected);
-    
+
     Configuration actual = configurationManager.loadConfiguration();
-    
+
     assertThat(actual).isEqualTo(expected);
   }
 
   @Test
-  @Ignore
   public void testProduceRedmineCli() throws Exception {
     Application.RedmineCliFactory redmineCliFactory =
         new Application.RedmineCliFactory();
 
     Configuration configuration = mock(Configuration.class);
 
-    RedmineCli expected = new RedmineCli(configuration, out);
+    RedmineCli expected = new RedmineCli(configuration, out,
+        redmineManagerFactory);
 
-    RedmineCli actual = redmineCliFactory.produce(configuration, out);
+    RedmineCli actual = redmineCliFactory.produce(configuration, out,
+        redmineManagerFactory);
 
     assertThat(actual).isEqualTo(expected);
   }
