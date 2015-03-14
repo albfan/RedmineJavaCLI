@@ -1,13 +1,23 @@
 package de.ad.tools.redmine.cli.util;
 
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
+import org.junit.rules.TemporaryFolder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class FileUtilTest {
+  @Rule
+  public TemporaryFolder tmpFolder = new TemporaryFolder();
+
+  @Before
+  public void setUp() throws Exception {
+    FileUtil.baseDir = tmpFolder.getRoot();
+  }
 
   @Test
   public void testReadObjectFromFile() throws Exception {
