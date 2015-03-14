@@ -39,6 +39,8 @@ Now list your projects or have a look at your project details:
 
 ```shell
 >redmine projects
+Name            Key
+¯¯¯¯            ¯¯¯
 Test Project 1  test-project-1  
 Test Project 2  test-project-2
 
@@ -49,26 +51,26 @@ This is a test project.
 
 Members
 ¯¯¯¯¯¯¯
-Manager:    Admin Istrator Admin  
+Manager:    Admin Istrator  
 Developer:  John Doe
 ```
 
 Use the same approach to investigate your issues:
 ```shell
 >redmine issues
-ID  Tracker  Status       Priority  Assignee              Updated        Description         
-¯¯  ¯¯¯¯¯¯¯  ¯¯¯¯¯¯       ¯¯¯¯¯¯¯¯  ¯¯¯¯¯¯¯¯              ¯¯¯¯¯¯¯        ¯¯¯¯¯¯¯¯¯¯¯         
-#2  Feature  In Progress  High      (not assigned)        5 minutes ago  This is a feature.  
-#1  Bug      New          Normal    Admin Istrator Admin  5 minutes ago  This is a bug. 
+ID  Tracker  Status       Priority  Assignee        Updated        Description         
+¯¯  ¯¯¯¯¯¯¯  ¯¯¯¯¯¯       ¯¯¯¯¯¯¯¯  ¯¯¯¯¯¯¯¯        ¯¯¯¯¯¯¯        ¯¯¯¯¯¯¯¯¯¯¯         
+#2  Feature  In Progress  High      (not assigned)  5 minutes ago  This is a feature.  
+#1  Bug      New          Normal    Admin Istrator  5 minutes ago  This is a bug. 
 
 >redmine issue 1
 Bug #1
 This is a bug.
-Added by Admin Istrator Admin 6 minutes ago. 
+Added by Admin Istrator 6 minutes ago. 
 
 Status  Priority  Assignee              
 ¯¯¯¯¯¯  ¯¯¯¯¯¯¯¯  ¯¯¯¯¯¯¯¯              
-New     Normal    Admin Istrator Admin  
+New     Normal    Admin Istrator  
 
 Description
 ¯¯¯¯¯¯¯¯¯¯¯
