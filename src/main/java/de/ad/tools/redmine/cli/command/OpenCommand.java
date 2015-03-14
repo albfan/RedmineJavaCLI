@@ -50,27 +50,35 @@ public class OpenCommand extends RedmineCommand {
   /**
    * Wraps static calls to Desktop for a better testability.
    */
-  public static class Browser{
+  public static class Browser {
 
     private final boolean isSupported;
     private final Desktop desktop;
 
-    public Browser(){
+    public Browser() {
       isSupported = Desktop.isDesktopSupported();
-      desktop = Desktop.getDesktop();
+
+      //Avoid java.awt.HeadlessException when running in CI environment
+      if (isSupported) {
+        desktop = Desktop.getDesktop();
+      } else {
+        desktop = null;
+      }
     }
-    
-    public Browser(boolean isSupported, Desktop desktop){
+
+    public Browser(boolean isSupported, Desktop desktop) {
       this.isSupported = isSupported;
       this.desktop = desktop;
     }
-    
+
     public boolean isSupported() {
       return isSupported;
     }
 
     public void browse(URI uri) throws IOException {
-      desktop.browse(uri);
+      if (desktop != null) {
+        desktop.browse(uri);
+      }
     }
   }
 }

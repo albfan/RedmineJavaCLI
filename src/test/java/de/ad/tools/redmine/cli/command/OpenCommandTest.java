@@ -84,6 +84,16 @@ public class OpenCommandTest {
   }
 
   @Test
+  public void testBrowserIsNotSupported() throws Exception {
+    boolean expected = false;
+    OpenCommand.Browser browser = new OpenCommand.Browser(expected, null);
+
+    boolean actual = browser.isSupported();
+
+    assertThat(actual).isEqualTo(expected);
+  }
+
+  @Test
   public void testBrowserBrowse() throws Exception {
     Desktop desktop = mock(Desktop.class);
     OpenCommand.Browser browser = new OpenCommand.Browser(false, desktop);
@@ -92,5 +102,13 @@ public class OpenCommandTest {
     browser.browse(uri);
 
     verify(desktop).browse(uri);
+  }
+
+  @Test
+  public void testBrowserBrowseWhenNotSupported() throws Exception {
+    OpenCommand.Browser browser = new OpenCommand.Browser(false, null);
+
+    URI uri = URI.create("http://test.redmine.com");
+    browser.browse(uri);
   }
 }
