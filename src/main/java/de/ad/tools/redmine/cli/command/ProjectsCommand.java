@@ -27,6 +27,8 @@ public class ProjectsCommand extends RedmineCommand {
 
     List<Project> projects = projectManager.getProjects();
 
+    String[] header = new String[]{"Name", "Key"};
+    
     String[][] projectTable = new String[projects.size()][2];
     int i = 0;
     for (Project project : projects) {
@@ -34,6 +36,6 @@ public class ProjectsCommand extends RedmineCommand {
           new String[] { project.getName(), project.getIdentifier() };
     }
 
-    printTable(projectTable);
+    printTable(header, projectTable);
   }
 }
