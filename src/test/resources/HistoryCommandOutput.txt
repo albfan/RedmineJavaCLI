@@ -1,6 +1,13 @@
 Bug #1
 Subject of #1
-Added by John Doe a few moments ago. 
+Added by John Doe an hour ago. Updated a few moments ago.
 
 History
 ¯¯¯¯¯¯¯
+---
+Updated by John Doe a few moments ago.
+ - Status changed from New to In Progress
+This is a note.
+---
+Updated by John Doe a few moments ago.
+ - Priority changed from Normal to High

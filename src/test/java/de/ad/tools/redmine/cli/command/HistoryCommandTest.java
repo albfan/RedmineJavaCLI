@@ -4,12 +4,18 @@ import com.taskadapter.redmineapi.Include;
 import com.taskadapter.redmineapi.IssueManager;
 import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.bean.Issue;
+import com.taskadapter.redmineapi.bean.Journal;
+import com.taskadapter.redmineapi.bean.JournalDetail;
 import com.taskadapter.redmineapi.bean.Tracker;
 import com.taskadapter.redmineapi.bean.User;
 import de.ad.tools.redmine.cli.Configuration;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -71,8 +77,13 @@ public class HistoryCommandTest {
     Tracker tracker = mock(Tracker.class);
     when(tracker.getName()).thenReturn("Bug");
 
-    Date createdOn = new Date();
-    Date updatedOn = new Date();
+    Date createdOn = Date.from(
+        LocalDateTime.now()
+            .minusHours(1)
+            .atZone(ZoneId.systemDefault())
+            .toInstant());
+    Date updatedOn = Date.from(
+        LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant());
 
     User author = mock(User.class);
     when(author.getFullName()).thenReturn("John Doe");
@@ -85,6 +96,34 @@ public class HistoryCommandTest {
     when(issue.getUpdatedOn()).thenReturn(updatedOn);
     when(issue.getAuthor()).thenReturn(author);
     when(issue.getDescription()).thenReturn("Description of #" + id);
+
+    Journal journal1 = mock(Journal.class);
+    when(journal1.getUser()).thenReturn(author);
+    when(journal1.getCreatedOn()).thenReturn(updatedOn);
+    when(journal1.getNotes()).thenReturn("This is a note.");
+
+    JournalDetail journalDetail1 = mock(JournalDetail.class);
+    when(journalDetail1.getName()).thenReturn("Status");
+    when(journalDetail1.getOldValue()).thenReturn("New");
+    when(journalDetail1.getNewValue()).thenReturn("In Progress");
+
+    when(journal1.getDetails()).thenReturn(
+        Arrays.asList(journalDetail1));
+
+    Journal journal2 = mock(Journal.class);
+    when(journal2.getUser()).thenReturn(author);
+    when(journal2.getCreatedOn()).thenReturn(updatedOn);
+
+    JournalDetail journalDetail2 = mock(JournalDetail.class);
+    when(journalDetail2.getName()).thenReturn("Priority");
+    when(journalDetail2.getOldValue()).thenReturn("Normal");
+    when(journalDetail2.getNewValue()).thenReturn("High");
+
+    when(journal2.getDetails()).thenReturn(
+        Arrays.asList(journalDetail2));
+
+    List<Journal> journals = Arrays.asList(journal1, journal2);
+    when(issue.getJournals()).thenReturn(journals);
 
     return issue;
   }
