@@ -6,6 +6,9 @@ import java.io.PrintStream;
 import java.util.Map;
 
 public class HelpCommand extends Command {
+  static final String NOT_A_REDMINE_COMMAND_MESSAGE =
+      "'%s' is not a redmine command. Call 'help' to see available commands.";
+  
   private static final String NAME = "help";
   private static final String DESCRIPTION =
       "Display general help or (if provided) command help.";
@@ -25,9 +28,7 @@ public class HelpCommand extends Command {
   public void process(String[] arguments) throws Exception {
     super.process(arguments);
 
-    if (arguments.length > 1) {
-      printCommandHelp(this);
-    } else if (arguments.length == 1) {
+    if (arguments.length == 1) {
       printCommandHelp(getArguments()[0].getValue());
     } else {
       printGeneralHelp();
@@ -61,9 +62,13 @@ public class HelpCommand extends Command {
     println("usage: redmine %s %s", command.getName(), arguments);
     println();
 
+    printArgumentHelp(command);
+  }
+
+  private void printArgumentHelp(Command command) {
     String[][] help = new String[command.getArguments().length][2];
     int i = 0;
-    for (Command.Argument argument : command.getArguments()) {
+    for (Argument argument : command.getArguments()) {
       String formattedArgumentName =
           String.format("<%s>", argument.getName());
       help[i++] = new String[] { formattedArgumentName,
@@ -77,9 +82,7 @@ public class HelpCommand extends Command {
     if (commands.containsKey(commandName)) {
       printCommandHelp(commands.get(commandName));
     } else {
-      println(
-          "'%s' is not a redmine command. Call 'help' to see available commands.",
-          commandName);
+      println(NOT_A_REDMINE_COMMAND_MESSAGE, commandName);
     }
   }
 

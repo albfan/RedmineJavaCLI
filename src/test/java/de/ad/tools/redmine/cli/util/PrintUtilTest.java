@@ -6,7 +6,9 @@ import org.junit.Test;
 
 import java.lang.reflect.Constructor;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 public class PrintUtilTest {
@@ -28,6 +30,15 @@ public class PrintUtilTest {
 
     verify(out).println("row1,col1  row1,col2  ");
     verify(out).println("row2,col1  row2,col2  ");
+  }
+
+  @Test
+  public void testPrintEmptyTable() throws Exception {
+    String[][] table = new String[0][0];
+
+    PrintUtil.printTable(out, table);
+
+    verify(out, never()).println(any(String.class));
   }
 
   @Test

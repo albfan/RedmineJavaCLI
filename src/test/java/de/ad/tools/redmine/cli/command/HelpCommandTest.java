@@ -42,6 +42,7 @@ public class HelpCommandTest {
     Map<String, Command> commands = new LinkedHashMap<>();
     commands.put("test1", new TestCommand1(configuration, out));
     commands.put("test2", new TestCommand2(configuration, out));
+    commands.put("test3", new TestCommand3(configuration, out));
 
     command = new HelpCommand(configuration, out, commands);
 
@@ -56,7 +57,7 @@ public class HelpCommandTest {
 
   @Test
   public void testCommandHelp() throws Exception {
-    String[] arguments = new String[]{"test1"};
+    String[] arguments = new String[] { "test1" };
 
     Map<String, Command> commands = new LinkedHashMap<>();
     commands.put("test1", new TestCommand1(configuration, out));
@@ -70,6 +71,24 @@ public class HelpCommandTest {
         new String(resourceToByteArray("/HelpCommandOutput2.txt"));
 
     assertThat(actual).isEqualTo(expected);
+  }
+
+  @Test
+  public void testCommandHelpWithInvalidCommand() throws Exception {
+    String[] arguments = new String[] { "test2" };
+
+    Map<String, Command> commands = new LinkedHashMap<>();
+    commands.put("test1", new TestCommand1(configuration, out));
+
+    out = mock(PrintStream.class);
+    command = new HelpCommand(configuration, out, commands);
+
+    command.process(arguments);
+
+    String expected =
+        String.format(HelpCommand.NOT_A_REDMINE_COMMAND_MESSAGE, "test2");
+
+    verify(out).println(expected);
   }
 
   private static class TestCommand1 extends Command {
@@ -92,6 +111,17 @@ public class HelpCommandTest {
         new Argument("optional", "An optional argument.", true) };
 
     protected TestCommand2(Configuration configuration, PrintStream out) {
+      super(NAME, DESCRIPTION, ARGUMENTS, configuration, out);
+    }
+  }
+
+  private static class TestCommand3 extends Command {
+    private static final String NAME = "test3";
+    private static final String DESCRIPTION =
+        "This is yet another test command.";
+    private static final Argument[] ARGUMENTS = new Argument[0];
+
+    protected TestCommand3(Configuration configuration, PrintStream out) {
       super(NAME, DESCRIPTION, ARGUMENTS, configuration, out);
     }
   }

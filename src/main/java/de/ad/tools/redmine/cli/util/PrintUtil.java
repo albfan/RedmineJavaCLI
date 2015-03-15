@@ -68,6 +68,9 @@ public final class PrintUtil {
   }
 
   private static int[] computeColumnSizes(String[][] table) {
+    if(table.length == 0)
+      return new int[0];
+    
     int[] columnSizes = new int[table[0].length];
     for (String[] row : table) {
       for (int column = 0; column < row.length; column++) {
