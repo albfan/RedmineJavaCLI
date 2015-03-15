@@ -61,7 +61,25 @@ public class IssueCommandTest {
     //However, String provides a better comparison in case of differences
     String actual = new String(stream.toByteArray());
     String expected =
-        new String(resourceToByteArray("/IssueCommandOutput.txt"));
+        new String(resourceToByteArray("/IssueCommandOutput1.txt"));
+
+    assertThat(actual).isEqualTo(expected);
+  }
+
+  @Test
+  public void testCommandWithAssigneeAndDescriptionNotSet() throws Exception {
+    String[] arguments = new String[] { "1" };
+
+    Issue issue = createAnotherMockIssue(1);
+    when(issueManager.getIssueById(1)).thenReturn(issue);
+
+    command.process(arguments);
+
+    //Maybe it's faster to use byte[]
+    //However, String provides a better comparison in case of differences
+    String actual = new String(stream.toByteArray());
+    String expected =
+        new String(resourceToByteArray("/IssueCommandOutput2.txt"));
 
     assertThat(actual).isEqualTo(expected);
   }
@@ -83,7 +101,31 @@ public class IssueCommandTest {
     when(issue.getCreatedOn()).thenReturn(createdOn);
     when(issue.getUpdatedOn()).thenReturn(updatedOn);
     when(issue.getAuthor()).thenReturn(author);
+    when(issue.getAssignee()).thenReturn(author);
     when(issue.getDescription()).thenReturn("Description of #" + id);
+
+    return issue;
+  }
+
+  private Issue createAnotherMockIssue(int id) {
+    Tracker tracker = mock(Tracker.class);
+    when(tracker.getName()).thenReturn("Bug");
+
+    Date createdOn = new Date();
+    Date updatedOn = new Date();
+
+    User author = mock(User.class);
+    when(author.getFullName()).thenReturn("John Doe");
+
+    Issue issue = mock(Issue.class);
+    when(issue.getTracker()).thenReturn(tracker);
+    when(issue.getId()).thenReturn(id);
+    when(issue.getSubject()).thenReturn("Subject of #" + id);
+    when(issue.getCreatedOn()).thenReturn(createdOn);
+    when(issue.getUpdatedOn()).thenReturn(updatedOn);
+    when(issue.getAuthor()).thenReturn(author);
+    when(issue.getAssignee()).thenReturn(null);
+    when(issue.getDescription()).thenReturn("");
 
     return issue;
   }
