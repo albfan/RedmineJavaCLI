@@ -1,0 +1,4 @@
+Name    ID  Default  Closed  
+¯¯¯¯    ¯¯  ¯¯¯¯¯¯¯  ¯¯¯¯¯¯  
+New     1   X                
+Closed  2            X       
