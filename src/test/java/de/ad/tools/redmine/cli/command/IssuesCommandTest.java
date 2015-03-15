@@ -87,13 +87,17 @@ public class IssuesCommandTest {
 
     for (int i = 0; i < count; i++) {
       Issue issue = mock(Issue.class);
-      when(issue.getId()).thenReturn(i +1);
+      when(issue.getId()).thenReturn(i + 1);
 
       when(issue.getSubject()).thenReturn("Issue " + (i + 1));
       when(issue.getTracker()).thenReturn(tracker);
       when(issue.getStatusName()).thenReturn("New");
       when(issue.getPriorityText()).thenReturn("Normal");
-      when(issue.getAssignee()).thenReturn(user);
+      if (i % 2 == 0) {
+        when(issue.getAssignee()).thenReturn(user);
+      } else {
+        when(issue.getAssignee()).thenReturn(null);
+      }
       when(issue.getUpdatedOn()).thenReturn(updatedOn);
 
       issues.add(issue);

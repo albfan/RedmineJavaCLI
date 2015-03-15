@@ -1,4 +1,4 @@
-ID  Tracker  Status  Priority  Assignee  Updated      Subject  
-¯¯  ¯¯¯¯¯¯¯  ¯¯¯¯¯¯  ¯¯¯¯¯¯¯¯  ¯¯¯¯¯¯¯¯  ¯¯¯¯¯¯¯      ¯¯¯¯¯¯¯  
-#2  Bug      New     Normal    John Doe  an hour ago  Issue 2  
-#1  Bug      New     Normal    John Doe  an hour ago  Issue 1  
+ID  Tracker  Status  Priority  Assignee        Updated      Subject  
+¯¯  ¯¯¯¯¯¯¯  ¯¯¯¯¯¯  ¯¯¯¯¯¯¯¯  ¯¯¯¯¯¯¯¯        ¯¯¯¯¯¯¯      ¯¯¯¯¯¯¯  
+#2  Bug      New     Normal    (not assigned)  an hour ago  Issue 2  
+#1  Bug      New     Normal    John Doe        an hour ago  Issue 1  
