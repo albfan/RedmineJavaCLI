@@ -77,23 +77,24 @@ public class IssuesCommandTest {
   private List<Issue> createDummyIssues(int count) {
     List<Issue> issues = new ArrayList<>();
 
-    Tracker tracker = TrackerFactory.create(0, "Bug");
-    User user = UserFactory.create();
-    user.setFullName("John Doe");
+    Tracker tracker = mock(Tracker.class);
+    when(tracker.getName()).thenReturn("Bug");
+    User user = mock(User.class);
+    when(user.getFullName()).thenReturn("John Doe");
 
     Date updatedOn = Date.from(LocalDateTime.now().minusHours(1).atZone(
         ZoneId.systemDefault()).toInstant());
 
     for (int i = 0; i < count; i++) {
-      Issue issue = IssueFactory.create(i + 1);
+      Issue issue = mock(Issue.class);
+      when(issue.getId()).thenReturn(i +1);
 
-      issue.setSubject("Issue " + (i + 1));
-      issue.setTracker(tracker);
-      issue.setStatusName("New");
-      issue.setPriorityText("Normal");
-      issue.setAssignee(user);
-      issue.setUpdatedOn(updatedOn);
-      issue.setSubject("Description " + (i + 1));
+      when(issue.getSubject()).thenReturn("Issue " + (i + 1));
+      when(issue.getTracker()).thenReturn(tracker);
+      when(issue.getStatusName()).thenReturn("New");
+      when(issue.getPriorityText()).thenReturn("Normal");
+      when(issue.getAssignee()).thenReturn(user);
+      when(issue.getUpdatedOn()).thenReturn(updatedOn);
 
       issues.add(issue);
     }

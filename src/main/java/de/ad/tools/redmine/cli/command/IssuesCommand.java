@@ -42,7 +42,7 @@ public class IssuesCommand extends RedmineCommand {
     String[] header =
         new String[] { "ID", "Tracker", "Status", "Priority",
             "Assignee", "Updated",
-            "Description" };
+            "Subject" };
 
     int i = 0;
     for (Issue issue : issues) {
