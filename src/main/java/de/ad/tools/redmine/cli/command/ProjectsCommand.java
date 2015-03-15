@@ -11,7 +11,7 @@ import java.util.List;
 public class ProjectsCommand extends RedmineCommand {
 
   private static final String NAME = "projects";
-  private static final String DESCRIPTION = "Displays your projects.";
+  private static final String DESCRIPTION = "Display your projects.";
   private static final Argument[] ARGUMENTS = new Argument[0];
 
   public ProjectsCommand(Configuration configuration, PrintStream out,

@@ -16,7 +16,7 @@ import static de.ad.tools.redmine.cli.util.DateUtil.getTimeDifferenceAsText;
 public class IssuesCommand extends RedmineCommand {
 
   private static final String NAME = "issues";
-  private static final String DESCRIPTION = "Displays issues.";
+  private static final String DESCRIPTION = "Display issues.";
   private static final Argument[] ARGUMENTS = new Argument[0];
 
   public IssuesCommand(Configuration configuration, PrintStream out,
