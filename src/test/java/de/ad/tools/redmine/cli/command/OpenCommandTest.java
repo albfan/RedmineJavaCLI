@@ -71,6 +71,7 @@ public class OpenCommandTest {
 
     String url = String.format("%s/issues/%s", server, arguments[0]);
     verify(browser).browse(new URI(url));
+    verify(out).println(String.format(OpenCommand.SUCCESS_MESSAGE, "id"));
   }
 
   @Test

@@ -12,7 +12,9 @@ public class OpenCommand extends RedmineCommand {
 
   static final String NO_DESKTOP_SUPPORT_MESSAGE =
       "Cannot open issue '%s' in default browser.";
-
+  static final String SUCCESS_MESSAGE =
+      "Opened issue '%s' in default browser.";
+  
   private static final String NAME = "open";
   private static final String DESCRIPTION = "Open issue in default browser.";
   private static final Argument[] ARGUMENTS =
@@ -39,6 +41,8 @@ public class OpenCommand extends RedmineCommand {
     String uri =
         String.format("%s/issues/%s", configuration.getServer(), id);
     browser.browse(new URI(uri));
+    
+    println(SUCCESS_MESSAGE, id);
   }
 
   private void assertBrowserIsSupported(String id) throws Exception {
