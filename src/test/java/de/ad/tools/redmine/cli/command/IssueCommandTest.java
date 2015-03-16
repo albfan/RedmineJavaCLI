@@ -8,6 +8,8 @@ import com.taskadapter.redmineapi.bean.User;
 import de.ad.tools.redmine.cli.Configuration;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import org.junit.Before;
 import org.junit.Rule;
@@ -88,8 +90,13 @@ public class IssueCommandTest {
     Tracker tracker = mock(Tracker.class);
     when(tracker.getName()).thenReturn("Bug");
 
-    Date createdOn = new Date();
-    Date updatedOn = new Date();
+    Date createdOn = Date.from(
+        LocalDateTime.now()
+            .minusHours(1)
+            .atZone(ZoneId.systemDefault())
+            .toInstant());
+    Date updatedOn = Date.from(
+        LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant());
 
     User author = mock(User.class);
     when(author.getFullName()).thenReturn("John Doe");
