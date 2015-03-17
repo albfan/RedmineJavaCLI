@@ -1,5 +1,11 @@
-command: test1
-description: This is a test command.
+Command
+¯¯¯¯¯¯¯
+test1
+
+Description
+¯¯¯¯¯¯¯¯¯¯
+This is a test command.
+And here goes a long description...
 
 usage: redmine test1 <mandatory> 
 

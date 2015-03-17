@@ -21,7 +21,8 @@ public class IssuesCommand extends RedmineCommand {
 
   public IssuesCommand(Configuration configuration, PrintStream out,
       RedmineManager redmineManager) {
-    super(NAME, DESCRIPTION, ARGUMENTS, configuration, out, redmineManager);
+    super(NAME, DESCRIPTION, "", ARGUMENTS, configuration, out,
+        redmineManager);
   }
 
   @Override

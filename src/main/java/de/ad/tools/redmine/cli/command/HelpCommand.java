@@ -19,7 +19,7 @@ public class HelpCommand extends Command {
 
   public HelpCommand(Configuration configuration, PrintStream out,
       Map<String, Command> commands) {
-    super(NAME, DESCRIPTION, ARGUMENTS, configuration, out);
+    super(NAME, DESCRIPTION, "", ARGUMENTS, configuration, out);
 
     this.commands = commands;
   }
@@ -55,8 +55,12 @@ public class HelpCommand extends Command {
   private void printCommandHelp(Command command) {
     String arguments = createArgumentHelpString(command);
 
-    println("command: %s", command.getName());
-    println("description: %s", command.getDescription());
+    println("Command\n¯¯¯¯¯¯¯");
+    println(command.getName());
+    println();
+    println("Description\n¯¯¯¯¯¯¯¯¯¯");
+    println(command.getDescription());
+    println(command.getLongDescription());
     println();
 
     println("usage: redmine %s %s", command.getName(), arguments);

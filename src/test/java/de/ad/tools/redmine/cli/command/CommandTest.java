@@ -31,7 +31,8 @@ public class CommandTest {
         new Command.Argument[] { new Command.Argument("arg1", "test", false),
             new Command.Argument("arg2", "test", false) };
 
-    command = new Command("test", "This is a test command.", commandArguments,
+    command = new Command("test", "This is a test command.", "Long Description",
+        commandArguments,
         configuration, out);
 
     String[] arguments = new String[] { "val1", "val2" };
@@ -45,7 +46,8 @@ public class CommandTest {
         new Command.Argument[] { new Command.Argument("arg1", "test", false),
             new Command.Argument("arg2", "test", false) };
 
-    command = new Command("test", "This is a test command.", commandArguments,
+    command = new Command("test", "This is a test command.", "Long Description",
+        commandArguments,
         configuration, out);
 
     String message =
@@ -65,7 +67,8 @@ public class CommandTest {
         new Command.Argument[] { new Command.Argument("arg1", "test", false),
             new Command.Argument("arg2", "test", false) };
 
-    command = new Command("test", "This is a test command.", commandArguments,
+    command = new Command("test", "This is a test command.", "Long Description",
+        commandArguments,
         configuration, out);
 
     String message =

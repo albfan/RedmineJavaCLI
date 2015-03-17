@@ -16,7 +16,8 @@ public class ProjectsCommand extends RedmineCommand {
 
   public ProjectsCommand(Configuration configuration, PrintStream out,
       RedmineManager redmineManager) {
-    super(NAME, DESCRIPTION, ARGUMENTS, configuration, out, redmineManager);
+    super(NAME, DESCRIPTION, "", ARGUMENTS, configuration, out,
+        redmineManager);
   }
 
   @Override

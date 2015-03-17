@@ -1,7 +1,6 @@
 package de.ad.tools.redmine.cli.command;
 
 import com.taskadapter.redmineapi.RedmineAuthenticationException;
-import com.taskadapter.redmineapi.RedmineManager;
 import de.ad.tools.redmine.cli.Configuration;
 import de.ad.tools.redmine.cli.RedmineCli;
 import java.io.PrintStream;
@@ -27,7 +26,7 @@ public class ConnectCommand extends Command {
 
   public ConnectCommand(Configuration configuration, PrintStream out,
       RedmineCli.RedmineManagerFactory redmineManagerFactory) {
-    super(NAME, DESCRIPTION, ARGUMENTS, configuration, out);
+    super(NAME, DESCRIPTION, "", ARGUMENTS, configuration, out);
 
     this.redmineManagerFactory = redmineManagerFactory;
   }

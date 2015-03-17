@@ -32,7 +32,7 @@ public class RedmineCommandTest {
     redmineManager = mock(RedmineManager.class);
 
     command = new RedmineCommand("test", "This is a test command.",
-        new Command.Argument[0],
+        "This is a long description", new Command.Argument[0],
         configuration, out, redmineManager);
   }
 

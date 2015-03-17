@@ -25,7 +25,8 @@ public class OpenCommand extends RedmineCommand {
 
   public OpenCommand(Configuration configuration, PrintStream out,
       RedmineManager redmineManager, Browser browser) {
-    super(NAME, DESCRIPTION, ARGUMENTS, configuration, out, redmineManager);
+    super(NAME, DESCRIPTION, "", ARGUMENTS, configuration, out,
+        redmineManager);
 
     this.browser = browser;
   }

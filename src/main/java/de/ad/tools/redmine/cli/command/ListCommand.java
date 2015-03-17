@@ -16,18 +16,19 @@ public class ListCommand extends RedmineCommand {
 
   static final String INVALID_ENTITY_MESSAGE =
       "'%s' could not be recognized.";
-  
+
   private static final String NAME = "list";
   private static final String DESCRIPTION = "List the specified entity.";
+  private static final String LONG_DESCRIPTION =
+      "Currently supported entities are:\nstatus, tracker";
   private static final Argument[] ARGUMENTS =
-      new Argument[] { new Argument("entity",
-          "The entity you want to list. Currently supported entities are: "
-              + "status, tracker",
-          false) };
+      new Argument[] {
+          new Argument("entity", "The entity you want to list.", false) };
 
   public ListCommand(Configuration configuration, PrintStream out,
       RedmineManager redmineManager) {
-    super(NAME, DESCRIPTION, ARGUMENTS, configuration, out, redmineManager);
+    super(NAME, DESCRIPTION, LONG_DESCRIPTION, ARGUMENTS, configuration, out,
+        redmineManager);
   }
 
   @Override

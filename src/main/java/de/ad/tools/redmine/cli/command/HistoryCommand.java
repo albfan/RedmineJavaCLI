@@ -22,7 +22,8 @@ public class HistoryCommand extends RedmineCommand {
 
   public HistoryCommand(Configuration configuration, PrintStream out,
       RedmineManager redmineManager) {
-    super(NAME, DESCRIPTION, ARGUMENTS, configuration, out, redmineManager);
+    super(NAME, DESCRIPTION, "", ARGUMENTS, configuration, out,
+        redmineManager);
   }
 
   @Override

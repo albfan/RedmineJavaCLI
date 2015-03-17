@@ -14,7 +14,7 @@ public class ResetCommand extends Command {
   private static final Argument[] ARGUMENTS = new Argument[0];
 
   public ResetCommand(Configuration configuration, PrintStream out) {
-    super(NAME, DESCRIPTION, ARGUMENTS, configuration, out);
+    super(NAME, DESCRIPTION, "", ARGUMENTS, configuration, out);
   }
 
   @Override

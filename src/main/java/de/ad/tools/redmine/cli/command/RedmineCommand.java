@@ -11,10 +11,9 @@ class RedmineCommand extends Command {
   protected final RedmineManager redmineManager;
 
   protected RedmineCommand(String name, String description,
-      Argument[] arguments,
-      Configuration configuration, PrintStream out,
-      RedmineManager redmineManager) {
-    super(name, description, arguments, configuration, out);
+      String longDescription, Argument[] arguments, Configuration configuration,
+      PrintStream out, RedmineManager redmineManager) {
+    super(name, description, longDescription, arguments, configuration, out);
 
     this.redmineManager = redmineManager;
   }

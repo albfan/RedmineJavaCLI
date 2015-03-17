@@ -95,11 +95,13 @@ public class HelpCommandTest {
     private static final String NAME = "test1";
     private static final String DESCRIPTION =
         "This is a test command.";
+    private static final String LONG_DESCRIPTION =
+        "And here goes a long description...";
     private static final Argument[] ARGUMENTS = new Argument[] {
         new Argument("mandatory", "A mandatory argument.", false) };
 
     protected TestCommand1(Configuration configuration, PrintStream out) {
-      super(NAME, DESCRIPTION, ARGUMENTS, configuration, out);
+      super(NAME, DESCRIPTION, LONG_DESCRIPTION, ARGUMENTS, configuration, out);
     }
   }
 
@@ -107,11 +109,13 @@ public class HelpCommandTest {
     private static final String NAME = "test2";
     private static final String DESCRIPTION =
         "This is another test command.";
+    private static final String LONG_DESCRIPTION =
+        "And here goes another long description...";
     private static final Argument[] ARGUMENTS = new Argument[] {
         new Argument("optional", "An optional argument.", true) };
 
     protected TestCommand2(Configuration configuration, PrintStream out) {
-      super(NAME, DESCRIPTION, ARGUMENTS, configuration, out);
+      super(NAME, DESCRIPTION, LONG_DESCRIPTION, ARGUMENTS, configuration, out);
     }
   }
 
@@ -119,10 +123,12 @@ public class HelpCommandTest {
     private static final String NAME = "test3";
     private static final String DESCRIPTION =
         "This is yet another test command.";
+    private static final String LONG_DESCRIPTION =
+        "And here goes yet another long description...";
     private static final Argument[] ARGUMENTS = new Argument[0];
 
     protected TestCommand3(Configuration configuration, PrintStream out) {
-      super(NAME, DESCRIPTION, ARGUMENTS, configuration, out);
+      super(NAME, DESCRIPTION, LONG_DESCRIPTION, ARGUMENTS, configuration, out);
     }
   }
 }

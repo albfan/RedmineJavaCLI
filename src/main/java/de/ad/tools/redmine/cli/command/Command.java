@@ -13,15 +13,18 @@ public class Command {
 
   private final String name;
   private final String description;
+  private final String longDescription;
   private final Argument[] arguments;
 
   protected final Configuration configuration;
   private final PrintStream out;
 
-  protected Command(String name, String description, Argument[] arguments,
+  protected Command(String name, String description, String longDescription,
+      Argument[] arguments,
       Configuration configuration, PrintStream out) {
     this.name = name;
     this.description = description;
+    this.longDescription = longDescription;
     this.arguments = arguments;
     this.configuration = configuration;
     this.out = out;
@@ -38,6 +41,10 @@ public class Command {
 
   public final String getDescription() {
     return description;
+  }
+
+  public String getLongDescription() {
+    return longDescription;
   }
 
   public final Argument[] getArguments() {
