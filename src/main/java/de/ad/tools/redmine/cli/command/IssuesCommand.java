@@ -35,8 +35,6 @@ public class IssuesCommand extends RedmineCommand {
     //Currently not working, see issue:
     //https://github.com/taskadapter/redmine-java-api/issues/181
     Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put("offset", "0");
-    parameters.put("limit", "10");
     List<Issue> issues = issueManager.getIssues(parameters);
 
     String[][] issueTable = new String[issues.size()][6];
