@@ -1,13 +1,17 @@
 package de.ad.tools.redmine.cli.command;
 
+import com.taskadapter.redmineapi.Include;
 import com.taskadapter.redmineapi.IssueManager;
 import com.taskadapter.redmineapi.ProjectManager;
 import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.IssueStatus;
+import com.taskadapter.redmineapi.bean.Membership;
 import com.taskadapter.redmineapi.bean.Project;
 import com.taskadapter.redmineapi.bean.Tracker;
+import com.taskadapter.redmineapi.bean.User;
+import com.taskadapter.redmineapi.bean.UserFactory;
 import de.ad.tools.redmine.cli.Configuration;
 import java.awt.Desktop;
 import java.io.PrintStream;
@@ -21,6 +25,8 @@ public class UpdateIssueCommand extends RedmineCommand {
       "'%s' is not valid key-value assignment. Please use key=value.";
   static final String INVALID_KEY_MESSAGE =
       "'%s' is not a valid key.";
+  static final String INVALID_ASSIGNEE_MESSAGE =
+      "'%s' is not a valid assignee.";
   static final String INVALID_STATUS_MESSAGE =
       "'%s' is not a valid status.";
   static final String INVALID_TRACKER_MESSAGE =
@@ -32,7 +38,7 @@ public class UpdateIssueCommand extends RedmineCommand {
   private static final String DESCRIPTION = "Update a given issue.";
   private static final String LONG_DESCRIPTION =
       "Supported keys:\n" +
-          " - description, subject, status, tracker\n\n";
+          " - description, subject, assignee, status, tracker\n\n";
 
   private static final Argument[] ARGUMENTS =
       new Argument[] {
@@ -51,11 +57,13 @@ public class UpdateIssueCommand extends RedmineCommand {
 
     Handler description = new DescriptionHandler();
     Handler subject = new SubjectHandler();
+    Handler assignee = new AssigneeHandler();
     Handler status = new StatusHandler();
     Handler tracker = new TrackerHandler();
-    
+
     handlers.put(description.getName(), description);
     handlers.put(subject.getName(), subject);
+    handlers.put(assignee.getName(), assignee);
     handlers.put(status.getName(), status);
     handlers.put(tracker.getName(), tracker);
   }
@@ -80,52 +88,102 @@ public class UpdateIssueCommand extends RedmineCommand {
 
     String[] keyAndValue = keyValue.split("=");
     String key = keyAndValue[0];
-    String value = keyAndValue[1];
+    String value = stripQuotes(keyAndValue[1]);
 
     if (handlers.containsKey(key)) {
-      handlers.get(key).handle(issueManager, issue, value);
+      handlers.get(key).handle(redmineManager, issue, value);
     } else {
       throw new Exception(String.format(INVALID_KEY_MESSAGE, key));
     }
 
     issueManager.update(issue);
-    
+
     println(ISSUE_UPDATE_SUCCESS_MESSAGE, issue.getId());
+  }
+
+  private String stripQuotes(String s) {
+    if (s.startsWith("\"")) {
+      s = s.substring(1);
+    }
+
+    if (s.endsWith("\"")) {
+      s = s.substring(0, s.length() - 1);
+    }
+
+    return s;
   }
 
   private static abstract class Handler {
     public abstract String getName();
 
-    public abstract void handle(IssueManager issueManager, Issue issue,
+    public abstract void handle(RedmineManager redmineManager, Issue issue,
         String value) throws Exception;
   }
 
-  private static class DescriptionHandler extends Handler{
+  private static class DescriptionHandler extends Handler {
 
     @Override public String getName() {
       return "description";
     }
 
     @Override
-    public void handle(IssueManager issueManager, Issue issue, String value)
+    public void handle(RedmineManager redmineManager, Issue issue, String value)
         throws Exception {
       issue.setDescription(value);
     }
   }
 
-  private static class SubjectHandler extends Handler{
+  private static class SubjectHandler extends Handler {
 
     @Override public String getName() {
       return "subject";
     }
 
     @Override
-    public void handle(IssueManager issueManager, Issue issue, String value)
+    public void handle(RedmineManager redmineManager, Issue issue, String value)
         throws Exception {
       issue.setSubject(value);
     }
   }
-  
+
+  private static class AssigneeHandler extends Handler {
+
+    @Override public String getName() {
+      return "assignee";
+    }
+
+    @Override
+    public void handle(RedmineManager redmineManager, Issue issue, String value)
+        throws Exception {
+      int projectId = issue.getProject().getId();
+      Project currentProject = null;
+      List<Project> projects = redmineManager.getProjectManager().getProjects();
+      for (Project project : projects) {
+        if (projectId == project.getId()) {
+          currentProject = project;
+          break;
+        }
+      }
+
+      List<Membership> memberships =
+          redmineManager.getMembershipManager().getMemberships(
+              currentProject.getIdentifier());
+
+      User newAssignee = null;
+      for (Membership membership : memberships) {
+        if (value.equals(membership.getUser().getFullName())) {
+          newAssignee = membership.getUser();
+        }
+      }
+
+      if (newAssignee != null) {
+        issue.setAssignee(newAssignee);
+      } else {
+        throw new Exception(String.format(INVALID_ASSIGNEE_MESSAGE, value));
+      }
+    }
+  }
+
   private static class StatusHandler extends Handler {
 
     @Override public String getName() {
@@ -133,10 +191,11 @@ public class UpdateIssueCommand extends RedmineCommand {
     }
 
     @Override
-    public void handle(IssueManager issueManager, Issue issue, String value)
+    public void handle(RedmineManager redmineManager, Issue issue, String value)
         throws Exception {
       IssueStatus newStatus = null;
-      List<IssueStatus> statuses = issueManager.getStatuses();
+      List<IssueStatus> statuses =
+          redmineManager.getIssueManager().getStatuses();
       for (IssueStatus status : statuses) {
         if (value.equals(status.getName())) {
           newStatus = status;
@@ -159,10 +218,10 @@ public class UpdateIssueCommand extends RedmineCommand {
     }
 
     @Override
-    public void handle(IssueManager issueManager, Issue issue, String value)
+    public void handle(RedmineManager redmineManager, Issue issue, String value)
         throws Exception {
       Tracker newTracker = null;
-      List<Tracker> trackers = issueManager.getTrackers();
+      List<Tracker> trackers = redmineManager.getIssueManager().getTrackers();
       for (Tracker tracker : trackers) {
         if (value.equals(tracker.getName())) {
           newTracker = tracker;

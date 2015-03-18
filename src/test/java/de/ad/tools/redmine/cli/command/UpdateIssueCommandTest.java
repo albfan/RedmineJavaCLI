@@ -1,9 +1,13 @@
 package de.ad.tools.redmine.cli.command;
 
 import com.taskadapter.redmineapi.IssueManager;
+import com.taskadapter.redmineapi.MembershipManager;
+import com.taskadapter.redmineapi.ProjectManager;
 import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.IssueStatus;
+import com.taskadapter.redmineapi.bean.Membership;
+import com.taskadapter.redmineapi.bean.Project;
 import com.taskadapter.redmineapi.bean.Tracker;
 import com.taskadapter.redmineapi.bean.User;
 import de.ad.tools.redmine.cli.Configuration;
@@ -86,7 +90,7 @@ public class UpdateIssueCommandTest {
 
     command.process(arguments);
 
-    verify(issue).setDescription("\"A new description.\"");
+    verify(issue).setDescription("A new description.");
     verify(issueManager).update(issue);
 
     verify(out).println(
@@ -103,13 +107,92 @@ public class UpdateIssueCommandTest {
 
     command.process(arguments);
 
-    verify(issue).setSubject("\"A new subject.\"");
+    verify(issue).setSubject("A new subject.");
     verify(issueManager).update(issue);
 
     verify(out).println(
         String.format(UpdateIssueCommand.ISSUE_UPDATE_SUCCESS_MESSAGE, 1));
   }
-  
+
+  @Test
+  public void testUpdateAssignee() throws Exception {
+    String[] arguments = new String[] { "1", "assignee=\"User Name\"" };
+
+    Issue issue = createMockIssue(1);
+    when(issueManager.getIssueById(1)).thenReturn(issue);
+
+    Project project1 = mock(Project.class);
+    when(project1.getId()).thenReturn(1);
+    when(project1.getIdentifier()).thenReturn("project-1");
+
+    Project project2 = mock(Project.class);
+    when(project2.getId()).thenReturn(2);
+    when(project2.getIdentifier()).thenReturn("project-2");
+
+    when(issue.getProject()).thenReturn(project2);
+
+    ProjectManager projectManager = mock(ProjectManager.class);
+    when(redmineManager.getProjectManager()).thenReturn(projectManager);
+    when(projectManager.getProjects()).thenReturn(
+        Arrays.asList(project1, project2));
+
+    User user = mock(User.class);
+    when(user.getFullName()).thenReturn("User Name");
+
+    Membership membership = mock(Membership.class);
+    when(membership.getUser()).thenReturn(user);
+
+    MembershipManager membershipManager = mock(MembershipManager.class);
+    when(membershipManager.getMemberships("project-2")).thenReturn(
+        Arrays.asList(membership));
+
+    when(redmineManager.getMembershipManager()).thenReturn(membershipManager);
+
+    command.process(arguments);
+
+    verify(issue).setAssignee(user);
+    verify(issueManager).update(issue);
+
+    verify(out).println(
+        String.format(UpdateIssueCommand.ISSUE_UPDATE_SUCCESS_MESSAGE, 1));
+  }
+
+  @Test
+  public void testUpdateWithInvalidAssignee() throws Exception {
+    String[] arguments = new String[] { "1", "assignee=\"Invalid\"" };
+
+    Issue issue = createMockIssue(1);
+    when(issueManager.getIssueById(1)).thenReturn(issue);
+
+    Project project = mock(Project.class);
+    when(issue.getProject()).thenReturn(project);
+    when(project.getId()).thenReturn(1);
+    when(project.getIdentifier()).thenReturn("project-1");
+
+    ProjectManager projectManager = mock(ProjectManager.class);
+    when(redmineManager.getProjectManager()).thenReturn(projectManager);
+    when(projectManager.getProjects()).thenReturn(Arrays.asList(project));
+
+    User user = mock(User.class);
+    when(user.getFullName()).thenReturn("User Name");
+
+    Membership membership = mock(Membership.class);
+    when(membership.getUser()).thenReturn(user);
+
+    MembershipManager membershipManager = mock(MembershipManager.class);
+    when(membershipManager.getMemberships("project-1")).thenReturn(
+        Arrays.asList(membership));
+
+    when(redmineManager.getMembershipManager()).thenReturn(membershipManager);
+
+    exception.expect(Exception.class);
+    exception.expectMessage(
+        String.format(UpdateIssueCommand.INVALID_ASSIGNEE_MESSAGE,
+            "Invalid"));
+
+    command.process(arguments);
+  }
+
   @Test
   public void testUpdateStatus() throws Exception {
     String[] arguments = new String[] { "1", "status=New" };
