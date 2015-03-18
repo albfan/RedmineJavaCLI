@@ -20,7 +20,7 @@ public class ListCommand extends RedmineCommand {
   private static final String NAME = "list";
   private static final String DESCRIPTION = "List the specified entity.";
   private static final String LONG_DESCRIPTION =
-      "Currently supported entities are:\nstatus, tracker";
+      "Supported entities:\n - status, tracker";
   private static final Argument[] ARGUMENTS =
       new Argument[] {
           new Argument("entity", "The entity you want to list.", false) };
