@@ -41,7 +41,7 @@ public class UpdateIssueCommand extends RedmineCommand {
   private static final String DESCRIPTION = "Update a given issue.";
   private static final String LONG_DESCRIPTION =
       "Supported keys:\n" +
-          " - description, subject, priority, assignee, status, tracker\n\n";
+          " - description, subject, priority, assignee, status, tracker";
 
   private static final Argument[] ARGUMENTS =
       new Argument[] {
