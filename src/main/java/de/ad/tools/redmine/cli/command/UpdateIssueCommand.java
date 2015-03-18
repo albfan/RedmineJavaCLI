@@ -6,6 +6,7 @@ import com.taskadapter.redmineapi.ProjectManager;
 import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.bean.Issue;
+import com.taskadapter.redmineapi.bean.IssuePriority;
 import com.taskadapter.redmineapi.bean.IssueStatus;
 import com.taskadapter.redmineapi.bean.Membership;
 import com.taskadapter.redmineapi.bean.Project;
@@ -25,6 +26,8 @@ public class UpdateIssueCommand extends RedmineCommand {
       "'%s' is not valid key-value assignment. Please use key=value.";
   static final String INVALID_KEY_MESSAGE =
       "'%s' is not a valid key.";
+  static final String INVALID_PRIORITY_MESSAGE =
+      "'%s' is not a valid priority.";
   static final String INVALID_ASSIGNEE_MESSAGE =
       "'%s' is not a valid assignee.";
   static final String INVALID_STATUS_MESSAGE =
@@ -38,7 +41,7 @@ public class UpdateIssueCommand extends RedmineCommand {
   private static final String DESCRIPTION = "Update a given issue.";
   private static final String LONG_DESCRIPTION =
       "Supported keys:\n" +
-          " - description, subject, assignee, status, tracker\n\n";
+          " - description, subject, priority, assignee, status, tracker\n\n";
 
   private static final Argument[] ARGUMENTS =
       new Argument[] {
@@ -57,12 +60,14 @@ public class UpdateIssueCommand extends RedmineCommand {
 
     Handler description = new DescriptionHandler();
     Handler subject = new SubjectHandler();
+    Handler priority = new PriorityHandler();
     Handler assignee = new AssigneeHandler();
     Handler status = new StatusHandler();
     Handler tracker = new TrackerHandler();
 
     handlers.put(description.getName(), description);
     handlers.put(subject.getName(), subject);
+    handlers.put(priority.getName(), priority);
     handlers.put(assignee.getName(), assignee);
     handlers.put(status.getName(), status);
     handlers.put(tracker.getName(), tracker);
@@ -143,6 +148,33 @@ public class UpdateIssueCommand extends RedmineCommand {
     public void handle(RedmineManager redmineManager, Issue issue, String value)
         throws Exception {
       issue.setSubject(value);
+    }
+  }
+
+  private static class PriorityHandler extends Handler {
+
+    @Override public String getName() {
+      return "priority";
+    }
+
+    @Override
+    public void handle(RedmineManager redmineManager, Issue issue, String value)
+        throws Exception {
+      IssuePriority newPriority = null;
+      List<IssuePriority> priorities =
+          redmineManager.getIssueManager().getIssuePriorities();
+      for (IssuePriority priority : priorities) {
+        if (value.equals(priority.getName())) {
+          newPriority = priority;
+          break;
+        }
+      }
+
+      if (newPriority != null) {
+        issue.setPriorityId(newPriority.getId());
+      } else {
+        throw new Exception(String.format(INVALID_PRIORITY_MESSAGE, value));
+      }
     }
   }
 

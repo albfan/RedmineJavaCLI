@@ -5,6 +5,7 @@ import com.taskadapter.redmineapi.MembershipManager;
 import com.taskadapter.redmineapi.ProjectManager;
 import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.bean.Issue;
+import com.taskadapter.redmineapi.bean.IssuePriority;
 import com.taskadapter.redmineapi.bean.IssueStatus;
 import com.taskadapter.redmineapi.bean.Membership;
 import com.taskadapter.redmineapi.bean.Project;
@@ -112,6 +113,43 @@ public class UpdateIssueCommandTest {
 
     verify(out).println(
         String.format(UpdateIssueCommand.ISSUE_UPDATE_SUCCESS_MESSAGE, 1));
+  }
+
+  @Test
+  public void testUpdatePriority() throws Exception {
+    String[] arguments = new String[] { "1", "priority=High" };
+
+    Issue issue = createMockIssue(1);
+    when(issueManager.getIssueById(1)).thenReturn(issue);
+
+    List<IssuePriority> priorities = createDummyPriorities();
+    when(issueManager.getIssuePriorities()).thenReturn(priorities);
+
+    command.process(arguments);
+
+    verify(issue).setPriorityId(2);
+    verify(issueManager).update(issue);
+
+    verify(out).println(
+        String.format(UpdateIssueCommand.ISSUE_UPDATE_SUCCESS_MESSAGE, 1));
+  }
+
+  @Test
+  public void testUpdateWithInvalidPriority() throws Exception {
+    String[] arguments = new String[] { "1", "priority=Invalid" };
+
+    Issue issue = createMockIssue(1);
+    when(issueManager.getIssueById(1)).thenReturn(issue);
+
+    List<IssuePriority> priorities = createDummyPriorities();
+    when(issueManager.getIssuePriorities()).thenReturn(priorities);
+
+    exception.expect(Exception.class);
+    exception.expectMessage(
+        String.format(UpdateIssueCommand.INVALID_PRIORITY_MESSAGE,
+            "Invalid"));
+    
+    command.process(arguments);
   }
 
   @Test
@@ -293,6 +331,18 @@ public class UpdateIssueCommandTest {
     when(issue.getDescription()).thenReturn("Description of #" + id);
 
     return issue;
+  }
+
+  private List<IssuePriority> createDummyPriorities() {
+    IssuePriority normal = mock(IssuePriority.class);
+    when(normal.getName()).thenReturn("Normal");
+    when(normal.getId()).thenReturn(1);
+
+    IssuePriority high = mock(IssuePriority.class);
+    when(high.getName()).thenReturn("High");
+    when(high.getId()).thenReturn(2);
+
+    return Arrays.asList(normal, high);
   }
 
   private List<IssueStatus> createDummyStatuses() {
