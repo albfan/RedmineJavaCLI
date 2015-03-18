@@ -3,7 +3,7 @@ Command
 test1
 
 Description
-¯¯¯¯¯¯¯¯¯¯
+¯¯¯¯¯¯¯¯¯¯¯
 This is a test command.
 And here goes a long description...
 

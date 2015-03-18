@@ -58,7 +58,7 @@ public class HelpCommand extends Command {
     println("Command\n¯¯¯¯¯¯¯");
     println(command.getName());
     println();
-    println("Description\n¯¯¯¯¯¯¯¯¯¯");
+    println("Description\n¯¯¯¯¯¯¯¯¯¯¯");
     println(command.getDescription());
     println(command.getLongDescription());
     println();
