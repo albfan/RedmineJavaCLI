@@ -1,6 +1,7 @@
 package de.ad.tools.redmine.cli;
 
 import de.ad.tools.redmine.cli.util.FileUtil;
+import java.io.IOException;
 import java.io.PrintStream;
 import org.junit.Before;
 import org.junit.Rule;
@@ -95,6 +96,17 @@ public class ApplicationTest {
     Configuration actual = configurationManager.loadConfiguration();
 
     assertThat(actual).isEqualTo(expected);
+  }
+
+  @Test
+  public void testLoadConfigurationWithException() throws Exception {
+    Application.ConfigurationManager configurationManager =
+        new Application.ConfigurationManager(
+            Application.LOCAL_CONFIGURATION_FILE_NAME);
+
+    FileUtil.setBaseDir(tmpFolder.getRoot());
+    
+    Configuration actual = configurationManager.loadConfiguration();
   }
 
   @Test
