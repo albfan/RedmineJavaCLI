@@ -2,6 +2,7 @@ package de.ad.tools.redmine.cli.command;
 
 import com.taskadapter.redmineapi.IssueManager;
 import com.taskadapter.redmineapi.RedmineManager;
+import com.taskadapter.redmineapi.bean.IssuePriority;
 import com.taskadapter.redmineapi.bean.IssueStatus;
 import com.taskadapter.redmineapi.bean.Tracker;
 import de.ad.tools.redmine.cli.Configuration;
@@ -83,6 +84,24 @@ public class ListCommandTest {
   }
 
   @Test
+  public void testListPriority() throws Exception {
+    String[] arguments = new String[] { "priority" };
+
+    List<IssuePriority> priorities = createDummyPriorities();
+
+    when(redmineManager.getIssueManager()).thenReturn(issueManager);
+    when(issueManager.getIssuePriorities()).thenReturn(priorities);
+
+    command.process(arguments);
+
+    String actual = new String(stream.toByteArray());
+    String expected =
+        new String(resourceToByteArray("/ListCommandOutput3.txt"));
+
+    assertThat(actual).isEqualTo(expected);
+  }
+
+  @Test
   public void testListInvalidEntity() throws Exception {
     String[] arguments = new String[] { "invalid" };
 
@@ -118,5 +137,17 @@ public class ListCommandTest {
     when(featureTracker.getId()).thenReturn(2);
 
     return Arrays.asList(bugTracker, featureTracker);
+  }
+
+  private List<IssuePriority> createDummyPriorities() {
+    IssuePriority normal = mock(IssuePriority.class);
+    when(normal.getName()).thenReturn("Normal");
+    when(normal.getId()).thenReturn(1);
+
+    IssuePriority high = mock(IssuePriority.class);
+    when(high.getName()).thenReturn("High");
+    when(high.getId()).thenReturn(2);
+
+    return Arrays.asList(normal, high);
   }
 }

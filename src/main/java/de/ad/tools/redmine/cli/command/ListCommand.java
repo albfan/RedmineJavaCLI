@@ -4,6 +4,7 @@ import com.taskadapter.redmineapi.IssueManager;
 import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.bean.Issue;
+import com.taskadapter.redmineapi.bean.IssuePriority;
 import com.taskadapter.redmineapi.bean.IssueStatus;
 import com.taskadapter.redmineapi.bean.Tracker;
 import de.ad.tools.redmine.cli.Configuration;
@@ -20,7 +21,7 @@ public class ListCommand extends RedmineCommand {
   private static final String NAME = "list";
   private static final String DESCRIPTION = "List the specified entity.";
   private static final String LONG_DESCRIPTION =
-      "Supported entities:\n - status, tracker";
+      "Supported entities:\n - status, tracker, priority";
   private static final Argument[] ARGUMENTS =
       new Argument[] {
           new Argument("entity", "The entity you want to list.", false) };
@@ -43,6 +44,9 @@ public class ListCommand extends RedmineCommand {
         break;
       case "tracker":
         listTracker();
+        break;
+      case "priority":
+        listPriority();
         break;
       default:
         throw new Exception(String.format(INVALID_ENTITY_MESSAGE, entity));
@@ -84,5 +88,22 @@ public class ListCommand extends RedmineCommand {
     }
 
     printTable(header, trackerTable);
+  }
+
+  private void listPriority() throws Exception {
+    IssueManager issueManager = redmineManager.getIssueManager();
+
+    List<IssuePriority> priorities = issueManager.getIssuePriorities();
+
+    String[][] priorityTable = new String[priorities.size()][2];
+    String[] header = new String[] { "Name", "ID" };
+
+    int i = 0;
+    for (IssuePriority priority : priorities) {
+      priorityTable[i++] =
+          new String[] { priority.getName(), String.valueOf(priority.getId()) };
+    }
+
+    printTable(header, priorityTable);
   }
 }

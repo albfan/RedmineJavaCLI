@@ -1,0 +1,4 @@
+Name    ID  
+¯¯¯¯    ¯¯  
+Normal  1   
+High    2   
