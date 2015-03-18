@@ -1,7 +1,6 @@
 package de.ad.tools.redmine.cli;
 
 import com.taskadapter.redmineapi.RedmineManager;
-import com.taskadapter.redmineapi.RedmineManagerFactory;
 import de.ad.tools.redmine.cli.command.*;
 
 import java.io.PrintStream;
@@ -54,6 +53,8 @@ public class RedmineCli {
     Command history =
         new HistoryCommand(configuration, out, redmineManager);
     Command list = new ListCommand(configuration, out, redmineManager);
+    Command updateIssueCommand =
+        new UpdateIssueCommand(configuration, out, redmineManager);
     Command open = new OpenCommand(configuration, out, redmineManager,
         new OpenCommand.Browser());
     Command reset = new ResetCommand(configuration, out);
@@ -65,8 +66,9 @@ public class RedmineCli {
     commands.put(issues.getName(), issues);
     commands.put(issue.getName(), issue);
     commands.put(history.getName(), history);
-    commands.put(open.getName(), open);
     commands.put(list.getName(), list);
+    commands.put(updateIssueCommand.getName(), updateIssueCommand);
+    commands.put(open.getName(), open);
     commands.put(reset.getName(), reset);
   }
 
