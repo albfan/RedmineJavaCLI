@@ -58,19 +58,23 @@ public class HistoryCommand extends RedmineCommand {
   private void printJournals(Issue issue) {
     printHeading("History");
 
-    for (Journal journal : issue.getJournals()) {
-      println("---");
-      println("Updated by %s %s ago.", journal.getUser().getFullName(),
-          getTimeDifferenceAsText(journal.getCreatedOn()));
+    issue.getJournals().forEach(this::printJournal);
+  }
 
-      for (JournalDetail detail : journal.getDetails()) {
-        println(" - %s changed from %s to %s", detail.getName(),
-            detail.getOldValue(), detail.getNewValue());
-      }
+  private void printJournal(Journal journal) {
+    println("---");
+    println("Updated by %s %s ago.", journal.getUser().getFullName(),
+        getTimeDifferenceAsText(journal.getCreatedOn()));
 
-      if (journal.getNotes() != null && journal.getNotes().length() > 0) {
-        println(journal.getNotes());
-      }
+    journal.getDetails().forEach(this::printJournalDetails);
+    
+    if (journal.getNotes() != null && journal.getNotes().length() > 0) {
+      println(journal.getNotes());
     }
+  }
+
+  private void printJournalDetails(JournalDetail journalDetail) {
+    println(" - %s changed from %s to %s", journalDetail.getName(),
+        journalDetail.getOldValue(), journalDetail.getNewValue());
   }
 }

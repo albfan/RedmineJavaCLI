@@ -50,32 +50,18 @@ public class ProjectCommand extends RedmineCommand {
         redmineManager.getMembershipManager();
     List<Membership> memberships =
         membershipManager.getMemberships(projectKey);
+    
     LinkedHashMap<Role, List<User>> rolesAndMembers =
         new LinkedHashMap<Role, List<User>>();
-    for (Membership membership : memberships) {
-      for (Role role : membership.getRoles()) {
-        if (rolesAndMembers.containsKey(role)) {
-          rolesAndMembers.get(role).add(membership.getUser());
-        } else {
-          List<User> members = new ArrayList<User>();
-          members.add(membership.getUser());
-
-          rolesAndMembers.put(role, members);
-        }
-      }
-    }
+    memberships.forEach(
+        membership -> membership.getRoles().forEach(
+            role -> addRoleForMembership(role, membership, rolesAndMembers)));
 
     String[][] membershipDetails = new String[rolesAndMembers.size()][2];
     int i = 0;
     for (Map.Entry<Role, List<User>> roleAndMembers : rolesAndMembers
         .entrySet()) {
-      StringBuilder members = new StringBuilder();
-      for (User user : roleAndMembers.getValue()) {
-        if (members.length() > 0) {
-          members.append(", ");
-        }
-        members.append(user.getFullName());
-      }
+      String members = getMemberListAsString(roleAndMembers);
       membershipDetails[i++] =
           new String[] { roleAndMembers.getKey().getName() + ":",
               members.toString() };
@@ -84,5 +70,29 @@ public class ProjectCommand extends RedmineCommand {
     printHeading("Members");
     printTable(membershipDetails);
     println();
+  }
+
+  private void addRoleForMembership(Role role, Membership membership,
+      LinkedHashMap<Role, List<User>> rolesAndMembers) {
+    if (rolesAndMembers.containsKey(role)) {
+      rolesAndMembers.get(role).add(membership.getUser());
+    } else {
+      List<User> members = new ArrayList<User>();
+      members.add(membership.getUser());
+
+      rolesAndMembers.put(role, members);
+    }
+  }
+
+  private String getMemberListAsString(
+      Map.Entry<Role, List<User>> roleAndMembers) {
+    StringBuilder members = new StringBuilder();
+    for (User user : roleAndMembers.getValue()) {
+      if (members.length() > 0) {
+        members.append(", ");
+      }
+      members.append(user.getFullName());
+    }
+    return members.toString();
   }
 }

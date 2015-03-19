@@ -28,8 +28,8 @@ public class ProjectsCommand extends RedmineCommand {
 
     List<Project> projects = projectManager.getProjects();
 
-    String[] header = new String[]{"Name", "Key"};
-    
+    String[] header = new String[] { "Name", "Key" };
+
     String[][] projectTable = new String[projects.size()][2];
     int i = 0;
     for (Project project : projects) {

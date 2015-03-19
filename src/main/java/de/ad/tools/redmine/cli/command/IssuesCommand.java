@@ -32,32 +32,33 @@ public class IssuesCommand extends RedmineCommand {
     IssueManager issueManager = redmineManager.getIssueManager();
 
     //Parameter spec: http://www.redmine.org/projects/redmine/wiki/Rest_Issues
-    //Currently not working, see issue:
-    //https://github.com/taskadapter/redmine-java-api/issues/181
     Map<String, String> parameters = new HashMap<String, String>();
     List<Issue> issues = issueManager.getIssues(parameters);
 
-    String[][] issueTable = new String[issues.size()][6];
+    final String[][] issueTable = new String[issues.size()][6];
     String[] header =
         new String[] { "ID", "Tracker", "Status", "Priority",
             "Assignee", "Updated",
             "Subject" };
-
+    
     int i = 0;
     for (Issue issue : issues) {
-      issueTable[i++] =
-          new String[] { "#" + issue.getId(),
-              issue.getTracker().getName(),
-              issue.getStatusName(),
-              issue.getPriorityText(),
-              issue.getAssignee() != null ?
-                  issue.getAssignee().getFullName() :
-                  "(not assigned)",
-              getTimeDifferenceAsText(issue.getUpdatedOn()) +
-                  " ago",
-              StringUtil.ellipsize(issue.getSubject(), 24) };
+      issueTable[i++] = buildRow(issue);
     }
 
     printTable(header, issueTable);
+  }
+
+  private String[] buildRow(Issue issue) {
+    return new String[] { "#" + issue.getId(),
+        issue.getTracker().getName(),
+        issue.getStatusName(),
+        issue.getPriorityText(),
+        issue.getAssignee() != null ?
+            issue.getAssignee().getFullName() :
+            "(not assigned)",
+        getTimeDifferenceAsText(issue.getUpdatedOn()) +
+            " ago",
+        StringUtil.ellipsize(issue.getSubject(), 24) };
   }
 }

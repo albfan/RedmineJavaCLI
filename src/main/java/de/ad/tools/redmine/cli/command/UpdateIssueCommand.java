@@ -19,6 +19,7 @@ import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class UpdateIssueCommand extends RedmineCommand {
 
@@ -160,21 +161,16 @@ public class UpdateIssueCommand extends RedmineCommand {
     @Override
     public void handle(RedmineManager redmineManager, Issue issue, String value)
         throws Exception {
-      IssuePriority newPriority = null;
       List<IssuePriority> priorities =
           redmineManager.getIssueManager().getIssuePriorities();
-      for (IssuePriority priority : priorities) {
-        if (value.equals(priority.getName())) {
-          newPriority = priority;
-          break;
-        }
-      }
 
-      if (newPriority != null) {
-        issue.setPriorityId(newPriority.getId());
-      } else {
-        throw new Exception(String.format(INVALID_PRIORITY_MESSAGE, value));
-      }
+      Optional<IssuePriority> newPriority = priorities.stream()
+          .filter(p -> value.equals(p.getName()))
+          .findFirst();
+
+      newPriority.ifPresent(p -> issue.setPriorityId(p.getId()));
+      newPriority.orElseThrow(
+          () -> new Exception(String.format(INVALID_PRIORITY_MESSAGE, value)));
     }
   }
 
@@ -191,18 +187,13 @@ public class UpdateIssueCommand extends RedmineCommand {
           redmineManager.getMembershipManager()
               .getMemberships(issue.getProject().getId());
 
-      User newAssignee = null;
-      for (Membership membership : memberships) {
-        if (value.equals(membership.getUser().getFullName())) {
-          newAssignee = membership.getUser();
-        }
-      }
+      Optional<Membership> newAssignee = memberships.stream()
+          .filter(m -> value.equals(m.getUser().getFullName()))
+          .findFirst();
 
-      if (newAssignee != null) {
-        issue.setAssignee(newAssignee);
-      } else {
-        throw new Exception(String.format(INVALID_ASSIGNEE_MESSAGE, value));
-      }
+      newAssignee.ifPresent(m -> issue.setAssignee(m.getUser()));
+      newAssignee.orElseThrow(
+          () -> new Exception(String.format(INVALID_ASSIGNEE_MESSAGE, value)));
     }
   }
 
@@ -215,21 +206,15 @@ public class UpdateIssueCommand extends RedmineCommand {
     @Override
     public void handle(RedmineManager redmineManager, Issue issue, String value)
         throws Exception {
-      IssueStatus newStatus = null;
       List<IssueStatus> statuses =
           redmineManager.getIssueManager().getStatuses();
-      for (IssueStatus status : statuses) {
-        if (value.equals(status.getName())) {
-          newStatus = status;
-          break;
-        }
-      }
+      
+      Optional<IssueStatus> newStatus =
+          statuses.stream().filter(s -> value.equals(s.getName())).findFirst();
 
-      if (newStatus != null) {
-        issue.setStatusId(newStatus.getId());
-      } else {
-        throw new Exception(String.format(INVALID_STATUS_MESSAGE, value));
-      }
+      newStatus.ifPresent(s -> issue.setStatusId(s.getId()));
+      newStatus.orElseThrow(
+          () -> new Exception(String.format(INVALID_STATUS_MESSAGE, value)));
     }
   }
 
@@ -242,20 +227,14 @@ public class UpdateIssueCommand extends RedmineCommand {
     @Override
     public void handle(RedmineManager redmineManager, Issue issue, String value)
         throws Exception {
-      Tracker newTracker = null;
       List<Tracker> trackers = redmineManager.getIssueManager().getTrackers();
-      for (Tracker tracker : trackers) {
-        if (value.equals(tracker.getName())) {
-          newTracker = tracker;
-          break;
-        }
-      }
+      
+      Optional<Tracker> newTracker = trackers.stream()
+          .filter(t -> value.equals(t.getName())).findFirst();
 
-      if (newTracker != null) {
-        issue.setTracker(newTracker);
-      } else {
-        throw new Exception(String.format(INVALID_TRACKER_MESSAGE, value));
-      }
+      newTracker.ifPresent(issue::setTracker);
+      newTracker.orElseThrow(() ->
+          new Exception(String.format(INVALID_TRACKER_MESSAGE, value)));
     }
   }
 }
