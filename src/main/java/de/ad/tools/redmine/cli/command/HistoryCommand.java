@@ -56,7 +56,7 @@ public class HistoryCommand extends RedmineCommand {
   }
 
   private void printJournals(Issue issue) {
-    println("History\n¯¯¯¯¯¯¯");
+    printHeading("History");
 
     for (Journal journal : issue.getJournals()) {
       println("---");

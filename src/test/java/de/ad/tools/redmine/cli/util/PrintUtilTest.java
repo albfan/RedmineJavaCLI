@@ -65,10 +65,20 @@ public class PrintUtilTest {
 
     PrintUtil.printTable(out, header, table);
 
-    verify(out).println("header1    header2    ");
+    verify(out).println("HEADER1    HEADER2    ");
     verify(out).println("¯¯¯¯¯¯¯    ¯¯¯¯¯¯¯    ");
     verify(out).println("row1,col1  row1,col2  ");
     verify(out).println("row2,col1  row2,col2  ");
+  }
+
+  @Test
+  public void testPrintHeading() throws Exception {
+    String heading = "Heading";
+    
+    PrintUtil.printHeading(out, heading);
+    
+    verify(out).println("HEADING");
+    verify(out).println("¯¯¯¯¯¯¯");
   }
 
   @Test

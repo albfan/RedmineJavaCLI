@@ -66,6 +66,10 @@ public class Command {
   protected final void printTable(String[] header, String[][] table) {
     PrintUtil.printTable(out, header, table);
   }
+  
+  protected final void printHeading(String heading){
+    PrintUtil.printHeading(out, heading);
+  }
 
   private void validateArguments(String[] arguments) throws Exception {
     int requiredArgumentsCount = getRequiredArgumentsCount();

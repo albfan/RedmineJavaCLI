@@ -1,8 +1,8 @@
-Command
+COMMAND
 ¯¯¯¯¯¯¯
 test1
 
-Description
+DESCRIPTION
 ¯¯¯¯¯¯¯¯¯¯¯
 This is a test command.
 And here goes a long description...

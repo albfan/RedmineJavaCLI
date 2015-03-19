@@ -2,7 +2,7 @@ Project 1
 
 Description
 
-Members
+MEMBERS
 ¯¯¯¯¯¯¯
 Manager:    Jane Doe             
 Developer:  John Doe, Jason Doe  

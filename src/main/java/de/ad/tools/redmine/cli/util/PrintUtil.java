@@ -23,10 +23,19 @@ public final class PrintUtil {
     printTable(out, tableWithHeader);
   }
 
+  public static void printHeading(PrintStream out, String heading) {
+    println(out, heading.toUpperCase());
+
+    char[] divider = new char[heading.length()];
+    Arrays.fill(divider, '¯');
+
+    println(out, new String(divider));
+  }
+
   private static String[][] addHeader(String[] header, String[][] table) {
     String[][] tableWithHeader = new String[table.length + 2][];
 
-    tableWithHeader[0] = header;
+    tableWithHeader[0] = toUpperCase(header);
     tableWithHeader[1] = createDividers(header);
 
     for (int i = 0; i < table.length; i++) {
@@ -34,6 +43,14 @@ public final class PrintUtil {
     }
 
     return tableWithHeader;
+  }
+
+  private static String[] toUpperCase(String[] header) {
+    for (int i = 0; i < header.length; i++) {
+      header[i] = header[i].toUpperCase();
+    }
+
+    return header;
   }
 
   private static String[] createDividers(String[] header) {
@@ -68,9 +85,10 @@ public final class PrintUtil {
   }
 
   private static int[] computeColumnSizes(String[][] table) {
-    if(table.length == 0)
+    if (table.length == 0) {
       return new int[0];
-    
+    }
+
     int[] columnSizes = new int[table[0].length];
     for (String[] row : table) {
       for (int column = 0; column < row.length; column++) {

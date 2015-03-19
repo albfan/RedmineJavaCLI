@@ -2,7 +2,7 @@ Bug #1
 Subject of #1
 Added by John Doe an hour ago. Updated a few moments ago.
 
-History
+HISTORY
 ¯¯¯¯¯¯¯
 ---
 Updated by John Doe a few moments ago.

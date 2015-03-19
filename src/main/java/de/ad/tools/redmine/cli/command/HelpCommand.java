@@ -55,10 +55,10 @@ public class HelpCommand extends Command {
   private void printCommandHelp(Command command) {
     String arguments = createArgumentHelpString(command);
 
-    println("Command\n¯¯¯¯¯¯¯");
+    printHeading("Command");
     println(command.getName());
     println();
-    println("Description\n¯¯¯¯¯¯¯¯¯¯¯");
+    printHeading("Description");
     println(command.getDescription());
     println(command.getLongDescription());
     println();

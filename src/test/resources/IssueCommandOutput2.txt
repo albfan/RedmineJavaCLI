@@ -1,12 +1,13 @@
-Bug #1
+BUG #1
+¯¯¯¯¯¯
 Subject of #1
 Added by John Doe a few moments ago. 
 
-Status  Priority  Assignee        
+STATUS  PRIORITY  ASSIGNEE        
 ¯¯¯¯¯¯  ¯¯¯¯¯¯¯¯  ¯¯¯¯¯¯¯¯        
 null    null      (not assigned)  
 
-Description
+DESCRIPTION
 ¯¯¯¯¯¯¯¯¯¯¯
 (not set)
 

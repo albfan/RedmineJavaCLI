@@ -38,7 +38,10 @@ public class IssueCommand extends RedmineCommand {
   }
 
   private void printHeader(Issue issue) {
-    println("%s #%d", issue.getTracker().getName(), issue.getId());
+    String heading =
+        String.format("%s #%d", issue.getTracker().getName(), issue.getId());
+    printHeading(heading);
+    
     println(issue.getSubject());
     String createdText = getTimeDifferenceAsText(issue.getCreatedOn());
     String updatedText = "";
@@ -68,7 +71,7 @@ public class IssueCommand extends RedmineCommand {
   }
 
   private void printDescription(Issue issue) {
-    println("Description\n¯¯¯¯¯¯¯¯¯¯¯");
+    printHeading("Description");
 
     if (issue.getDescription().length() > 0) {
       println(issue.getDescription());

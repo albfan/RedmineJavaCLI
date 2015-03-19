@@ -81,7 +81,7 @@ public class ProjectCommand extends RedmineCommand {
               members.toString() };
     }
 
-    println("Members\n¯¯¯¯¯¯¯");
+    printHeading("Members");
     printTable(membershipDetails);
     println();
   }
