@@ -187,19 +187,9 @@ public class UpdateIssueCommand extends RedmineCommand {
     @Override
     public void handle(RedmineManager redmineManager, Issue issue, String value)
         throws Exception {
-      int projectId = issue.getProject().getId();
-      Project currentProject = null;
-      List<Project> projects = redmineManager.getProjectManager().getProjects();
-      for (Project project : projects) {
-        if (projectId == project.getId()) {
-          currentProject = project;
-          break;
-        }
-      }
-
       List<Membership> memberships =
-          redmineManager.getMembershipManager().getMemberships(
-              currentProject.getIdentifier());
+          redmineManager.getMembershipManager()
+              .getMemberships(issue.getProject().getId());
 
       User newAssignee = null;
       for (Membership membership : memberships) {

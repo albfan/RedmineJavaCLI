@@ -161,19 +161,9 @@ public class UpdateIssueCommandTest {
 
     Project project1 = mock(Project.class);
     when(project1.getId()).thenReturn(1);
-    when(project1.getIdentifier()).thenReturn("project-1");
 
-    Project project2 = mock(Project.class);
-    when(project2.getId()).thenReturn(2);
-    when(project2.getIdentifier()).thenReturn("project-2");
-
-    when(issue.getProject()).thenReturn(project2);
-
-    ProjectManager projectManager = mock(ProjectManager.class);
-    when(redmineManager.getProjectManager()).thenReturn(projectManager);
-    when(projectManager.getProjects()).thenReturn(
-        Arrays.asList(project1, project2));
-
+    when(issue.getProject()).thenReturn(project1);
+    
     User user = mock(User.class);
     when(user.getFullName()).thenReturn("User Name");
 
@@ -181,7 +171,7 @@ public class UpdateIssueCommandTest {
     when(membership.getUser()).thenReturn(user);
 
     MembershipManager membershipManager = mock(MembershipManager.class);
-    when(membershipManager.getMemberships("project-2")).thenReturn(
+    when(membershipManager.getMemberships(1)).thenReturn(
         Arrays.asList(membership));
 
     when(redmineManager.getMembershipManager()).thenReturn(membershipManager);
@@ -203,13 +193,9 @@ public class UpdateIssueCommandTest {
     when(issueManager.getIssueById(1)).thenReturn(issue);
 
     Project project = mock(Project.class);
-    when(issue.getProject()).thenReturn(project);
     when(project.getId()).thenReturn(1);
-    when(project.getIdentifier()).thenReturn("project-1");
 
-    ProjectManager projectManager = mock(ProjectManager.class);
-    when(redmineManager.getProjectManager()).thenReturn(projectManager);
-    when(projectManager.getProjects()).thenReturn(Arrays.asList(project));
+    when(issue.getProject()).thenReturn(project);
 
     User user = mock(User.class);
     when(user.getFullName()).thenReturn("User Name");
