@@ -1,14 +1,16 @@
 package de.ad.tools.redmine.cli.command;
 
 import de.ad.tools.redmine.cli.Configuration;
-
+import de.ad.tools.redmine.cli.util.TemplateUtil;
 import java.io.PrintStream;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 public class HelpCommand extends Command {
   static final String NOT_A_REDMINE_COMMAND_MESSAGE =
       "'%s' is not a redmine command. Call 'help' to see available commands.";
-  
+
   private static final String NAME = "help";
   private static final String DESCRIPTION =
       "Display general help or (if provided) command help.";
@@ -36,37 +38,23 @@ public class HelpCommand extends Command {
   }
 
   private void printGeneralHelp() {
-    println("usage: redmine <command> [<args>]");
-    println();
-
-    String[][] help = new String[commands.size()][3];
-    int i = 0;
-    for (Map.Entry<String, Command> commandEntry : commands.entrySet()) {
-      Command command = commandEntry.getValue();
-
-      help[i++] = new String[] { command.getName(),
-          createArgumentHelpString(command),
-          command.getDescription() };
-    }
-
-    printTable(help);
+    Function table = o -> TemplateUtil.convertToTable((String) o);
+    
+    Map<String, Object> scope = new HashMap<>();
+    scope.put("commands", commands.entrySet());
+    scope.put("table", table);
+    
+    TemplateUtil.printTemplate(System.out, "HelpCommand1.template", scope);
   }
 
   private void printCommandHelp(Command command) {
-    String arguments = createArgumentHelpString(command);
+    Function table = o -> TemplateUtil.convertToTable((String) o);
 
-    printHeading("Command");
-    println(command.getName());
-    println();
-    printHeading("Description");
-    println(command.getDescription());
-    println(command.getLongDescription());
-    println();
+    Map<String, Object> scope = new HashMap<>();
+    scope.put("command", command);
+    scope.put("table", table);
 
-    println("usage: redmine %s %s", command.getName(), arguments);
-    println();
-
-    printArgumentHelp(command);
+    TemplateUtil.printTemplate(System.out, "HelpCommand2.template", scope);
   }
 
   private void printArgumentHelp(Command command) {

@@ -1,0 +1,18 @@
+{{#command}}
+COMMAND
+¯¯¯¯¯¯¯
+{{name}}
+
+DESCRIPTION
+¯¯¯¯¯¯¯¯¯¯¯
+{{description}}
+{{{longDescription}}}
+
+usage: redmine {{name}} {{#arguments}}<{{name}}> {{/arguments}} 
+
+{{#table}}
+{{#arguments}}
+<{{name}}>|{{description}}
+{{/arguments}}
+{{/table}}
+{{/command}}

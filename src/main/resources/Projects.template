@@ -1,0 +1,8 @@
+{{#table}}
+NAME|KEY        
+¯¯¯¯|¯¯¯
+{{#projects}}
+{{name}}|{{identifier}}
+{{/projects}}
+{{/table}}
+

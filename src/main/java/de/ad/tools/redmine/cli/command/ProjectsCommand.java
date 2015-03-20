@@ -5,8 +5,12 @@ import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.bean.Project;
 import de.ad.tools.redmine.cli.Configuration;
 
+import de.ad.tools.redmine.cli.util.TemplateUtil;
 import java.io.PrintStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 public class ProjectsCommand extends RedmineCommand {
 
@@ -28,15 +32,12 @@ public class ProjectsCommand extends RedmineCommand {
 
     List<Project> projects = projectManager.getProjects();
 
-    String[] header = new String[] { "Name", "Key" };
+    Function table = o -> TemplateUtil.convertToTable((String) o);
 
-    String[][] projectTable = new String[projects.size()][2];
-    int i = 0;
-    for (Project project : projects) {
-      projectTable[i++] =
-          new String[] { project.getName(), project.getIdentifier() };
-    }
+    Map<String, Object> scope = new HashMap<>();
+    scope.put("projects", projects);
+    scope.put("table", table);
 
-    printTable(header, projectTable);
+    TemplateUtil.printTemplate(System.out, "Projects.template", scope);
   }
 }

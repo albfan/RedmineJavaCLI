@@ -1,0 +1,9 @@
+usage: redmine <command> [<args>]
+
+{{#table}}
+{{#commands}}
+{{#value}}
+{{name}}|{{#arguments}}{{#optional}}[{{name}}]{{/optional}}{{^optional}}{{name}}{{/optional}}{{/arguments}}|{{description}}
+{{/value}}
+{{/commands}}
+{{/table}}
