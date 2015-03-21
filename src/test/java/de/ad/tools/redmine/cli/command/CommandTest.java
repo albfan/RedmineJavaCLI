@@ -8,6 +8,7 @@ import org.junit.rules.ExpectedException;
 
 import java.io.PrintStream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 public class CommandTest {
@@ -32,8 +33,7 @@ public class CommandTest {
             new Command.Argument("arg2", "test", false) };
 
     command = new Command("test", "This is a test command.", "Long Description",
-        commandArguments,
-        configuration, out);
+        commandArguments, configuration, out);
 
     String[] arguments = new String[] { "val1", "val2" };
 
@@ -47,8 +47,7 @@ public class CommandTest {
             new Command.Argument("arg2", "test", false) };
 
     command = new Command("test", "This is a test command.", "Long Description",
-        commandArguments,
-        configuration, out);
+        commandArguments, configuration, out);
 
     String message =
         String.format(Command.TOO_FEW_ARGUMENTS_MESSAGE, command.getName(), 2,
@@ -68,14 +67,49 @@ public class CommandTest {
             new Command.Argument("arg2", "test", false) };
 
     command = new Command("test", "This is a test command.", "Long Description",
-        commandArguments,
-        configuration, out);
+        commandArguments, configuration, out);
 
     String message =
         String.format(Command.TOO_MANY_ARGUMENTS_MESSAGE, command.getName(), 2,
             3);
 
     String[] arguments = new String[] { "val1", "val2", "val3" };
+
+    exception.expect(IllegalArgumentException.class);
+    exception.expectMessage(message);
+    command.process(arguments);
+  }
+
+  @Test
+  public void testOptionValidation() throws Exception {
+    Command.Argument[] commandArguments = new Command.Argument[0];
+
+    Command.Option[] commandOptions = new Command.Option[] {
+        new Command.Option("opt", "This is an option")
+    };
+
+    command = new Command("test", "This is a test command.", "Long Description",
+        commandArguments, commandOptions, configuration, out);
+
+    String[] arguments = new String[] { "--opt=v" };
+
+    command.process(arguments);
+  }
+
+  @Test
+  public void testOptionValidationWithInvalidOption() throws Exception {
+    Command.Argument[] commandArguments = new Command.Argument[0];
+
+    Command.Option[] commandOptions = new Command.Option[] {
+        new Command.Option("opt", "This is an option")
+    };
+
+    command = new Command("test", "This is a test command.", "Long Description",
+        commandArguments, commandOptions, configuration, out);
+
+    String[] arguments = new String[] { "--op=v" };
+
+    String message = String.format(Command.INVALID_OPTION_MESSAGE, "--op=v");
 
     exception.expect(IllegalArgumentException.class);
     exception.expectMessage(message);
