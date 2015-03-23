@@ -10,10 +10,21 @@ class RedmineCommand extends Command {
       "Cannot execute command '%s' when not connected to a server. Call 'connect' first.";
   protected final RedmineManager redmineManager;
 
+  @Deprecated
   protected RedmineCommand(String name, String description,
       String longDescription, Argument[] arguments, Configuration configuration,
       PrintStream out, RedmineManager redmineManager) {
     super(name, description, longDescription, arguments, configuration, out);
+
+    this.redmineManager = redmineManager;
+  }
+
+  protected RedmineCommand(String name, String description,
+      String longDescription, Argument[] arguments, Option[] options,
+      Configuration configuration,
+      PrintStream out, RedmineManager redmineManager) {
+    super(name, description, longDescription, arguments, options, configuration,
+        out);
 
     this.redmineManager = redmineManager;
   }

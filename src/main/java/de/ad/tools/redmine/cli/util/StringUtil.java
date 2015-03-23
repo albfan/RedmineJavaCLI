@@ -13,4 +13,16 @@ public final class StringUtil {
       return string.substring(0, maxLength - 1) + ELLIPSIS;
     }
   }
+
+  public static String stripQuotes(String s) {
+    if (s.startsWith("\"")) {
+      s = s.substring(1);
+    }
+
+    if (s.endsWith("\"")) {
+      s = s.substring(0, s.length() - 1);
+    }
+
+    return s;
+  }
 }
