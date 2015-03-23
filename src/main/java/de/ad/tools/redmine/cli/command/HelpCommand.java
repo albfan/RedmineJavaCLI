@@ -8,7 +8,7 @@ import java.util.Map;
 public class HelpCommand extends Command {
   static final String NOT_A_REDMINE_COMMAND_MESSAGE =
       "'%s' is not a redmine command. Call 'help' to see available commands.";
-  
+
   private static final String NAME = "help";
   private static final String DESCRIPTION =
       "Display general help or (if provided) command help.";
@@ -36,7 +36,7 @@ public class HelpCommand extends Command {
   }
 
   private void printGeneralHelp() {
-    println("usage: redmine <command> [<args>]");
+    println("usage: redmine <command> [<args>] [<opts>]");
     println();
 
     String[][] help = new String[commands.size()][3];
@@ -54,6 +54,7 @@ public class HelpCommand extends Command {
 
   private void printCommandHelp(Command command) {
     String arguments = createArgumentHelpString(command);
+    String options = createOptionHelpString(command);
 
     printHeading("Command");
     println(command.getName());
@@ -63,10 +64,13 @@ public class HelpCommand extends Command {
     println(command.getLongDescription());
     println();
 
-    println("usage: redmine %s %s", command.getName(), arguments);
+    println("usage: redmine %s %s%s", command.getName(), arguments, options);
     println();
 
     printArgumentHelp(command);
+    println();
+
+    printOptionHelp(command);
   }
 
   private void printArgumentHelp(Command command) {
@@ -77,6 +81,19 @@ public class HelpCommand extends Command {
           String.format("<%s>", argument.getName());
       help[i++] = new String[] { formattedArgumentName,
           argument.getDescription() };
+    }
+
+    printTable(help);
+  }
+
+  private void printOptionHelp(Command command) {
+    String[][] help = new String[command.getOptions().length][2];
+    int i = 0;
+    for (Option option : command.getOptions()) {
+      String formattedOptionName =
+          String.format("--%s", option.getName());
+      help[i++] = new String[] { formattedOptionName,
+          option.getDescription() };
     }
 
     printTable(help);
@@ -104,5 +121,9 @@ public class HelpCommand extends Command {
     }
 
     return argumentBuilder.toString();
+  }
+
+  private String createOptionHelpString(Command command) {
+    return command.getOptions().length > 0 ? "--option=value" : "";
   }
 }

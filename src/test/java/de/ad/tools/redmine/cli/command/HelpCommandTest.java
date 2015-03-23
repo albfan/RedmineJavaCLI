@@ -56,7 +56,7 @@ public class HelpCommandTest {
   }
 
   @Test
-  public void testCommandHelp() throws Exception {
+  public void testCommandHelpWithDescription() throws Exception {
     String[] arguments = new String[] { "test1" };
 
     Map<String, Command> commands = new LinkedHashMap<>();
@@ -69,6 +69,24 @@ public class HelpCommandTest {
     String actual = new String(stream.toByteArray());
     String expected =
         new String(resourceToByteArray("/HelpCommandOutput2.txt"));
+
+    assertThat(actual).isEqualTo(expected);
+  }
+
+  @Test
+  public void testCommandHelpWithoutDescription() throws Exception {
+    String[] arguments = new String[] { "test2" };
+
+    Map<String, Command> commands = new LinkedHashMap<>();
+    commands.put("test2", new TestCommand2(configuration, out));
+
+    command = new HelpCommand(configuration, out, commands);
+
+    command.process(arguments);
+
+    String actual = new String(stream.toByteArray());
+    String expected =
+        new String(resourceToByteArray("/HelpCommandOutput3.txt"));
 
     assertThat(actual).isEqualTo(expected);
   }
@@ -99,9 +117,12 @@ public class HelpCommandTest {
         "And here goes a long description...";
     private static final Argument[] ARGUMENTS = new Argument[] {
         new Argument("mandatory", "A mandatory argument.", false) };
+    private static final Option[] OPTIONS = new Option[] {
+        new Option("option", "This is an option.") };
 
     protected TestCommand1(Configuration configuration, PrintStream out) {
-      super(NAME, DESCRIPTION, LONG_DESCRIPTION, ARGUMENTS, configuration, out);
+      super(NAME, DESCRIPTION, LONG_DESCRIPTION, ARGUMENTS, OPTIONS,
+          configuration, out);
     }
   }
 

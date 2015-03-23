@@ -7,6 +7,8 @@ DESCRIPTION
 This is a test command.
 And here goes a long description...
 
-usage: redmine test1 <mandatory> 
+usage: redmine test1 <mandatory> --option=value
 
 <mandatory>  A mandatory argument.  
+
+--option  This is an option.  
