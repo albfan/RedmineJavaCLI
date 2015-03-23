@@ -1,0 +1,13 @@
+COMMAND
+¯¯¯¯¯¯¯
+test2
+
+DESCRIPTION
+¯¯¯¯¯¯¯¯¯¯¯
+This is another test command.
+And here goes another long description...
+
+usage: redmine test2 [<optional>] 
+
+<optional>  An optional argument.  
+
