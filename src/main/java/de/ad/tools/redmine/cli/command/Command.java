@@ -203,7 +203,7 @@ public class Command {
 
   public static final class Option {
     private static final Pattern OPTION_PATTERN = Pattern.compile(
-        "^--(?<name>[a-z]+)=(?<value>[A-Za-z0-9]+|\"[A-Za-z0-9 ]+\")$");
+        "^--(?<name>[a-z]+)=(?<value>[A-Za-z0-9 ]+|\"[A-Za-z0-9 ]+\")$");
 
     private final String name;
     private final String description;
@@ -238,7 +238,7 @@ public class Command {
       Matcher matcher = OPTION_PATTERN.matcher(optionStatement);
 
       matcher.find();
-      
+
       return matcher.group("name");
     }
 
@@ -246,7 +246,7 @@ public class Command {
       Matcher matcher = OPTION_PATTERN.matcher(optionStatement);
 
       matcher.find();
-      
+
       return matcher.group("value");
     }
   }

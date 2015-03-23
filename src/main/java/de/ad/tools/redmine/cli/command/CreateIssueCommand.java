@@ -1,33 +1,29 @@
 package de.ad.tools.redmine.cli.command;
 
-import com.taskadapter.redmineapi.Include;
 import com.taskadapter.redmineapi.IssueManager;
 import com.taskadapter.redmineapi.ProjectManager;
-import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.bean.Issue;
+import com.taskadapter.redmineapi.bean.IssueFactory;
 import com.taskadapter.redmineapi.bean.IssuePriority;
 import com.taskadapter.redmineapi.bean.IssueStatus;
 import com.taskadapter.redmineapi.bean.Membership;
 import com.taskadapter.redmineapi.bean.Project;
+import com.taskadapter.redmineapi.bean.ProjectFactory;
 import com.taskadapter.redmineapi.bean.Tracker;
-import com.taskadapter.redmineapi.bean.User;
-import com.taskadapter.redmineapi.bean.UserFactory;
 import de.ad.tools.redmine.cli.Configuration;
-import de.ad.tools.redmine.cli.util.StringUtil;
-import java.awt.Desktop;
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class UpdateIssueCommand extends RedmineCommand {
+import static de.ad.tools.redmine.cli.util.DateUtil.getTimeDifferenceAsText;
 
-  static final String INVALID_KEYVALUE_MESSAGE =
-      "'%s' is not valid key-value assignment. Please use key=value.";
-  static final String INVALID_KEY_MESSAGE =
-      "'%s' is not a valid key.";
+public class CreateIssueCommand extends RedmineCommand {
+  static final String SUCCESS_MESSAGE = "Issue #%d succesfully created.";
+
   static final String INVALID_PRIORITY_MESSAGE =
       "'%s' is not a valid priority.";
   static final String INVALID_ASSIGNEE_MESSAGE =
@@ -36,39 +32,35 @@ public class UpdateIssueCommand extends RedmineCommand {
       "'%s' is not a valid status.";
   static final String INVALID_TRACKER_MESSAGE =
       "'%s' is not a valid tracker.";
-  static final String ISSUE_UPDATE_SUCCESS_MESSAGE =
-      "Sucessfully updated issue #%d.";
 
-  private static final String NAME = "update-issue";
-  private static final String DESCRIPTION = "Update a given issue.";
-  private static final String LONG_DESCRIPTION =
-      "Supported keys:\n" +
-          " - description, subject, priority, assignee, status, tracker";
-
+  private static final String NAME = "create-issue";
+  private static final String DESCRIPTION = "Create a new issue.";
   private static final Argument[] ARGUMENTS =
-      new Argument[] {
-          new Argument("id", "The ID of the issue you want to update.",
-              false),
-          new Argument("keyValue",
-              "The key you want to update with value, separated by '='.",
-              false) };
+      new Argument[] { new Argument("projectKey",
+          "The key of the project to add this issue to.",
+          false), new Argument("subject", "The subject of the issue.",
+          false) };
+  private static final Option[] OPTIONS = new Option[] {
+      new Option("description", "The description of the issue to create."),
+      new Option("priority", "The priority of the issue to create."),
+      new Option("assignee", "The assignee of the issue to create."),
+      new Option("status", "The status of the issue to create."),
+      new Option("tracker", "The tracker of the issue to create.") };
 
   private static final Map<String, Handler> handlers = new HashMap<>();
 
-  public UpdateIssueCommand(Configuration configuration, PrintStream out,
+  public CreateIssueCommand(Configuration configuration, PrintStream out,
       RedmineManager redmineManager) {
-    super(NAME, DESCRIPTION, LONG_DESCRIPTION, ARGUMENTS, configuration, out,
+    super(NAME, DESCRIPTION, "", ARGUMENTS, OPTIONS, configuration, out,
         redmineManager);
 
     Handler description = new DescriptionHandler();
-    Handler subject = new SubjectHandler();
     Handler priority = new PriorityHandler();
     Handler assignee = new AssigneeHandler();
     Handler status = new StatusHandler();
     Handler tracker = new TrackerHandler();
 
     handlers.put(description.getName(), description);
-    handlers.put(subject.getName(), subject);
     handlers.put(priority.getName(), priority);
     handlers.put(assignee.getName(), assignee);
     handlers.put(status.getName(), status);
@@ -78,34 +70,29 @@ public class UpdateIssueCommand extends RedmineCommand {
   @Override
   public void process(String[] arguments) throws Exception {
     super.process(arguments);
+    String projectKey = getArguments()[0].getValue();
+    String subject = getArguments()[1].getValue();
 
-    String id = getArguments()[0].getValue();
-    String keyValue = getArguments()[1].getValue();
-
-    if (!keyValue.contains("=")) {
-      throw new Exception(String.format(INVALID_KEYVALUE_MESSAGE, keyValue));
-    }
-
-    processIssue(id, keyValue);
-  }
-
-  private void processIssue(String id, String keyValue) throws Exception {
+    ProjectManager projectManager = redmineManager.getProjectManager();
     IssueManager issueManager = redmineManager.getIssueManager();
-    Issue issue = issueManager.getIssueById(Integer.valueOf(id));
 
-    String[] keyAndValue = keyValue.split("=");
-    String key = keyAndValue[0];
-    String value = StringUtil.stripQuotes(keyAndValue[1]);
+    Project project = projectManager.getProjectByKey(projectKey);
 
-    if (handlers.containsKey(key)) {
-      handlers.get(key).handle(redmineManager, issue, value);
-    } else {
-      throw new Exception(String.format(INVALID_KEY_MESSAGE, key));
+    Issue issueToCreate =
+        IssueFactory.create(project.getId(), subject);
+
+    for (Option option : getOptions()) {
+      if (option.getValue() == null) {
+        continue;
+      }
+
+      handlers.get(option.getName())
+          .handle(redmineManager, issueToCreate, option.getValue());
     }
 
-    issueManager.update(issue);
+    Issue newIssue = issueManager.createIssue(issueToCreate);
 
-    println(ISSUE_UPDATE_SUCCESS_MESSAGE, issue.getId());
+    println(SUCCESS_MESSAGE, newIssue.getId());
   }
 
   private static abstract class Handler {
@@ -125,19 +112,6 @@ public class UpdateIssueCommand extends RedmineCommand {
     public void handle(RedmineManager redmineManager, Issue issue, String value)
         throws Exception {
       issue.setDescription(value);
-    }
-  }
-
-  private static class SubjectHandler extends Handler {
-
-    @Override public String getName() {
-      return "subject";
-    }
-
-    @Override
-    public void handle(RedmineManager redmineManager, Issue issue, String value)
-        throws Exception {
-      issue.setSubject(value);
     }
   }
 
@@ -197,7 +171,7 @@ public class UpdateIssueCommand extends RedmineCommand {
         throws Exception {
       List<IssueStatus> statuses =
           redmineManager.getIssueManager().getStatuses();
-      
+
       Optional<IssueStatus> newStatus =
           statuses.stream().filter(s -> value.equals(s.getName())).findFirst();
 
@@ -217,7 +191,7 @@ public class UpdateIssueCommand extends RedmineCommand {
     public void handle(RedmineManager redmineManager, Issue issue, String value)
         throws Exception {
       List<Tracker> trackers = redmineManager.getIssueManager().getTrackers();
-      
+
       Optional<Tracker> newTracker = trackers.stream()
           .filter(t -> value.equals(t.getName())).findFirst();
 

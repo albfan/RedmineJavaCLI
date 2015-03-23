@@ -53,6 +53,8 @@ public class RedmineCli {
     Command history =
         new HistoryCommand(configuration, out, redmineManager);
     Command list = new ListCommand(configuration, out, redmineManager);
+    Command createIssueCommand =
+        new CreateIssueCommand(configuration, out, redmineManager);
     Command updateIssueCommand =
         new UpdateIssueCommand(configuration, out, redmineManager);
     Command open = new OpenCommand(configuration, out, redmineManager,
@@ -67,6 +69,7 @@ public class RedmineCli {
     commands.put(issue.getName(), issue);
     commands.put(history.getName(), history);
     commands.put(list.getName(), list);
+    commands.put(createIssueCommand.getName(), createIssueCommand);
     commands.put(updateIssueCommand.getName(), updateIssueCommand);
     commands.put(open.getName(), open);
     commands.put(reset.getName(), reset);
