@@ -19,6 +19,7 @@ import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -58,25 +59,16 @@ public class UpdateIssueCommandTest {
   }
 
   @Test
-  public void testUpdateWithInvalidKeyValue() throws Exception {
-    String[] arguments = new String[] { "1", "thisIsNoKey" };
+  public void testUpdateWithNoOptionSet() throws Exception {
+    String[] arguments = new String[] { "1" };
+
+    Issue issue = createMockIssue(1);
+    when(issueManager.getIssueById(1)).thenReturn(issue);
 
     exception.expect(Exception.class);
     exception.expectMessage(
-        String.format(UpdateIssueCommand.INVALID_KEYVALUE_MESSAGE,
-            "thisIsNoKey"));
-
-    command.process(arguments);
-  }
-
-  @Test
-  public void testUpdateWithInvalidKey() throws Exception {
-    String[] arguments = new String[] { "1", "invalidKey=value" };
-
-    exception.expect(Exception.class);
-    exception.expectMessage(
-        String.format(UpdateIssueCommand.INVALID_KEY_MESSAGE,
-            "invalidKey"));
+        String.format(UpdateIssueCommand.NO_OPTION_SET_MESSAGE,
+            command.getName()));
 
     command.process(arguments);
   }
@@ -84,14 +76,14 @@ public class UpdateIssueCommandTest {
   @Test
   public void testUpdateDescription() throws Exception {
     String[] arguments =
-        new String[] { "1", "description=\"A new description.\"" };
+        new String[] { "1", "--description=A new description" };
 
     Issue issue = createMockIssue(1);
     when(issueManager.getIssueById(1)).thenReturn(issue);
 
     command.process(arguments);
 
-    verify(issue).setDescription("A new description.");
+    verify(issue).setDescription("A new description");
     verify(issueManager).update(issue);
 
     verify(out).println(
@@ -101,14 +93,14 @@ public class UpdateIssueCommandTest {
   @Test
   public void testUpdateSubject() throws Exception {
     String[] arguments =
-        new String[] { "1", "subject=\"A new subject.\"" };
+        new String[] { "1", "--subject=A new subject" };
 
     Issue issue = createMockIssue(1);
     when(issueManager.getIssueById(1)).thenReturn(issue);
 
     command.process(arguments);
 
-    verify(issue).setSubject("A new subject.");
+    verify(issue).setSubject("A new subject");
     verify(issueManager).update(issue);
 
     verify(out).println(
@@ -117,7 +109,7 @@ public class UpdateIssueCommandTest {
 
   @Test
   public void testUpdatePriority() throws Exception {
-    String[] arguments = new String[] { "1", "priority=High" };
+    String[] arguments = new String[] { "1", "--priority=High" };
 
     Issue issue = createMockIssue(1);
     when(issueManager.getIssueById(1)).thenReturn(issue);
@@ -136,7 +128,7 @@ public class UpdateIssueCommandTest {
 
   @Test
   public void testUpdateWithInvalidPriority() throws Exception {
-    String[] arguments = new String[] { "1", "priority=Invalid" };
+    String[] arguments = new String[] { "1", "--priority=Invalid" };
 
     Issue issue = createMockIssue(1);
     when(issueManager.getIssueById(1)).thenReturn(issue);
@@ -148,13 +140,13 @@ public class UpdateIssueCommandTest {
     exception.expectMessage(
         String.format(UpdateIssueCommand.INVALID_PRIORITY_MESSAGE,
             "Invalid"));
-    
+
     command.process(arguments);
   }
 
   @Test
   public void testUpdateAssignee() throws Exception {
-    String[] arguments = new String[] { "1", "assignee=\"User Name\"" };
+    String[] arguments = new String[] { "1", "--assignee=User Name" };
 
     Issue issue = createMockIssue(1);
     when(issueManager.getIssueById(1)).thenReturn(issue);
@@ -163,7 +155,7 @@ public class UpdateIssueCommandTest {
     when(project1.getId()).thenReturn(1);
 
     when(issue.getProject()).thenReturn(project1);
-    
+
     User user = mock(User.class);
     when(user.getFullName()).thenReturn("User Name");
 
@@ -187,7 +179,7 @@ public class UpdateIssueCommandTest {
 
   @Test
   public void testUpdateWithInvalidAssignee() throws Exception {
-    String[] arguments = new String[] { "1", "assignee=\"Invalid\"" };
+    String[] arguments = new String[] { "1", "--assignee=Invalid" };
 
     Issue issue = createMockIssue(1);
     when(issueManager.getIssueById(1)).thenReturn(issue);
@@ -219,7 +211,7 @@ public class UpdateIssueCommandTest {
 
   @Test
   public void testUpdateStatus() throws Exception {
-    String[] arguments = new String[] { "1", "status=New" };
+    String[] arguments = new String[] { "1", "--status=New" };
 
     Issue issue = createMockIssue(1);
     when(issueManager.getIssueById(1)).thenReturn(issue);
@@ -238,7 +230,7 @@ public class UpdateIssueCommandTest {
 
   @Test
   public void testUpdateWithInvalidStatus() throws Exception {
-    String[] arguments = new String[] { "1", "status=invalid" };
+    String[] arguments = new String[] { "1", "--status=invalid" };
 
     Issue issue = createMockIssue(1);
     when(issueManager.getIssueById(1)).thenReturn(issue);
@@ -256,7 +248,7 @@ public class UpdateIssueCommandTest {
 
   @Test
   public void testUpdateTracker() throws Exception {
-    String[] arguments = new String[] { "1", "tracker=Bug" };
+    String[] arguments = new String[] { "1", "--tracker=Bug" };
 
     Issue issue = createMockIssue(1);
     when(issueManager.getIssueById(1)).thenReturn(issue);
@@ -275,7 +267,7 @@ public class UpdateIssueCommandTest {
 
   @Test
   public void testUpdateWithInvalidTracker() throws Exception {
-    String[] arguments = new String[] { "1", "tracker=invalid" };
+    String[] arguments = new String[] { "1", "--tracker=invalid" };
 
     Issue issue = createMockIssue(1);
     when(issueManager.getIssueById(1)).thenReturn(issue);
@@ -289,6 +281,11 @@ public class UpdateIssueCommandTest {
             "invalid"));
 
     command.process(arguments);
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    Arrays.stream(command.getOptions()).forEach(o -> o.setValue(null));
   }
 
   private Issue createMockIssue(int id) {
