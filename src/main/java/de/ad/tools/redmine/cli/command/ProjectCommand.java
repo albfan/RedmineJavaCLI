@@ -16,7 +16,7 @@ public class ProjectCommand extends RedmineCommand {
   private static final String DESCRIPTION = "Display project details.";
   private static final Argument[] ARGUMENTS =
       new Argument[] {
-          new Argument("key", "The key of the project to display.",
+          new TextArgument("key", "The key of the project to display.",
               false) };
 
   public ProjectCommand(Configuration configuration, PrintStream out,
@@ -31,7 +31,7 @@ public class ProjectCommand extends RedmineCommand {
 
     ProjectManager projectManager = redmineManager.getProjectManager();
 
-    String key = getArguments()[0].getValue();
+    String key = ((TextArgument)getArguments()[0]).getValue();
     Project project = projectManager.getProjectByKey(key);
 
     println(project.getName());

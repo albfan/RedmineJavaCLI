@@ -14,8 +14,8 @@ public class IssueCommand extends RedmineCommand {
   private static final String NAME = "issue";
   private static final String DESCRIPTION = "Display issue details.";
   private static final Argument[] ARGUMENTS =
-      new Argument[] { new Argument("id", "The ID of the issue to display.",
-          false) };
+      new Argument[] {
+          new NumberArgument("id", "The ID of the issue to display.", false) };
 
   public IssueCommand(Configuration configuration, PrintStream out,
       RedmineManager redmineManager) {
@@ -29,8 +29,8 @@ public class IssueCommand extends RedmineCommand {
 
     IssueManager issueManager = redmineManager.getIssueManager();
 
-    String id = getArguments()[0].getValue();
-    Issue issue = issueManager.getIssueById(Integer.valueOf(id));
+    Integer id = ((NumberArgument)getArguments()[0]).getValue();
+    Issue issue = issueManager.getIssueById(id);
 
     printHeader(issue);
     printDetails(issue);
@@ -41,7 +41,7 @@ public class IssueCommand extends RedmineCommand {
     String heading =
         String.format("%s #%d", issue.getTracker().getName(), issue.getId());
     printHeading(heading);
-    
+
     println(issue.getSubject());
     String createdText = getTimeDifferenceAsText(issue.getCreatedOn());
     String updatedText = "";

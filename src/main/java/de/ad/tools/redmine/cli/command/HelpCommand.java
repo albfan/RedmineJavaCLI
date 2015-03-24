@@ -13,7 +13,7 @@ public class HelpCommand extends Command {
   private static final String DESCRIPTION =
       "Display general help or (if provided) command help.";
   private static final Argument[] ARGUMENTS = new Argument[] {
-      new Argument("command", "The command to show help.", true) };
+      new TextArgument("command", "The command to show help.", true) };
 
   private final Map<String, Command> commands;
 
@@ -29,7 +29,7 @@ public class HelpCommand extends Command {
     super.process(arguments);
 
     if (arguments.length == 1) {
-      printCommandHelp(getArguments()[0].getValue());
+      printCommandHelp(((TextArgument)getArguments()[0]).getValue());
     } else {
       printGeneralHelp();
     }

@@ -29,8 +29,9 @@ public class CommandTest {
   @Test
   public void testArgumentValidation() throws Exception {
     Command.Argument[] commandArguments =
-        new Command.Argument[] { new Command.Argument("arg1", "test", false),
-            new Command.Argument("arg2", "test", false) };
+        new Command.Argument[] {
+            new Command.TextArgument("arg1", "test", false),
+            new Command.TextArgument("arg2", "test", false) };
 
     command = new Command("test", "This is a test command.", "Long Description",
         commandArguments, configuration, out);
@@ -43,8 +44,9 @@ public class CommandTest {
   @Test
   public void testArgumentValidationWithTooFewArguments() throws Exception {
     Command.Argument[] commandArguments =
-        new Command.Argument[] { new Command.Argument("arg1", "test", false),
-            new Command.Argument("arg2", "test", false) };
+        new Command.Argument[] {
+            new Command.TextArgument("arg1", "test", false),
+            new Command.TextArgument("arg2", "test", false) };
 
     command = new Command("test", "This is a test command.", "Long Description",
         commandArguments, configuration, out);
@@ -63,8 +65,9 @@ public class CommandTest {
   @Test
   public void testArgumentValidationWithTooManyArguments() throws Exception {
     Command.Argument[] commandArguments =
-        new Command.Argument[] { new Command.Argument("arg1", "test", false),
-            new Command.Argument("arg2", "test", false) };
+        new Command.Argument[] {
+            new Command.TextArgument("arg1", "test", false),
+            new Command.TextArgument("arg2", "test", false) };
 
     command = new Command("test", "This is a test command.", "Long Description",
         commandArguments, configuration, out);
@@ -75,6 +78,72 @@ public class CommandTest {
 
     String[] arguments = new String[] { "val1", "val2", "val3" };
 
+    exception.expect(IllegalArgumentException.class);
+    exception.expectMessage(message);
+    command.process(arguments);
+  }
+
+  @Test
+  public void testNumberArgument() throws Exception {
+    Command.Argument[] commandArguments =
+        new Command.Argument[] {
+            new Command.NumberArgument("arg1", "test", false) };
+
+    command = new Command("test", "This is a test command.", "Long Description",
+        commandArguments, configuration, out);
+
+    String[] arguments = new String[] { "1" };
+
+    command.process(arguments);
+  }
+
+  @Test
+  public void testInvalidNumberArgument() throws Exception {
+    Command.Argument[] commandArguments =
+        new Command.Argument[] {
+            new Command.NumberArgument("arg1", "test", false) };
+
+    command = new Command("test", "This is a test command.", "Long Description",
+        commandArguments, configuration, out);
+
+    String[] arguments = new String[] { "NotANumber" };
+
+    String message =
+        String.format(Command.NumberArgument.INVALID_TYPE_MESSAGE,
+            arguments[0]);
+    exception.expect(IllegalArgumentException.class);
+    exception.expectMessage(message);
+    command.process(arguments);
+  }
+
+  @Test
+  public void testBooleanArgument() throws Exception {
+    Command.Argument[] commandArguments =
+        new Command.Argument[] {
+            new Command.BooleanArgument("arg1", "test", false) };
+
+    command = new Command("test", "This is a test command.", "Long Description",
+        commandArguments, configuration, out);
+
+    String[] arguments = new String[] { "true" };
+
+    command.process(arguments);
+  }
+
+  @Test
+  public void testInvalidBooleanArgument() throws Exception {
+    Command.Argument[] commandArguments =
+        new Command.Argument[] {
+            new Command.BooleanArgument("arg1", "test", false) };
+
+    command = new Command("test", "This is a test command.", "Long Description",
+        commandArguments, configuration, out);
+
+    String[] arguments = new String[] { "NotABoolean" };
+
+    String message =
+        String.format(Command.BooleanArgument.INVALID_TYPE_MESSAGE,
+            arguments[0]);
     exception.expect(IllegalArgumentException.class);
     exception.expectMessage(message);
     command.process(arguments);

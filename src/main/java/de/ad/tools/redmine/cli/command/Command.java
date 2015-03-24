@@ -152,7 +152,7 @@ public class Command {
   private void assignArguments(List<String> arguments) {
     Argument[] commandArguments = getArguments();
     for (int i = 0; i < arguments.size(); i++) {
-      commandArguments[i].setValue(arguments.get(i));
+      commandArguments[i].setValueOrThrow(arguments.get(i));
     }
   }
 
@@ -168,11 +168,11 @@ public class Command {
     return (int) Arrays.stream(arguments).filter(a -> !a.isOptional()).count();
   }
 
-  public static final class Argument {
+  public static abstract class Argument<T> {
     private final String name;
     private final String description;
     private final boolean isOptional;
-    private String value;
+    private T value;
 
     public Argument(String name, String description, boolean isOptional) {
       this.name = name;
@@ -192,12 +192,65 @@ public class Command {
       return isOptional;
     }
 
-    public String getValue() {
+    public T getValue() {
       return value;
     }
 
-    public void setValue(String value) {
+    protected void setValue(T value) {
       this.value = value;
+    }
+
+    public abstract void setValueOrThrow(String value);
+  }
+
+  public static final class TextArgument extends Argument<String> {
+    public TextArgument(String name, String description, boolean isOptional) {
+      super(name, description, isOptional);
+    }
+
+    @Override public void setValueOrThrow(String value) {
+      setValue(value);
+    }
+  }
+
+  public static final class NumberArgument extends Argument<Integer> {
+    static final String INVALID_TYPE_MESSAGE =
+        "Supplied argument '%s' is not of type number.";
+
+    public NumberArgument(String name, String description, boolean isOptional) {
+      super(name, description, isOptional);
+    }
+
+    @Override public void setValueOrThrow(String value) {
+      try {
+        Integer integerValue = Integer.valueOf(value);
+
+        setValue(integerValue);
+      } catch (NumberFormatException e) {
+        throw new IllegalArgumentException(
+            String.format(INVALID_TYPE_MESSAGE, value));
+      }
+    }
+  }
+
+  public static final class BooleanArgument extends Argument<Boolean> {
+    static final String INVALID_TYPE_MESSAGE =
+        "Supplied argument '%s' is not of type boolean.";
+
+    public BooleanArgument(String name, String description,
+        boolean isOptional) {
+      super(name, description, isOptional);
+    }
+
+    @Override public void setValueOrThrow(String value) {
+      if ("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value)) {
+        Boolean booleanValue = Boolean.parseBoolean(value);
+
+        setValue(booleanValue);
+      } else {
+        throw new IllegalArgumentException(
+            String.format(INVALID_TYPE_MESSAGE, value));
+      }
     }
   }
 

@@ -18,8 +18,8 @@ public class ConnectCommand extends Command {
   private static final String DESCRIPTION =
       "Connect to server using API key for authentication.";
   private static final Argument[] ARGUMENTS = new Argument[] {
-      new Argument("url", "The redmine server url.", false),
-      new Argument("apiKey", "The API key to use for authentication.",
+      new TextArgument("url", "The redmine server url.", false),
+      new TextArgument("apiKey", "The API key to use for authentication.",
           false) };
 
   private RedmineCli.RedmineManagerFactory redmineManagerFactory;
@@ -40,8 +40,8 @@ public class ConnectCommand extends Command {
       return;
     }
 
-    String url = getArguments()[0].getValue();
-    String apiKey = getArguments()[1].getValue();
+    String url = ((TextArgument)getArguments()[0]).getValue();
+    String apiKey = ((TextArgument)getArguments()[1]).getValue();
 
     try {
       String login = redmineManagerFactory.createWithApiKey(url, apiKey)
