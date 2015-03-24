@@ -116,7 +116,7 @@ public class HelpCommandTest {
     private static final String LONG_DESCRIPTION =
         "And here goes a long description...";
     private static final Argument[] ARGUMENTS = new Argument[] {
-        new Argument("mandatory", "A mandatory argument.", false) };
+        new TextArgument("mandatory", "A mandatory argument.", false) };
     private static final Option[] OPTIONS = new Option[] {
         new Option("option", "This is an option.") };
 
@@ -133,7 +133,7 @@ public class HelpCommandTest {
     private static final String LONG_DESCRIPTION =
         "And here goes another long description...";
     private static final Argument[] ARGUMENTS = new Argument[] {
-        new Argument("optional", "An optional argument.", true) };
+        new TextArgument("optional", "An optional argument.", true) };
 
     protected TestCommand2(Configuration configuration, PrintStream out) {
       super(NAME, DESCRIPTION, LONG_DESCRIPTION, ARGUMENTS, configuration, out);

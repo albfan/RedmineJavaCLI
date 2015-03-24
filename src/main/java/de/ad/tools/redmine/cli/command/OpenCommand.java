@@ -11,15 +11,15 @@ import java.net.URI;
 public class OpenCommand extends RedmineCommand {
 
   static final String NO_DESKTOP_SUPPORT_MESSAGE =
-      "Cannot open issue '%s' in default browser.";
+      "Cannot open issue #%d in default browser.";
   static final String SUCCESS_MESSAGE =
-      "Opened issue '%s' in default browser.";
+      "Opened issue #%d in default browser.";
   
   private static final String NAME = "open";
   private static final String DESCRIPTION = "Open issue in default browser.";
   private static final Argument[] ARGUMENTS =
       new Argument[] {
-          new Argument("id", "The ID of the issue to open.", false) };
+          new NumberArgument("id", "The ID of the issue to open.", false) };
 
   private Browser browser;
 
@@ -35,18 +35,18 @@ public class OpenCommand extends RedmineCommand {
   public void process(String[] arguments) throws Exception {
     super.process(arguments);
 
-    String id = getArguments()[0].getValue();
+    Integer id = ((NumberArgument)getArguments()[0]).getValue();
 
     assertBrowserIsSupported(id);
 
     String uri =
-        String.format("%s/issues/%s", configuration.getServer(), id);
+        String.format("%s/issues/%d", configuration.getServer(), id);
     browser.browse(new URI(uri));
     
     println(SUCCESS_MESSAGE, id);
   }
 
-  private void assertBrowserIsSupported(String id) throws Exception {
+  private void assertBrowserIsSupported(Integer id) throws Exception {
     if (!browser.isSupported()) {
       throw new Exception(String.format(NO_DESKTOP_SUPPORT_MESSAGE, id));
     }

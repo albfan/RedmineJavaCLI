@@ -24,7 +24,7 @@ public class ListCommand extends RedmineCommand {
       "Supported entities:\n - status, tracker, priority";
   private static final Argument[] ARGUMENTS =
       new Argument[] {
-          new Argument("entity", "The entity you want to list.", false) };
+          new TextArgument("entity", "The entity you want to list.", false) };
 
   public ListCommand(Configuration configuration, PrintStream out,
       RedmineManager redmineManager) {
@@ -36,7 +36,7 @@ public class ListCommand extends RedmineCommand {
   public void process(String[] arguments) throws Exception {
     super.process(arguments);
 
-    String entity = getArguments()[0].getValue();
+    String entity = ((TextArgument)getArguments()[0]).getValue();
 
     switch (entity) {
       case "status":

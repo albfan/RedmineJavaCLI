@@ -35,7 +35,7 @@ public class UpdateIssueCommand extends RedmineCommand {
 
   private static final Argument[] ARGUMENTS =
       new Argument[] {
-          new Argument("id", "The ID of the issue you want to update.",
+          new NumberArgument("id", "The ID of the issue you want to update.",
               false) };
   private static final Option[] OPTIONS = new Option[] {
       new Option("description", "The description of the issue to update."),
@@ -71,14 +71,14 @@ public class UpdateIssueCommand extends RedmineCommand {
   public void process(String[] arguments) throws Exception {
     super.process(arguments);
 
-    String id = getArguments()[0].getValue();
+    Integer id = ((NumberArgument)getArguments()[0]).getValue();
 
     processIssue(id);
   }
 
-  private void processIssue(String id) throws Exception {
+  private void processIssue(Integer id) throws Exception {
     IssueManager issueManager = redmineManager.getIssueManager();
-    Issue issue = issueManager.getIssueById(Integer.valueOf(id));
+    Issue issue = issueManager.getIssueById(id);
 
     boolean atLeastOneOptionSet = false;
     for (Option option : getOptions()) {

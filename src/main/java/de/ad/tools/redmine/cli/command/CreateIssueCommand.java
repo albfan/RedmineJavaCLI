@@ -36,9 +36,9 @@ public class CreateIssueCommand extends RedmineCommand {
   private static final String NAME = "create-issue";
   private static final String DESCRIPTION = "Create a new issue.";
   private static final Argument[] ARGUMENTS =
-      new Argument[] { new Argument("projectKey",
+      new Argument[] { new TextArgument("projectKey",
           "The key of the project to add this issue to.",
-          false), new Argument("subject", "The subject of the issue.",
+          false), new TextArgument("subject", "The subject of the issue.",
           false) };
   private static final Option[] OPTIONS = new Option[] {
       new Option("description", "The description of the issue to create."),
@@ -70,8 +70,8 @@ public class CreateIssueCommand extends RedmineCommand {
   @Override
   public void process(String[] arguments) throws Exception {
     super.process(arguments);
-    String projectKey = getArguments()[0].getValue();
-    String subject = getArguments()[1].getValue();
+    String projectKey = ((TextArgument)getArguments()[0]).getValue();
+    String subject = ((TextArgument)getArguments()[1]).getValue();
 
     ProjectManager projectManager = redmineManager.getProjectManager();
     IssueManager issueManager = redmineManager.getIssueManager();

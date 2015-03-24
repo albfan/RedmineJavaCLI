@@ -17,8 +17,8 @@ public class HistoryCommand extends RedmineCommand {
   private static final String NAME = "history";
   private static final String DESCRIPTION = "Display issue history.";
   private static final Argument[] ARGUMENTS =
-      new Argument[] { new Argument("id", "The ID of the issue to display.",
-          false) };
+      new Argument[] {
+          new NumberArgument("id", "The ID of the issue to display.", false) };
 
   public HistoryCommand(Configuration configuration, PrintStream out,
       RedmineManager redmineManager) {
@@ -32,9 +32,8 @@ public class HistoryCommand extends RedmineCommand {
 
     IssueManager issueManager = redmineManager.getIssueManager();
 
-    String id = getArguments()[0].getValue();
-    Issue issue = issueManager
-        .getIssueById(Integer.valueOf(id), Include.journals);
+    Integer id = ((NumberArgument)getArguments()[0]).getValue();
+    Issue issue = issueManager.getIssueById(id, Include.journals);
 
     printHeader(issue);
     printJournals(issue);
@@ -67,7 +66,7 @@ public class HistoryCommand extends RedmineCommand {
         getTimeDifferenceAsText(journal.getCreatedOn()));
 
     journal.getDetails().forEach(this::printJournalDetails);
-    
+
     if (journal.getNotes() != null && journal.getNotes().length() > 0) {
       println(journal.getNotes());
     }

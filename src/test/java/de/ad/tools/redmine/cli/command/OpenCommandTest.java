@@ -51,7 +51,7 @@ public class OpenCommandTest {
 
     when(browser.isSupported()).thenReturn(false);
     String message =
-        String.format(OpenCommand.NO_DESKTOP_SUPPORT_MESSAGE, arguments[0]);
+        String.format(OpenCommand.NO_DESKTOP_SUPPORT_MESSAGE, 1);
 
     exception.expect(Exception.class);
     exception.expectMessage(message);
@@ -61,7 +61,7 @@ public class OpenCommandTest {
 
   @Test
   public void testCommand() throws Exception {
-    String[] arguments = new String[] { "id" };
+    String[] arguments = new String[] { "1" };
 
     String server = "http://test.redmine.com";
     when(configuration.getServer()).thenReturn(server);
@@ -71,7 +71,7 @@ public class OpenCommandTest {
 
     String url = String.format("%s/issues/%s", server, arguments[0]);
     verify(browser).browse(new URI(url));
-    verify(out).println(String.format(OpenCommand.SUCCESS_MESSAGE, "id"));
+    verify(out).println(String.format(OpenCommand.SUCCESS_MESSAGE, 1));
   }
 
   @Test
