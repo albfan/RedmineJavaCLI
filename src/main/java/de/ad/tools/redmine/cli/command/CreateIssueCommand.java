@@ -12,6 +12,7 @@ import com.taskadapter.redmineapi.bean.Project;
 import com.taskadapter.redmineapi.bean.ProjectFactory;
 import com.taskadapter.redmineapi.bean.Tracker;
 import de.ad.tools.redmine.cli.Configuration;
+import de.ad.tools.redmine.cli.util.RedmineUtil;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -124,12 +125,8 @@ public class CreateIssueCommand extends RedmineCommand {
     @Override
     public void handle(RedmineManager redmineManager, Issue issue, String value)
         throws Exception {
-      List<IssuePriority> priorities =
-          redmineManager.getIssueManager().getIssuePriorities();
-
-      Optional<IssuePriority> newPriority = priorities.stream()
-          .filter(p -> value.equals(p.getName()))
-          .findFirst();
+      Optional<IssuePriority> newPriority =  RedmineUtil.resolvePriorityByName(
+          redmineManager, value);
 
       newPriority.ifPresent(p -> issue.setPriorityId(p.getId()));
       newPriority.orElseThrow(
@@ -146,13 +143,9 @@ public class CreateIssueCommand extends RedmineCommand {
     @Override
     public void handle(RedmineManager redmineManager, Issue issue, String value)
         throws Exception {
-      List<Membership> memberships =
-          redmineManager.getMembershipManager()
-              .getMemberships(issue.getProject().getId());
-
-      Optional<Membership> newAssignee = memberships.stream()
-          .filter(m -> value.equals(m.getUser().getFullName()))
-          .findFirst();
+      Optional<Membership> newAssignee = RedmineUtil.resolveMembershipByName(
+          redmineManager,
+          issue.getProject().getId(), value);
 
       newAssignee.ifPresent(m -> issue.setAssignee(m.getUser()));
       newAssignee.orElseThrow(
@@ -169,11 +162,8 @@ public class CreateIssueCommand extends RedmineCommand {
     @Override
     public void handle(RedmineManager redmineManager, Issue issue, String value)
         throws Exception {
-      List<IssueStatus> statuses =
-          redmineManager.getIssueManager().getStatuses();
-
       Optional<IssueStatus> newStatus =
-          statuses.stream().filter(s -> value.equals(s.getName())).findFirst();
+          RedmineUtil.resolveStatusByName(redmineManager, value);
 
       newStatus.ifPresent(s -> issue.setStatusId(s.getId()));
       newStatus.orElseThrow(
@@ -190,10 +180,8 @@ public class CreateIssueCommand extends RedmineCommand {
     @Override
     public void handle(RedmineManager redmineManager, Issue issue, String value)
         throws Exception {
-      List<Tracker> trackers = redmineManager.getIssueManager().getTrackers();
-
-      Optional<Tracker> newTracker = trackers.stream()
-          .filter(t -> value.equals(t.getName())).findFirst();
+      Optional<Tracker> newTracker = RedmineUtil.resolveTrackerByName(
+          redmineManager, value);
 
       newTracker.ifPresent(issue::setTracker);
       newTracker.orElseThrow(() ->

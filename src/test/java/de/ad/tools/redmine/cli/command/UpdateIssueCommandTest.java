@@ -146,7 +146,7 @@ public class UpdateIssueCommandTest {
 
   @Test
   public void testUpdateAssignee() throws Exception {
-    String[] arguments = new String[] { "1", "--assignee=User Name" };
+    String[] arguments = new String[] { "1", "--assignee=User Name 2" };
 
     Issue issue = createMockIssue(1);
     when(issueManager.getIssueById(1)).thenReturn(issue);
@@ -156,21 +156,15 @@ public class UpdateIssueCommandTest {
 
     when(issue.getProject()).thenReturn(project1);
 
-    User user = mock(User.class);
-    when(user.getFullName()).thenReturn("User Name");
-
-    Membership membership = mock(Membership.class);
-    when(membership.getUser()).thenReturn(user);
-
+    List<Membership> memberships = createDummyMemberships();
     MembershipManager membershipManager = mock(MembershipManager.class);
-    when(membershipManager.getMemberships(1)).thenReturn(
-        Arrays.asList(membership));
+    when(membershipManager.getMemberships(1)).thenReturn(memberships);
 
     when(redmineManager.getMembershipManager()).thenReturn(membershipManager);
 
     command.process(arguments);
 
-    verify(issue).setAssignee(user);
+    verify(issue).setAssignee(memberships.get(1).getUser());
     verify(issueManager).update(issue);
 
     verify(out).println(
@@ -189,15 +183,9 @@ public class UpdateIssueCommandTest {
 
     when(issue.getProject()).thenReturn(project);
 
-    User user = mock(User.class);
-    when(user.getFullName()).thenReturn("User Name");
-
-    Membership membership = mock(Membership.class);
-    when(membership.getUser()).thenReturn(user);
-
+    List<Membership> memberships = createDummyMemberships();
     MembershipManager membershipManager = mock(MembershipManager.class);
-    when(membershipManager.getMemberships("project-1")).thenReturn(
-        Arrays.asList(membership));
+    when(membershipManager.getMemberships(1)).thenReturn(memberships);
 
     when(redmineManager.getMembershipManager()).thenReturn(membershipManager);
 
@@ -326,6 +314,21 @@ public class UpdateIssueCommandTest {
     when(high.getId()).thenReturn(2);
 
     return Arrays.asList(normal, high);
+  }
+
+  private List<Membership> createDummyMemberships() {
+    User user1 = mock(User.class);
+    when(user1.getFullName()).thenReturn("User Name 1");
+    User user2 = mock(User.class);
+    when(user2.getFullName()).thenReturn("User Name 2");
+
+    Membership membership1 = mock(Membership.class);
+    when(membership1.getUser()).thenReturn(user1);
+
+    Membership membership2 = mock(Membership.class);
+    when(membership2.getUser()).thenReturn(user2);
+
+    return Arrays.asList(membership1, membership2);
   }
 
   private List<IssueStatus> createDummyStatuses() {
