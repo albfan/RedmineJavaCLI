@@ -5,11 +5,15 @@ import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.bean.IssuePriority;
 import com.taskadapter.redmineapi.bean.IssueStatus;
 import com.taskadapter.redmineapi.bean.Membership;
+import com.taskadapter.redmineapi.bean.Project;
 import com.taskadapter.redmineapi.bean.Tracker;
 import java.util.List;
 import java.util.Optional;
 
-public class RedmineUtil {
+public final class RedmineUtil {
+  
+  private RedmineUtil(){}
+  
   public static Optional<IssuePriority> resolvePriorityByName(
       RedmineManager redmineManager, String name) throws RedmineException {
     List<IssuePriority> priorities =
@@ -47,5 +51,13 @@ public class RedmineUtil {
 
     return trackers.stream()
         .filter(t -> name.equals(t.getName())).findFirst();
+  }
+
+  public static Optional<Project> resolveProjectByName(
+      RedmineManager redmineManager,
+      String name) throws RedmineException {
+    List<Project> projects = redmineManager.getProjectManager().getProjects();
+
+    return projects.stream().filter(p -> name.equals(p.getName())).findFirst();
   }
 }

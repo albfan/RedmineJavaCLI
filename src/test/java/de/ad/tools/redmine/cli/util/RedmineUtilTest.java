@@ -2,12 +2,15 @@ package de.ad.tools.redmine.cli.util;
 
 import com.taskadapter.redmineapi.IssueManager;
 import com.taskadapter.redmineapi.MembershipManager;
+import com.taskadapter.redmineapi.ProjectManager;
 import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.bean.IssuePriority;
 import com.taskadapter.redmineapi.bean.IssueStatus;
 import com.taskadapter.redmineapi.bean.Membership;
+import com.taskadapter.redmineapi.bean.Project;
 import com.taskadapter.redmineapi.bean.Tracker;
 import com.taskadapter.redmineapi.bean.User;
+import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -23,15 +26,18 @@ public class RedmineUtilTest {
   private RedmineManager redmineManager;
   private IssueManager issueManager;
   private MembershipManager membershipManager;
+  private ProjectManager projectManager;
 
   @Before
   public void setUp() throws Exception {
     redmineManager = mock(RedmineManager.class);
     issueManager = mock(IssueManager.class);
     membershipManager = mock(MembershipManager.class);
+    projectManager = mock(ProjectManager.class);
 
     when(redmineManager.getIssueManager()).thenReturn(issueManager);
     when(redmineManager.getMembershipManager()).thenReturn(membershipManager);
+    when(redmineManager.getProjectManager()).thenReturn(projectManager);
   }
 
   @Test
@@ -87,6 +93,27 @@ public class RedmineUtilTest {
     assertThat(actual.get()).isEqualTo(expected);
   }
 
+  @Test
+  public void testResolveProject() throws Exception {
+    List<Project> projects = createDummyProjects();
+    when(projectManager.getProjects()).thenReturn(projects);
+
+    Project expected = projects.get(1);
+    Optional<Project> actual = RedmineUtil.resolveProjectByName(
+        redmineManager, "Project 2");
+
+    assertThat(actual.isPresent()).isTrue();
+    assertThat(actual.get()).isEqualTo(expected);
+  }
+
+  @Test
+  public void testPrivateConstructor() throws Exception {
+    Constructor<?>[] constructors =
+        RedmineUtil.class.getDeclaredConstructors();
+    constructors[0].setAccessible(true);
+    constructors[0].newInstance((Object[]) null);
+  }
+
   private List<IssuePriority> createDummyPriorities() {
     IssuePriority normal = mock(IssuePriority.class);
     when(normal.getName()).thenReturn("Normal");
@@ -140,5 +167,19 @@ public class RedmineUtilTest {
     when(featureTracker.getId()).thenReturn(2);
 
     return Arrays.asList(bugTracker, featureTracker);
+  }
+  
+  private List<Project> createDummyProjects(){
+    Project project1 = mock(Project.class);
+    when(project1.getId()).thenReturn(1);
+    when(project1.getName()).thenReturn("Project 1");
+    when(project1.getIdentifier()).thenReturn("project-1");
+
+    Project project2 = mock(Project.class);
+    when(project2.getId()).thenReturn(2);
+    when(project2.getName()).thenReturn("Project 2");
+    when(project2.getIdentifier()).thenReturn("project-2");
+    
+    return Arrays.asList(project1, project2);
   }
 }
