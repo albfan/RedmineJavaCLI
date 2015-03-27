@@ -1,11 +1,11 @@
 # RedmineJavaCLI [![Build Status](https://travis-ci.org/a11n/RedmineJavaCLI.svg)](https://travis-ci.org/a11n/RedmineJavaCLI) [![Coverage Status](https://coveralls.io/repos/a11n/RedmineJavaCLI/badge.svg)](https://coveralls.io/r/a11n/RedmineJavaCLI)
 
-You already have a **powerful, console-based** workflow in place?
-*git, svn, gradle, mvn* - you are mastering them all. And you are fast!
+You already have a **powerful, console-based** workflow in place?  
+*git, svn, gradle, mvn* - you are mastering them all. And you are fast!  
 But Redmine breaks your workflow?
 
-**Not anymore:** RedmineJavaCLI is here for you.
-A convenient, comprehensive, stateful Redmine client.
+**Not anymore:** RedmineJavaCLI is here for you.  
+A convenient, comprehensive, stateful Redmine client.  
 Your new companion.
 
 ##3-Step-Setup
