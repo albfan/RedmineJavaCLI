@@ -3,95 +3,86 @@ layout: page
 title: User guide
 ---
 
-For convenience I recommend to create an alias first:
+##3-Step-Setup
+* Download [RedmineJavaCLI]({{ site.github.repo }}/releases/download/v{{ site.version }}/RedmineJavaCli-{{ site.version }}.jar)
+* Create an alias
 {% highlight bash %}
-alias redmine="java -jar /<pathToJar>/RedmineJavaCli-1.0.jar $@"
+alias redmine="java -jar ./RedmineJavaCli-{{ site.version }}.jar $@"
 {% endhighlight %}
+* Connect to your Redmine instance
+{% highlight bash %}
+>redmine connect http://your.server/redmine apiKey
+{% endhighlight %}
+You are all set. Have fun :-)
 
-Let's display a list of available commands:
+##Available commands
+To get a list of available command just call `redmine help`.
 {% highlight bash %}
 >redmine help
-usage: redmine <command> [<args>]
-
-help          [<command>]       Display general help or (if provided) command help.  
-connect       <url> <apiKey>    Connect to server using API key for authentication.  
-projects                        Display your projects.
-project       <key>             Display project details.
-issues                          Display issues.
-issue         <id>              Display issue details.
-history       <id>              Display issue history.
-list          <entity>          List the specified entity.
-update-issue  <id> <keyValue>   Update a given issue.
-open          <id>              Open issue in default browser.
-reset                           Reset the current configuration.
+help          Display general help or (if provided) command help.  
+connect       Connect to server using API key for authentication.  
+projects      Display your projects.
+project       Display project details.
+issues        Display issues.
+issue         Display issue details.
+history       Display issue history.
+list          List the specified entity.
+create-issue  Create a new issue.
+update-issue  Update a given issue.
+open          Open issue in default browser.
+reset         Reset the current configuration.
 {% endhighlight %}
 
-**Note:** There is also a per-command help available, just type `redmine help connect` for example.
-
-Before querying a Redmine instance we need to connect to a server beforehand:
+The `help` command also features a dedicated help for each command.
 {% highlight bash %}
->redmine connect http://localhost:8080/redmine f92db342be05601b7ce84e98a829bd5d6a65db21
-Successfully connected user 'admin' to server 'http://localhost:8080/redmine'.
-{% endhighlight %}
-
-**Note:** Currently only API key authorization is supported. But in a next version there will be also "noauth" and user/password authorization support.
-
-Now list your projects or have a look at your project details:
-
-{% highlight bash %}
->redmine projects
-Name            Key
-¯¯¯¯            ¯¯¯
-Test Project 1  test-project-1  
-Test Project 2  test-project-2
-
->redmine project test-project-1
-Test Project 1
-
-This is a test project.
-
-Members
+>redmine help create-issue
+COMMAND
 ¯¯¯¯¯¯¯
-Manager:    Admin Istrator  
-Developer:  John Doe
-{% endhighlight %}
+create-issue
 
-Use the same approach to investigate your issues:
-{% highlight bash %}
->redmine issues
-ID  Tracker  Status       Priority  Assignee        Updated        Subject
-¯¯  ¯¯¯¯¯¯¯  ¯¯¯¯¯¯       ¯¯¯¯¯¯¯¯  ¯¯¯¯¯¯¯¯        ¯¯¯¯¯¯¯        ¯¯¯¯¯¯¯
-#2  Feature  In Progress  High      (not assigned)  5 minutes ago  This is a feature.  
-#1  Bug      New          Normal    Admin Istrator  5 minutes ago  This is a bug.
-
->redmine issue 1
-Bug #1
-This is a bug.
-Added by Admin Istrator 6 minutes ago.
-
-Status  Priority  Assignee
-¯¯¯¯¯¯  ¯¯¯¯¯¯¯¯  ¯¯¯¯¯¯¯¯
-New     Normal    Admin Istrator  
-
-Description
+DESCRIPTION
 ¯¯¯¯¯¯¯¯¯¯¯
-This is a bug description.
+Create a new issue.
+
+usage: redmine create-issue <projectKey> <subject> --option=value
+
+<projectKey>  The key of the project to add this issue to.  
+<subject>     The subject of the issue.
+
+--description  The description of the issue to create.  
+--priority     The priority of the issue to create.
+--assignee     The assignee of the issue to create.
+--status       The status of the issue to create.
+--tracker      The tracker of the issue to create.
 {% endhighlight %}
 
-Now if you'd like to update an issue, feel free to do so by using the `update-issue` command:
+##Example
 {% highlight bash %}
->redmine update-issue 1 status="In Progress"
-Sucessfully updated issue #1.
+>redmine issues --priority=High --status="In Progress"
+ID    TRACKER  STATUS       PRIORITY  ASSIGNEE        UPDATED     SUBJECT
+¯¯    ¯¯¯¯¯¯¯  ¯¯¯¯¯¯       ¯¯¯¯¯¯¯¯  ¯¯¯¯¯¯¯¯        ¯¯¯¯¯¯¯     ¯¯¯¯¯¯¯
+#127  Feature  In Progress  High      (not assigned)  3 days ago  New subject
+#126  Feature  In Progress  High      John Doe        6 days ago  This is a new issue.  
 {% endhighlight %}
-Currently the following issue properties could be updated:
-- description, subject, priority, assignee, status, tracker
+**Remark:** Have you noticed the quotation marks encapsulating `"In Progress"`? Use these to escape values with whitespaces. Feel free to skip them for simple values, such as `High`.
 
-**Remark**: For single word value you could use a simple assignment `key=value`. If the value consist of multiple words, just surround it by quotes to make sure it's handled properly, e.g. `status="In Progress"`.
+##Protips
+Although the `help` command is pretty straightforward, here some pro tips for you.
 
-Since some of those properties (priority, status and tracker) are fully customizable on your Redmine server, you can list their available values with another command:
+###Open issue in default browser.
+This tool is intended as an enhancement rather than a replacement of the Redmine web solution. So there are good reasons to use both in parallel. To make this as convenient as possible for you, there is the `open` command, which opens a specified issue in your default browser for you.
+{% highlight bash %}
+>redmine open 1
+Opened issue #1 in default browser.
+{% endhighlight %}
+
+###Which statuses, priorities and trackers are configured?
+Redmine features the ability to configure certain properties of an issue. So there is no general assignment available.  
+This means, for example `--priority=High` might not be available on every Redmine instance. In order to filter, create or update you need to know the available assignments.  
+That's where the `list` command comes into the game.
 {% highlight bash %}
 >redmine list status
-Name         ID  Default  Closed  
+NAME         ID  DEFAULT  CLOSED  
 ¯¯¯¯         ¯¯  ¯¯¯¯¯¯¯  ¯¯¯¯¯¯  
 New          1   X
 In Progress  2
@@ -101,10 +92,13 @@ Closed       5            X
 Rejected     6            X
 {% endhighlight %}
 
-You could also list the values for priority and tracker.
 
-Last but not least, if you still fill the need to use your browser, just continue working in your browser with this simple command:
-{% highlight bash %}
->redmine open 1
-Opened issue '1' in default browser.
-{% endhighlight %}
+###How to obtain my API key?
+In order to use this tool you are required to provide an **API key** for authentication.
+
+1. Login into Redmine
+2. Click "My account" (in the upper right corner)
+3. On the right-hand-side panel you could find your API key within the *API access key* section
+4. Copy this key.
+
+**Note:** If you **do not** see this section, most probably the REST API access of your Redmine instance has been disabled. If you are the administrator of the server you could enable it in the server settings.
