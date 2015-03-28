@@ -8,18 +8,7 @@ But Redmine breaks your workflow?
 A convenient, comprehensive, stateful Redmine client.  
 Your new companion.
 
-##3-Step-Setup
-* Download RedmineJavaCLI
-* Create an alias 
-```shell
-alias redmine="java -jar ./RedmineJavaCli-1.0.jar $@"
-```
-* Connect to your Redmine instance
-```shell
->redmine connect http://localhost:8080/redmine f92db342be05601b7ce84e98a829bd5d6a65db21
-Successfully connected user 'admin' to server 'http://localhost:8080/redmine'.
-```
-You are all set. Have fun :-)
+For setup instructions, user guide and protips see the [project page](http://a11n.github.io/RedmineJavaCLI).
 
 ##Usage
 Just type `redmine help` to see what's waiting for you:
@@ -39,4 +28,13 @@ create-issue  <projectKey> <subject>   Create a new issue.
 update-issue  <id>                     Update a given issue.                                
 open          <id>                     Open issue in default browser.                       
 reset                                  Reset the current configuration.
+```
+##Example
+This is how a looks like in action.
+```shell
+>redmine issues --priority=High --status="In Progress"
+ID    TRACKER  STATUS       PRIORITY  ASSIGNEE        UPDATED     SUBJECT
+¯¯    ¯¯¯¯¯¯¯  ¯¯¯¯¯¯       ¯¯¯¯¯¯¯¯  ¯¯¯¯¯¯¯¯        ¯¯¯¯¯¯¯     ¯¯¯¯¯¯¯
+#127  Feature  In Progress  High      (not assigned)  3 days ago  New subject
+#126  Feature  In Progress  High      John Doe        6 days ago  This is a new issue.  
 ```
