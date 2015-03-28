@@ -11,7 +11,7 @@ title:            Redmine Java CLI
 tagline:          'A convenient, comprehensive, stateful Redmine client.'
 description:      'A convenient, comprehensive, stateful Redmine client.'
 url:              http://a11n.github.io/RedmineJavaCLI
-baseurl:          /RedmineJavaCLI/
+baseurl:          /RedmineJavaCLI
 
 author:
   name:           'André Diermann'
