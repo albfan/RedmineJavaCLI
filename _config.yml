@@ -1,0 +1,26 @@
+# Dependencies
+markdown:         redcarpet
+highlighter:      pygments
+
+# Permalinks
+permalink:        pretty
+relative_permalinks: true
+
+# Setup
+title:            Redmine Java CLI
+tagline:          'A convenient, comprehensive, stateful Redmine client.'
+description:      'A convenient, comprehensive, stateful Redmine client.'
+url:              http://a11n.github.io/RedmineJavaCLI
+baseurl:          /
+
+author:
+  name:           'André Diermann'
+  url:
+
+paginate:         5
+
+# Custom vars
+version:          1.1.0
+
+github:
+  repo:           https://github.com/a11n/RedmineJavaCLI
