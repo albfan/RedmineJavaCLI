@@ -64,10 +64,10 @@ ID    TRACKER  STATUS       PRIORITY  ASSIGNEE        UPDATED     SUBJECT
 #127  Feature  In Progress  High      (not assigned)  3 days ago  New subject
 #126  Feature  In Progress  High      John Doe        6 days ago  This is a new issue.  
 {% endhighlight %}
-**Remark:** Have you noticed the quotation marks encapsulating `"In Progress"`? Use these to escape values with whitespaces. Feel free to skip them for simple values, such as `High`.
+**Note:** Have you noticed the quotation marks encapsulating `"In Progress"`? Use these to escape values with whitespaces. Feel free to skip them for simple values, such as `High`.
 
 ##Protips
-Although the `help` command is pretty straightforward, here some pro tips for you.
+Although the `help` command is pretty straightforward, here are some pro tips for you.
 
 ###Open issue in default browser.
 This tool is intended as an enhancement rather than a replacement of the Redmine web solution. So there are good reasons to use both in parallel. To make this as convenient as possible for you, there is the `open` command, which opens a specified issue in your default browser for you.
