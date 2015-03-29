@@ -30,7 +30,7 @@ open          <id>                     Open issue in default browser.
 reset                                  Reset the current configuration.
 ```
 ##Example
-This is how a looks like in action.
+This is how it looks like in action.
 ```shell
 >redmine issues --priority=High --status="In Progress"
 ID    TRACKER  STATUS       PRIORITY  ASSIGNEE        UPDATED     SUBJECT
