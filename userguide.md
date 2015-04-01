@@ -3,18 +3,6 @@ layout: page
 title: User guide
 ---
 
-##3-Step-Setup
-* Download [RedmineJavaCLI]({{ site.github.repo }}/releases/download/v{{ site.version }}/RedmineJavaCli-{{ site.version }}.jar)
-* Create an alias
-{% highlight bash %}
-alias redmine="java -jar ./RedmineJavaCli-{{ site.version }}.jar $@"
-{% endhighlight %}
-* Connect to your Redmine instance
-{% highlight bash %}
->redmine connect http://your.server/redmine apiKey
-{% endhighlight %}
-You are all set. Have fun :-)
-
 ##Available commands
 To get a list of available command just call `redmine help`.
 {% highlight bash %}
