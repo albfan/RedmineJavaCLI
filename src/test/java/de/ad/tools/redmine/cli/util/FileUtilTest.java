@@ -20,6 +20,23 @@ public class FileUtilTest {
   }
 
   @Test
+  public void testExists() throws Exception {
+    TestObject object = new TestObject(1, true, "test");
+    FileUtil.writeObjectToFile(object, "test");
+    
+    boolean actual = FileUtil.exists("test");
+    
+    assertThat(actual).isTrue();
+  }
+
+  @Test
+  public void testExistsWithNonExistentFile() throws Exception {
+    boolean actual = FileUtil.exists("DoesNotExist");
+
+    assertThat(actual).isFalse();
+  }
+
+  @Test
   public void testReadObjectFromFile() throws Exception {
     TestObject object = new TestObject(1, true, "test");
     FileUtil.writeObjectToFile(object, "test");
