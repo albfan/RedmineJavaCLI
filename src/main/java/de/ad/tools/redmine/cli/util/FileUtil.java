@@ -5,8 +5,12 @@ import java.io.*;
 public final class FileUtil {
 
   private static File baseDir = new File(".");
-  
+
   private FileUtil() {
+  }
+
+  public static boolean exists(String filename) {
+    return new File(baseDir, filename).exists();
   }
 
   public static <T> T readObjectFromFile(String filename) throws IOException,
@@ -27,8 +31,8 @@ public final class FileUtil {
     ObjectOutputStream oos = new ObjectOutputStream(fout);
     oos.writeObject(object);
   }
-  
-  public static void setBaseDir(File baseDir){
+
+  public static void setBaseDir(File baseDir) {
     FileUtil.baseDir = baseDir;
   }
 }

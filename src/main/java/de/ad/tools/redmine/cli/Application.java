@@ -55,16 +55,15 @@ public class Application {
     }
 
     public Configuration loadConfiguration() {
-      Configuration configuration = new Configuration();
-
-      try {
-        configuration =
-            FileUtil.readObjectFromFile(configurationFileName);
-      } catch (IOException | ClassNotFoundException e) {
-        e.printStackTrace();
+      if (!FileUtil.exists(configurationFileName)) {
+        return new Configuration();
       }
 
-      return configuration;
+      try {
+        return FileUtil.readObjectFromFile(configurationFileName);
+      } catch (IOException | ClassNotFoundException e) {
+        throw new IllegalStateException();
+      }
     }
 
     public void persistConfiguration(Configuration configuration) {
