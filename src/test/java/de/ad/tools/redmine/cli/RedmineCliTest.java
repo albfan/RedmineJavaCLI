@@ -1,5 +1,10 @@
 package de.ad.tools.redmine.cli;
 
+import com.taskadapter.redmineapi.RedmineManager;
+import com.taskadapter.redmineapi.internal.Transport;
+import com.taskadapter.redmineapi.internal.URIConfigurator;
+import java.lang.reflect.Field;
+import java.net.URL;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,7 +34,7 @@ public class RedmineCliTest {
     when(configuration.getApiKey()).thenReturn("1234567890");
 
     out = mock(PrintStream.class);
-    
+
     redmineManagerFactory = mock(RedmineCli.RedmineManagerFactory.class);
 
     redmineCli = new RedmineCli(configuration, out, redmineManagerFactory);
@@ -99,5 +104,35 @@ public class RedmineCliTest {
         redmineManagerFactory);
 
     assertThat(redmineCli1.hashCode()).isEqualTo(redmineCli2.hashCode());
+  }
+
+  public static class RedmineManagerFactoryTest {
+    @Test
+    public void testCreateWithApiKey() throws Exception {
+      RedmineCli.RedmineManagerFactory redmineManagerFactory =
+          new RedmineCli.RedmineManagerFactory();
+
+      String url = "http://test.redmine.com";
+      String apiKey = "apiKey";
+
+      RedmineManager result =
+          redmineManagerFactory.createWithApiKey(url, apiKey);
+
+      Transport transport = reflectField(result, "transport");
+      URIConfigurator configurator = reflectField(transport, "configurator");
+      URL baseUrl = reflectField(configurator, "baseURL");
+      String apiAccessKey = reflectField(configurator, "apiAccessKey");
+
+      assertThat(baseUrl).isEqualTo(new URL(url));
+      assertThat(apiAccessKey).isEqualTo(apiKey);
+    }
+
+    private <T> T reflectField(Object subject, String fieldName)
+        throws NoSuchFieldException, IllegalAccessException {
+      Field field = subject.getClass().getDeclaredField(fieldName);
+      field.setAccessible(true);
+
+      return (T) field.get(subject);
+    }
   }
 }
