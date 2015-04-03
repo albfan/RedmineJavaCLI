@@ -23,14 +23,7 @@ public class ApplicationTest {
   private RedmineCli.RedmineManagerFactory redmineManagerFactory;
   private PrintStream out;
 
-  private FileUtil.FileUtilImpl impl;
-
   private RedmineCli redmineCli;
-
-  @Rule
-  public ExpectedException exception = ExpectedException.none();
-  @Rule
-  public TemporaryFolder tmpFolder = new TemporaryFolder();
 
   @Before
   public void setUp() throws Exception {
@@ -45,9 +38,6 @@ public class ApplicationTest {
     when(redmineCliFactory.produce(any(Configuration.class),
         any(PrintStream.class), any(RedmineCli.RedmineManagerFactory.class))).
         thenReturn(redmineCli);
-
-    impl = mock(FileUtil.FileUtilImpl.class);
-    FileUtil.impl = impl;
   }
 
   @Test
@@ -88,77 +78,98 @@ public class ApplicationTest {
     verify(out).println(message);
   }
 
-  @Test
-  public void testLoadConfiguration() throws Exception {
-    Application.ConfigurationManager configurationManager =
-        new Application.ConfigurationManager(
-            Application.LOCAL_CONFIGURATION_FILE_NAME);
+  public static class ConfigurationManagerTest {
 
-    Configuration expected = new Configuration();
-    when(impl.readObjectFromFile(
-        Application.LOCAL_CONFIGURATION_FILE_NAME)).thenReturn(expected);
+    private FileUtil.FileUtilImpl impl;
 
-    Configuration actual = configurationManager.loadConfiguration();
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
+    @Rule
+    public TemporaryFolder tmpFolder = new TemporaryFolder();
 
-    assertThat(actual).isEqualTo(expected);
+    @Before
+    public void setUp() throws Exception {
+      impl = mock(FileUtil.FileUtilImpl.class);
+      FileUtil.impl = impl;
+    }
+
+    @Test
+    public void testLoadConfiguration() throws Exception {
+      Application.ConfigurationManager configurationManager =
+          new Application.ConfigurationManager(
+              Application.LOCAL_CONFIGURATION_FILE_NAME);
+
+      Configuration expected = new Configuration();
+      when(impl.readObjectFromFile(
+          Application.LOCAL_CONFIGURATION_FILE_NAME)).thenReturn(expected);
+
+      Configuration actual = configurationManager.loadConfiguration();
+
+      assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void testLoadConfigurationWithException() throws Exception {
+      Application.ConfigurationManager configurationManager =
+          new Application.ConfigurationManager(
+              Application.LOCAL_CONFIGURATION_FILE_NAME);
+
+      when(impl.exists(Application.LOCAL_CONFIGURATION_FILE_NAME)).thenReturn(
+          true);
+      doThrow(IOException.class).when(impl)
+          .readObjectFromFile(Application.LOCAL_CONFIGURATION_FILE_NAME);
+
+      exception.expect(IllegalStateException.class);
+      configurationManager.loadConfiguration();
+    }
+
+    @Test
+    public void testPersistConfiguration() throws Exception {
+      Application.ConfigurationManager configurationManager =
+          new Application.ConfigurationManager(
+              Application.LOCAL_CONFIGURATION_FILE_NAME);
+
+      Configuration configuration = new Configuration();
+      configurationManager.persistConfiguration(configuration);
+
+      verify(impl).writeObjectToFile(configuration,
+          Application.LOCAL_CONFIGURATION_FILE_NAME);
+    }
+
+    @Test
+    public void testPersistConfigurationWithException() throws Exception {
+      Application.ConfigurationManager configurationManager =
+          new Application.ConfigurationManager(
+              Application.LOCAL_CONFIGURATION_FILE_NAME);
+
+      Configuration configuration = new Configuration();
+
+      doThrow(IOException.class).when(impl)
+          .writeObjectToFile(configuration,
+              Application.LOCAL_CONFIGURATION_FILE_NAME);
+
+      configurationManager.persistConfiguration(configuration);
+    }
   }
 
-  @Test
-  public void testLoadConfigurationWithException() throws Exception {
-    Application.ConfigurationManager configurationManager =
-        new Application.ConfigurationManager(
-            Application.LOCAL_CONFIGURATION_FILE_NAME);
+  public static class RedmineCliFactoryTest {
+    @Test
+    public void testProduceRedmineCli() throws Exception {
+      Application.RedmineCliFactory redmineCliFactory =
+          new Application.RedmineCliFactory();
+      PrintStream out = mock(PrintStream.class);
+      RedmineCli.RedmineManagerFactory redmineManagerFactory =
+          mock(RedmineCli.RedmineManagerFactory.class);
 
-    when(impl.exists(Application.LOCAL_CONFIGURATION_FILE_NAME)).thenReturn(
-        true);
-    doThrow(IOException.class).when(impl)
-        .readObjectFromFile(Application.LOCAL_CONFIGURATION_FILE_NAME);
-    
-    exception.expect(IllegalStateException.class);
-    configurationManager.loadConfiguration();
-  }
+      Configuration configuration = mock(Configuration.class);
 
-  @Test
-  public void testPersistConfiguration() throws Exception {
-    Application.ConfigurationManager configurationManager =
-        new Application.ConfigurationManager(
-            Application.LOCAL_CONFIGURATION_FILE_NAME);
+      RedmineCli expected = new RedmineCli(configuration, out,
+          redmineManagerFactory);
 
-    Configuration configuration = new Configuration();
-    configurationManager.persistConfiguration(configuration);
+      RedmineCli actual = redmineCliFactory.produce(configuration, out,
+          redmineManagerFactory);
 
-    verify(impl).writeObjectToFile(configuration,
-        Application.LOCAL_CONFIGURATION_FILE_NAME);
-  }
-
-  @Test
-  public void testPersistConfigurationWithException() throws Exception {
-    Application.ConfigurationManager configurationManager =
-        new Application.ConfigurationManager(
-            Application.LOCAL_CONFIGURATION_FILE_NAME);
-
-    Configuration configuration = new Configuration();
-
-    doThrow(IOException.class).when(impl)
-        .writeObjectToFile(configuration,
-            Application.LOCAL_CONFIGURATION_FILE_NAME);
-
-    configurationManager.persistConfiguration(configuration);
-  }
-
-  @Test
-  public void testProduceRedmineCli() throws Exception {
-    Application.RedmineCliFactory redmineCliFactory =
-        new Application.RedmineCliFactory();
-
-    Configuration configuration = mock(Configuration.class);
-
-    RedmineCli expected = new RedmineCli(configuration, out,
-        redmineManagerFactory);
-
-    RedmineCli actual = redmineCliFactory.produce(configuration, out,
-        redmineManagerFactory);
-
-    assertThat(actual).isEqualTo(expected);
+      assertThat(actual).isEqualTo(expected);
+    }
   }
 }
