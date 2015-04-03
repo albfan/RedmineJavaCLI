@@ -23,7 +23,10 @@ public class ApplicationTest {
   private RedmineCli.RedmineManagerFactory redmineManagerFactory;
   private PrintStream out;
 
+  private FileUtil.FileUtilImpl impl;
+
   private RedmineCli redmineCli;
+
   @Rule
   public ExpectedException exception = ExpectedException.none();
   @Rule
@@ -42,6 +45,9 @@ public class ApplicationTest {
     when(redmineCliFactory.produce(any(Configuration.class),
         any(PrintStream.class), any(RedmineCli.RedmineManagerFactory.class))).
         thenReturn(redmineCli);
+
+    impl = mock(FileUtil.FileUtilImpl.class);
+    FileUtil.impl = impl;
   }
 
   @Test
@@ -88,10 +94,9 @@ public class ApplicationTest {
         new Application.ConfigurationManager(
             Application.LOCAL_CONFIGURATION_FILE_NAME);
 
-    FileUtil.setBaseDir(tmpFolder.getRoot());
-
     Configuration expected = new Configuration();
-    configurationManager.persistConfiguration(expected);
+    when(impl.readObjectFromFile(
+        Application.LOCAL_CONFIGURATION_FILE_NAME)).thenReturn(expected);
 
     Configuration actual = configurationManager.loadConfiguration();
 
@@ -104,9 +109,41 @@ public class ApplicationTest {
         new Application.ConfigurationManager(
             Application.LOCAL_CONFIGURATION_FILE_NAME);
 
-    FileUtil.setBaseDir(tmpFolder.getRoot());
+    when(impl.exists(Application.LOCAL_CONFIGURATION_FILE_NAME)).thenReturn(
+        true);
+    doThrow(IOException.class).when(impl)
+        .readObjectFromFile(Application.LOCAL_CONFIGURATION_FILE_NAME);
     
-    Configuration actual = configurationManager.loadConfiguration();
+    exception.expect(IllegalStateException.class);
+    configurationManager.loadConfiguration();
+  }
+
+  @Test
+  public void testPersistConfiguration() throws Exception {
+    Application.ConfigurationManager configurationManager =
+        new Application.ConfigurationManager(
+            Application.LOCAL_CONFIGURATION_FILE_NAME);
+
+    Configuration configuration = new Configuration();
+    configurationManager.persistConfiguration(configuration);
+
+    verify(impl).writeObjectToFile(configuration,
+        Application.LOCAL_CONFIGURATION_FILE_NAME);
+  }
+
+  @Test
+  public void testPersistConfigurationWithException() throws Exception {
+    Application.ConfigurationManager configurationManager =
+        new Application.ConfigurationManager(
+            Application.LOCAL_CONFIGURATION_FILE_NAME);
+
+    Configuration configuration = new Configuration();
+
+    doThrow(IOException.class).when(impl)
+        .writeObjectToFile(configuration,
+            Application.LOCAL_CONFIGURATION_FILE_NAME);
+
+    configurationManager.persistConfiguration(configuration);
   }
 
   @Test

@@ -16,7 +16,8 @@ public class FileUtilTest {
 
   @Before
   public void setUp() throws Exception {
-    FileUtil.setBaseDir(tmpFolder.getRoot());
+    FileUtil.FileUtilImpl impl = new FileUtil.FileUtilImpl(tmpFolder.getRoot());
+    FileUtil.impl = impl;
   }
 
   @Test
