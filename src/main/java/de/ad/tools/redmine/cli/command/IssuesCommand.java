@@ -11,12 +11,10 @@ import com.taskadapter.redmineapi.bean.Tracker;
 import de.ad.tools.redmine.cli.Configuration;
 import de.ad.tools.redmine.cli.util.RedmineUtil;
 import de.ad.tools.redmine.cli.util.StringUtil;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.PrintStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static de.ad.tools.redmine.cli.util.DateUtil.getTimeDifferenceAsText;
 
@@ -89,7 +87,48 @@ public class IssuesCommand extends RedmineCommand {
 
   private Map<String, String> buildParameterMapFromOptions() throws Exception {
     //Parameter spec: http://www.redmine.org/projects/redmine/wiki/Rest_Issues
-    Map<String, String> parameters = new HashMap<>();
+
+    HashMap<String, String>parameters = new HashMap<String, String>() {
+
+      Set<Entry<String, String>> entries;
+      @Override
+      public Set<Entry<String, String>> entrySet() {
+        return entries;
+      }
+
+      @Override
+      public int size() {
+        return entries.size();
+      }
+
+      public String put(String key, String value) {
+        if (entries == null) {
+          entries = new AbstractSet<Entry<String, String>>() {
+
+            ArrayList<Entry<String, String>> list = new ArrayList<>();
+            @Override
+            public Iterator<Entry<String, String>> iterator() {
+              return list.iterator();
+            }
+
+            @Override
+            public int size() {
+              return list.size();
+            }
+
+            @Override
+            public boolean add(Entry<String, String> stringStringEntry) {
+              return list.add(stringStringEntry);
+            }
+          };
+        }
+        StatusHandler.MyEntry entry = new StatusHandler.MyEntry();
+        entry.setKey(key);
+        entry.setValue(value);
+        entries.add(entry);
+        return value;
+      }
+    };
 
     for (Option option : getOptions()) {
       if (option.getValue() == null) {
@@ -189,10 +228,52 @@ public class IssuesCommand extends RedmineCommand {
       Optional<IssueStatus> status =
           RedmineUtil.resolveStatusByName(redmineManager, value);
 
-      status.ifPresent(s -> parameters.put("status_id", String.valueOf(
-          s.getId())));
-      status.orElseThrow(
-          () -> new Exception(String.format(INVALID_STATUS_MESSAGE, value)));
+      if (value.contains(",")) {
+        String[] split = value.trim().split(",");
+        parameters.put("f[]","status_id");
+        parameters.put("op[status_id]","=");
+        for (int i = 0; i < split.length; i++) {
+          String s = split[i];
+          Optional<IssueStatus> statusSplit =
+                  RedmineUtil.resolveStatusByName(redmineManager, s);
+          if (statusSplit.isPresent()) {
+            parameters.put("v[status_id][]", String.valueOf(statusSplit.get().getId()));
+          }
+        }
+      } else if ("open".equalsIgnoreCase(value) || "close".equalsIgnoreCase(value)) {
+        parameters.put("status_id", value);
+      } else {
+        if (status.isPresent()) {
+          parameters.put("status_id", String.valueOf(status.get().getId()));
+        } else {
+          throw new Exception(String.format(INVALID_STATUS_MESSAGE, value));
+        }
+      }
+    }
+
+    private static class MyEntry implements Map.Entry<String, String> {
+      String key;
+      String value;
+
+      @Override
+      public String getKey() {
+        return key;
+      }
+
+      @Override
+      public String getValue() {
+        return value;
+      }
+
+      @Override
+      public String setValue(String value) {
+        this.value = value;
+        return value;
+      }
+
+      public void setKey(String key) {
+        this.key = key;
+      }
     }
   }
 
