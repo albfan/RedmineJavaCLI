@@ -256,7 +256,7 @@ public class Command {
 
   public static final class Option {
     private static final Pattern OPTION_PATTERN = Pattern.compile(
-        "^--(?<name>[a-z]+)=(?<value>[A-Za-z0-9 ]+|\"[A-Za-z0-9 ]+\")$");
+        "^--(?<name>[a-z]+)=(?<value>[\\p{IsLatin} ,]+|\"[\\p{IsLatin} ,]+\")$");
 
     private final String name;
     private final String description;
