@@ -1,5 +1,8 @@
 package de.ad.tools.redmine.cli.util;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.Arrays;
 
@@ -74,14 +77,38 @@ public final class PrintUtil {
   }
 
   private static String generateRowFormat(int[] columnSizes) {
+
+    int terminalWidth = getTerminalWidth();
+
     StringBuilder formatBuilder = new StringBuilder();
 
-    for (int columnSize : columnSizes) {
-      String format = String.format("%%-%ds", columnSize + 2);
+    int total = 0;
+    for (int i = 0; i < columnSizes.length; i++) {
+      int columnSize = columnSizes[i];
+      int size;
+      if (i == columnSizes.length -1 && terminalWidth != -1) {
+        size = terminalWidth - total;
+      } else {
+        size = columnSize + 2;
+      }
+      total += size;
+      String format = String.format("%%-%ds", size);
       formatBuilder.append(format);
     }
 
     return formatBuilder.toString();
+  }
+
+  private static int getTerminalWidth() {
+    int terminalWidth;
+    try {
+      Process p = Runtime.getRuntime().exec("tput cols");
+      BufferedReader bri = new BufferedReader(new InputStreamReader(p.getInputStream()));
+      terminalWidth = Integer.parseInt(bri.readLine());
+    } catch (IOException e) {
+      terminalWidth = -1;
+    }
+    return terminalWidth;
   }
 
   private static int[] computeColumnSizes(String[][] table) {

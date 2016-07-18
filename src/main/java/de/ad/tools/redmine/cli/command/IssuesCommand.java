@@ -151,7 +151,7 @@ public class IssuesCommand extends RedmineCommand {
             "(not assigned)",
         getTimeDifferenceAsText(issue.getUpdatedOn()) +
             " ago",
-        StringUtil.ellipsize(issue.getSubject(), 24) };
+        issue.getSubject()};
   }
 
   private static abstract class Handler {
