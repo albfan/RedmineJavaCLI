@@ -93,15 +93,6 @@ public class IssuesCommand extends RedmineCommand {
       Set<Entry<String, String>> entries;
       @Override
       public Set<Entry<String, String>> entrySet() {
-        return entries;
-      }
-
-      @Override
-      public int size() {
-        return entries.size();
-      }
-
-      public String put(String key, String value) {
         if (entries == null) {
           entries = new AbstractSet<Entry<String, String>>() {
 
@@ -122,6 +113,16 @@ public class IssuesCommand extends RedmineCommand {
             }
           };
         }
+        return entries;
+      }
+
+      @Override
+      public int size() {
+        return entries.size();
+      }
+
+      public String put(String key, String value) {
+        Set<Entry<String, String>> entries = entrySet();
         StatusHandler.MyEntry entry = new StatusHandler.MyEntry();
         entry.setKey(key);
         entry.setValue(value);
