@@ -7,7 +7,7 @@ import java.io.PrintStream;
 
 public class Application {
 
-  public static final String LOCAL_CONFIGURATION_FILE_NAME = ".redmine";
+  public static final String LOCAL_CONFIGURATION_FILE_NAME = System.getProperty("user.home")+"/.redmine";
 
   static Application instance =
       new Application(new ConfigurationManager(LOCAL_CONFIGURATION_FILE_NAME),

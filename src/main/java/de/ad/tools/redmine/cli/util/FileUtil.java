@@ -31,12 +31,12 @@ public final class FileUtil {
     }
 
     public boolean exists(String filename) {
-      return new File(baseDir, filename).exists();
+      return getFile(filename).exists();
     }
 
     public <T> T readObjectFromFile(String filename) throws IOException,
         ClassNotFoundException {
-      File input = new File(baseDir, filename);
+      File input = getFile(filename);
       FileInputStream fin = new FileInputStream(input);
       ObjectInputStream ois = new ObjectInputStream(fin);
       T object = (T) ois.readObject();
@@ -47,10 +47,20 @@ public final class FileUtil {
 
     public void writeObjectToFile(Object object, String filename)
         throws IOException {
-      File output = new File(baseDir, filename);
+      File output = getFile(filename);
       FileOutputStream fout = new FileOutputStream(output);
       ObjectOutputStream oos = new ObjectOutputStream(fout);
       oos.writeObject(object);
+    }
+
+    private File getFile(String filename) {
+      File output;
+      if (!filename.startsWith(File.separator)) {
+        output = new File(baseDir, filename);
+      } else {
+        output = new File(filename);
+      }
+      return output;
     }
   }
 }
