@@ -73,8 +73,9 @@ public class IssueCommand extends RedmineCommand {
   private void printDescription(Issue issue) {
     printHeading("Description");
 
-    if (issue.getDescription().length() > 0) {
-      println(issue.getDescription());
+    String description = issue.getDescription();
+    if (description.length() > 0) {
+      println(description.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", ""));
     } else {
       println("(not set)");
     }
