@@ -88,6 +88,9 @@ public final class PrintUtil {
       int size;
       if (i == columnSizes.length -1 && terminalWidth != -1) {
         size = terminalWidth - total;
+        if (size <= 0) {
+          size = columnSize;
+        }
       } else {
         size = columnSize + 2;
       }
@@ -105,8 +108,13 @@ public final class PrintUtil {
       Process p = Runtime.getRuntime().exec("tput cols");
       BufferedReader bri = new BufferedReader(new InputStreamReader(p.getInputStream()));
       terminalWidth = Integer.parseInt(bri.readLine());
-    } catch (IOException e) {
-      terminalWidth = -1;
+    } catch (Exception e) {
+      try {
+        int columns = Integer.parseInt(System.getenv("COLUMNS"));
+        terminalWidth = columns;
+      } catch (Exception ex) {
+        terminalWidth = -1;
+      }
     }
     return terminalWidth;
   }
