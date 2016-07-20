@@ -209,7 +209,9 @@ public class IssuesCommand extends RedmineCommand {
         Map<String, String> parameters, String value)
         throws Exception {
       if ("me".equalsIgnoreCase(value) || value.matches("[0-9]+")) {
-        parameters.put("assigned_to_id", value);
+        parameters.put("f[]", "assigned_to_id");
+        parameters.put("op[assigned_to_id]","=");
+        parameters.put("v[assigned_to_id][]",value);
       } else {
         throw new Exception(String.format(INVALID_ASSIGNEE_MESSAGE, value));
       }
