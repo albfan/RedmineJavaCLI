@@ -73,7 +73,7 @@ public class IssuesCommand extends RedmineCommand {
 
     final String[][] issueTable = new String[issues.size()][6];
     String[] header =
-        new String[] { "ID", "Tracker", "Status", "Priority",
+        new String[] { "ID", "Project", "Tracker", "Status", "Priority",
             "Assignee", "Updated",
             "Subject" };
 
@@ -143,8 +143,9 @@ public class IssuesCommand extends RedmineCommand {
   }
 
   private String[] buildRow(Issue issue) {
-    return new String[] { "#" + issue.getId(),
+    return new String[] { ""+issue.getId(),
         issue.getTracker().getName(),
+        issue.getProject().getName(),
         issue.getStatusName(),
         issue.getPriorityText(),
         issue.getAssignee() != null ?
