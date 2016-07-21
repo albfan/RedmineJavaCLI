@@ -9,9 +9,10 @@ import com.taskadapter.redmineapi.bean.Membership;
 import com.taskadapter.redmineapi.bean.Tracker;
 import de.ad.tools.redmine.cli.Configuration;
 import de.ad.tools.redmine.cli.util.RedmineUtil;
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.PrintStream;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -25,6 +26,8 @@ public class UpdateIssueCommand extends RedmineCommand {
       "'%s' is not a valid status.";
   static final String INVALID_TRACKER_MESSAGE =
       "'%s' is not a valid tracker.";
+  static final String INVALID_NOTES_MESSAGE =
+      "'%s' is not a valid note.";
   static final String ISSUE_UPDATE_SUCCESS_MESSAGE =
       "Sucessfully updated issue #%d.";
   static final String NO_OPTION_SET_MESSAGE =
@@ -44,7 +47,8 @@ public class UpdateIssueCommand extends RedmineCommand {
       new Option("priority", "The priority of the issue to update."),
       new Option("assignee", "The assignee of the issue to update."),
       new Option("status", "The status of the issue to update."),
-      new Option("tracker", "The tracker of the issue to update.") };
+      new Option("tracker", "The tracker of the issue to update."),
+      new Option("notes", "Comments about the update.") };
 
   private static final Map<String, Handler> handlers = new HashMap<>();
 
@@ -59,6 +63,7 @@ public class UpdateIssueCommand extends RedmineCommand {
     Handler assignee = new AssigneeHandler();
     Handler status = new StatusHandler();
     Handler tracker = new TrackerHandler();
+    Handler notes = new NotesHandler();
 
     handlers.put(description.getName(), description);
     handlers.put(subject.getName(), subject);
@@ -66,6 +71,7 @@ public class UpdateIssueCommand extends RedmineCommand {
     handlers.put(assignee.getName(), assignee);
     handlers.put(status.getName(), status);
     handlers.put(tracker.getName(), tracker);
+    handlers.put(notes.getName(), notes);
   }
 
   @Override
@@ -205,6 +211,23 @@ public class UpdateIssueCommand extends RedmineCommand {
       newTracker.ifPresent(issue::setTracker);
       newTracker.orElseThrow(() ->
           new Exception(String.format(INVALID_TRACKER_MESSAGE, value)));
+    }
+  }
+
+  private static class NotesHandler extends Handler {
+
+    @Override public String getName() {
+      return "notes";
+    }
+
+    @Override
+    public void handle(RedmineManager redmineManager, Issue issue, String value)
+        throws Exception {
+      if (!StringUtils.isBlank(value)) {
+        issue.setNotes(value);
+      }else {
+          throw new Exception(String.format(INVALID_NOTES_MESSAGE, value));
+      }
     }
   }
 }

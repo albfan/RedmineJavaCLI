@@ -4,9 +4,9 @@ import com.taskadapter.redmineapi.RedmineManager;
 import de.ad.tools.redmine.cli.command.*;
 
 import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -42,23 +42,16 @@ public class RedmineCli {
     }
 
     Command help = new HelpCommand(configuration, out, commands);
-    Command connect = new ConnectCommand(configuration, out,
-        redmineManagerFactory);
-    Command projects =
-        new ProjectsCommand(configuration, out, redmineManager);
-    Command project =
-        new ProjectCommand(configuration, out, redmineManager);
+    Command connect = new ConnectCommand(configuration, out, redmineManagerFactory);
+    Command projects = new ProjectsCommand(configuration, out, redmineManager);
+    Command project = new ProjectCommand(configuration, out, redmineManager);
     Command issues = new IssuesCommand(configuration, out, redmineManager);
     Command issue = new IssueCommand(configuration, out, redmineManager);
-    Command history =
-        new HistoryCommand(configuration, out, redmineManager);
+    Command history = new HistoryCommand(configuration, out, redmineManager);
     Command list = new ListCommand(configuration, out, redmineManager);
-    Command createIssueCommand =
-        new CreateIssueCommand(configuration, out, redmineManager);
-    Command updateIssueCommand =
-        new UpdateIssueCommand(configuration, out, redmineManager);
-    Command open = new OpenCommand(configuration, out, redmineManager,
-        new OpenCommand.Browser());
+    Command createIssueCommand = new CreateIssueCommand(configuration, out, redmineManager);
+    Command updateIssueCommand = new UpdateIssueCommand(configuration, out, redmineManager);
+    Command open = new OpenCommand(configuration, out, redmineManager, new OpenCommand.Browser());
     Command reset = new ResetCommand(configuration, out);
 
     commands.put(help.getName(), help);
@@ -85,7 +78,14 @@ public class RedmineCli {
     String command = getCommand(args);
     String[] arguments = getArguments(args);
 
-    validateCommand(command);
+    if (StringUtils.isNumeric(command)) {
+      ArrayList<String> argumentsList = new ArrayList<>(Arrays.asList(arguments));
+      argumentsList.add(0, command);
+      arguments = argumentsList.toArray(new String[argumentsList.size()]);
+      command = "issue";
+    } else {
+      validateCommand(command);
+    }
 
     proccessCommand(command, arguments);
   }
@@ -114,9 +114,7 @@ public class RedmineCli {
 
   private void validateCommand(String command) throws Exception {
     if (!commands.containsKey(command)) {
-      throw new Exception(
-          String.format(INVALID_COMMAND_MESSAGE,
-              command));
+      throw new Exception(String.format(INVALID_COMMAND_MESSAGE, command));
     }
   }
 

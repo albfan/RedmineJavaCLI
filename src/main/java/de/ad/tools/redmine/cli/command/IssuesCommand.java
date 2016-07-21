@@ -30,6 +30,8 @@ public class IssuesCommand extends RedmineCommand {
       "'%s' is not a valid status.";
   static final String INVALID_TRACKER_MESSAGE =
       "'%s' is not a valid tracker.";
+  static final String INVALID_SORT_MESSAGE =
+      "'%s' is not a valid sort.";
 
   private static final String NAME = "issues";
   private static final String DESCRIPTION = "Display issues.";
@@ -39,7 +41,8 @@ public class IssuesCommand extends RedmineCommand {
       new Option("priority", "Only display issues with specified priority."),
       new Option("assignee", "Only display issues for the specified assignee."),
       new Option("status", "Only display issues with the specified status."),
-      new Option("tracker", "Only display issues for the specified tracker.")
+      new Option("tracker", "Only display issues for the specified tracker."),
+      new Option("sort", "Column to sort with. Append :desc to invert the order.")
   };
 
   private static final Map<String, Handler> handlers = new HashMap<>();
@@ -54,12 +57,14 @@ public class IssuesCommand extends RedmineCommand {
     Handler assignee = new AssigneeHandler();
     Handler status = new StatusHandler();
     Handler tracker = new TrackerHandler();
+    Handler sort = new SortHandler();
 
     handlers.put(project.getName(), project);
     handlers.put(priority.getName(), priority);
     handlers.put(assignee.getName(), assignee);
     handlers.put(status.getName(), status);
     handlers.put(tracker.getName(), tracker);
+    handlers.put(sort.getName(), sort);
   }
 
   @Override
@@ -298,6 +303,25 @@ public class IssuesCommand extends RedmineCommand {
           t.getId())));
       tracker.orElseThrow(() ->
           new Exception(String.format(INVALID_TRACKER_MESSAGE, value)));
+    }
+  }
+
+  private static class SortHandler extends Handler {
+
+    @Override public String getName() {
+      return "sort";
+    }
+
+    @Override
+    public void handle(RedmineManager redmineManager,
+        Map<String, String> parameters, String value)
+        throws Exception {
+      if (!StringUtils.isBlank(value)) {
+        //TODO: Parse sort
+        parameters.put("sort", value);
+      } else {
+        throw new Exception(String.format(INVALID_TRACKER_MESSAGE, value));
+      }
     }
   }
 }
