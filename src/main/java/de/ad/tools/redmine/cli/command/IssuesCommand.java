@@ -5,12 +5,10 @@ import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.IssuePriority;
 import com.taskadapter.redmineapi.bean.IssueStatus;
-import com.taskadapter.redmineapi.bean.Membership;
 import com.taskadapter.redmineapi.bean.Project;
 import com.taskadapter.redmineapi.bean.Tracker;
 import de.ad.tools.redmine.cli.Configuration;
 import de.ad.tools.redmine.cli.util.RedmineUtil;
-import de.ad.tools.redmine.cli.util.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.PrintStream;
@@ -137,12 +135,12 @@ public class IssuesCommand extends RedmineCommand {
     };
 
     for (Option option : getOptions()) {
-      if (option.getValue() == null) {
+      if (option.buildValue() == null) {
         continue;
       }
 
       handlers.get(option.getName())
-          .handle(redmineManager, parameters, option.getValue());
+          .handle(redmineManager, parameters, option.buildValue());
     }
     return parameters;
   }

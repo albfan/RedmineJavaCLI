@@ -6,7 +6,6 @@ import de.ad.tools.redmine.cli.util.PrintUtil;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -138,15 +137,23 @@ public class Command {
   }
 
   private void validateOptions(List<String> suppliedOptions) throws Exception {
-    List<String> availableOptions =
-        Arrays.stream(options).map(Option::getName).collect(toList());
 
-    for (String suppliedOption : suppliedOptions)
-      if (!Option.isOption(suppliedOption) || !availableOptions.contains(
-          Option.getName(suppliedOption))) {
-        throw new IllegalArgumentException(
-            String.format(INVALID_OPTION_MESSAGE, suppliedOption));
+    List<Option> availableOptions = Arrays.asList(getOptions());
+
+    boolean valid = false;
+    for (String suppliedOption : suppliedOptions) {
+      for (Option availableOption : availableOptions) {
+        if (availableOption.matches(suppliedOption)) {
+          availableOption.setValue(availableOption.buildValue(suppliedOption));
+          valid = true;
+          break;
+        }
       }
+      if (!valid) {
+        throw new IllegalArgumentException(
+                String.format(INVALID_OPTION_MESSAGE, suppliedOption));
+      }
+    }
   }
 
   private void assignArguments(List<String> arguments) {
@@ -157,11 +164,15 @@ public class Command {
   }
 
   private void assignOptions(List<String> suppliedOptions) {
-    Map<String, Option> options =
-        Arrays.stream(getOptions()).collect(toMap(Option::getName, o -> o));
+    List<Option> availableOptions = Arrays.asList(getOptions());
 
-    suppliedOptions.forEach(
-        o -> options.get(Option.getName(o)).setValue(Option.getValue(o)));
+    for (String suppliedOption : suppliedOptions) {
+      for (Option availableOption : availableOptions) {
+        if (availableOption.matches(suppliedOption)) {
+          availableOption.setValue(availableOption.buildValue());
+        }
+      }
+    }
   }
 
   private int getRequiredArgumentsCount() {
@@ -255,16 +266,22 @@ public class Command {
   }
 
   public static final class Option {
-    private static final Pattern OPTION_PATTERN = Pattern.compile(
-        "(?m)^--(?<name>[a-z]+)=(?<value>[\\p{IsLatin} ,:\r\n]+|\"[\\p{IsLatin} ,:\r\n]+\")$");
+    private Pattern optionPattern;
 
     private final String name;
     private final String description;
     private String value;
+    boolean hasValue;
 
     public Option(String name, String description) {
+      this(name, description, "(?ms)^--" + name + "=(?<value>.*)$");
+    }
+
+    public Option(String name, String description, String regex) {
       this.name = name;
       this.description = description;
+      optionPattern = Pattern.compile(regex);
+      setHasValue(true);
     }
 
     public String getName() {
@@ -275,32 +292,40 @@ public class Command {
       return description;
     }
 
-    public String getValue() {
+    public String buildValue() {
       return value;
+    }
+
+    public boolean isHasValue() {
+      return hasValue;
+    }
+
+    public void setHasValue(boolean hasValue) {
+      this.hasValue = hasValue;
     }
 
     public void setValue(String value) {
       this.value = value;
     }
 
-    public static boolean isOption(String optionStatement) {
-      return OPTION_PATTERN.matcher(optionStatement).matches();
+    public boolean matches(String optionStatement) {
+      return optionPattern.matcher(optionStatement).matches();
     }
 
-    public static String getName(String optionStatement) {
-      Matcher matcher = OPTION_PATTERN.matcher(optionStatement);
-
-      matcher.find();
-
-      return matcher.group("name");
+    public String buildValue(String optionStatement) {
+      if (isHasValue()) {
+        Matcher matcher = optionPattern.matcher(optionStatement);
+        matcher.find();
+        return matcher.group("value");
+      } else {
+        return "true";
+      }
     }
 
-    public static String getValue(String optionStatement) {
-      Matcher matcher = OPTION_PATTERN.matcher(optionStatement);
-
-      matcher.find();
-
-      return matcher.group("value");
+    public static final Option buildOptionWithoutValue(String name, String description) {
+      Option option = new Option(name, description, "(?ms)^--" + name);
+      option.setHasValue(false);
+      return option;
     }
   }
 }

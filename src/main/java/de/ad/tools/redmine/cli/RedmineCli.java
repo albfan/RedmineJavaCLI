@@ -1,6 +1,9 @@
 package de.ad.tools.redmine.cli;
 
 import com.taskadapter.redmineapi.RedmineManager;
+import com.taskadapter.redmineapi.RedmineManagerFactory;
+import com.taskadapter.redmineapi.internal.Transport;
+import com.taskadapter.redmineapi.internal.URIConfigurator;
 import de.ad.tools.redmine.cli.command.*;
 
 import java.io.PrintStream;
@@ -35,10 +38,12 @@ public class RedmineCli {
 
     RedmineManager redmineManager = null;
 
+    String uri = null;
+    String apiKey = null;
     if (configuration.isConnected()) {
-      redmineManager = redmineManagerFactory
-          .createWithApiKey(configuration.getServer(),
-              configuration.getApiKey());
+      uri = configuration.getServer();
+      apiKey = configuration.getApiKey();
+      redmineManager = redmineManagerFactory.createWithApiKey(uri, apiKey);
     }
 
     Command help = new HelpCommand(configuration, out, commands);
@@ -53,6 +58,8 @@ public class RedmineCli {
     Command updateIssueCommand = new UpdateIssueCommand(configuration, out, redmineManager);
     Command open = new OpenCommand(configuration, out, redmineManager, new OpenCommand.Browser());
     Command reset = new ResetCommand(configuration, out);
+    //TODO: Modificar redmine-java-api
+    //Command timeEntries = new TimeEntriesCommand(configuration, out, new Transport(new URIConfigurator(uri, apiKey), com.taskadapter.redmineapi.RedmineManagerFactory.createDefaultTransportConfig().client));
 
     commands.put(help.getName(), help);
     commands.put(connect.getName(), connect);

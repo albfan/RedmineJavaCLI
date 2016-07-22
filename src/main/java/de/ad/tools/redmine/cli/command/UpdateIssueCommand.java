@@ -89,14 +89,14 @@ public class UpdateIssueCommand extends RedmineCommand {
 
     boolean atLeastOneOptionSet = false;
     for (Option option : getOptions()) {
-      if (option.getValue() == null) {
+      if (option.buildValue() == null) {
         continue;
       }
 
       atLeastOneOptionSet = true;
 
       handlers.get(option.getName())
-          .handle(redmineManager, issue, option.getValue());
+          .handle(redmineManager, issue, option.buildValue());
     }
 
     if (!atLeastOneOptionSet) {

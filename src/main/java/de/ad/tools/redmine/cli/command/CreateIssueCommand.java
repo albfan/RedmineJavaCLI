@@ -9,18 +9,13 @@ import com.taskadapter.redmineapi.bean.IssuePriority;
 import com.taskadapter.redmineapi.bean.IssueStatus;
 import com.taskadapter.redmineapi.bean.Membership;
 import com.taskadapter.redmineapi.bean.Project;
-import com.taskadapter.redmineapi.bean.ProjectFactory;
 import com.taskadapter.redmineapi.bean.Tracker;
 import de.ad.tools.redmine.cli.Configuration;
 import de.ad.tools.redmine.cli.util.RedmineUtil;
 import java.io.PrintStream;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import static de.ad.tools.redmine.cli.util.DateUtil.getTimeDifferenceAsText;
 
 public class CreateIssueCommand extends RedmineCommand {
   static final String SUCCESS_MESSAGE = "Issue #%d succesfully created.";
@@ -83,12 +78,12 @@ public class CreateIssueCommand extends RedmineCommand {
         IssueFactory.create(project.getId(), subject);
 
     for (Option option : getOptions()) {
-      if (option.getValue() == null) {
+      if (option.buildValue() == null) {
         continue;
       }
 
       handlers.get(option.getName())
-          .handle(redmineManager, issueToCreate, option.getValue());
+          .handle(redmineManager, issueToCreate, option.buildValue());
     }
 
     Issue newIssue = issueManager.createIssue(issueToCreate);

@@ -15,7 +15,6 @@ class RedmineCommand extends Command {
       String longDescription, Argument[] arguments, Configuration configuration,
       PrintStream out, RedmineManager redmineManager) {
     super(name, description, longDescription, arguments, configuration, out);
-
     this.redmineManager = redmineManager;
   }
 
@@ -23,9 +22,7 @@ class RedmineCommand extends Command {
       String longDescription, Argument[] arguments, Option[] options,
       Configuration configuration,
       PrintStream out, RedmineManager redmineManager) {
-    super(name, description, longDescription, arguments, options, configuration,
-        out);
-
+    super(name, description, longDescription, arguments, options, configuration, out);
     this.redmineManager = redmineManager;
   }
 
