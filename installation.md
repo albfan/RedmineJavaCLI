@@ -18,7 +18,7 @@ You are all set. Have fun :-)
 ##OS X - Homebrew
 If you are running OS X along with Homebrew installation is even simpler.
 {% highlight bash %}
-brew install https://raw.github.com/a11n/RedmineJavaCLI/master/homebrew/redminejavacli.rb
+brew install https://raw.github.com/albfan/RedmineJavaCLI/master/homebrew/redminejavacli.rb
 {% endhighlight %}
 This will download RedmineJavaCli and setup an according alias for you.
 
