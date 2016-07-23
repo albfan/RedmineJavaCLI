@@ -1,4 +1,4 @@
-# RedmineJavaCLI [![Build Status](https://travis-ci.org/a11n/RedmineJavaCLI.svg)](https://travis-ci.org/a11n/RedmineJavaCLI) [![Coverage Status](https://coveralls.io/repos/a11n/RedmineJavaCLI/badge.svg)](https://coveralls.io/r/a11n/RedmineJavaCLI)
+# RedmineJavaCLI [![Build Status](https://travis-ci.org/albfan/RedmineJavaCLI.svg?branch=master)](https://travis-ci.org/albfan/RedmineJavaCLI) [![Coverage Status](https://coveralls.io/repos/github/albfan/RedmineJavaCLI/badge.svg?branch=master)](https://coveralls.io/github/albfan/RedmineJavaCLI?branch=master)
 
 You already have a **powerful, console-based** workflow in place?  
 *git, svn, gradle, mvn* - you are mastering them all. And you are fast!  
