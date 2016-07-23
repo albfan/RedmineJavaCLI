@@ -1,9 +1,5 @@
 # RedmineJavaCLI [![Build Status](https://travis-ci.org/a11n/RedmineJavaCLI.svg)](https://travis-ci.org/a11n/RedmineJavaCLI) [![Coverage Status](https://coveralls.io/repos/a11n/RedmineJavaCLI/badge.svg)](https://coveralls.io/r/a11n/RedmineJavaCLI)
 
-## Deprecated
-**This project is deprecated. There will be no new development on this project.
-See [RedmineCLI](https://github.com/a11n/RedmineCLI) if you are looking for smart, console-based Redmine client.**
-
 You already have a **powerful, console-based** workflow in place?  
 *git, svn, gradle, mvn* - you are mastering them all. And you are fast!  
 But Redmine breaks your workflow?
@@ -42,3 +38,6 @@ ID    TRACKER  STATUS       PRIORITY  ASSIGNEE        UPDATED     SUBJECT
 #127  Feature  In Progress  High      (not assigned)  3 days ago  New subject
 #126  Feature  In Progress  High      John Doe        6 days ago  This is a new issue.  
 ```
+
+## Alternatives
+See [RedmineCLI](https://github.com/a11n/RedmineCLI) if you are looking for smart, console-based Redmine client.
