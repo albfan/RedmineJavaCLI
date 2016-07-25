@@ -35,7 +35,7 @@ public class ConnectCommand extends Command {
   public void process(String[] arguments) throws Exception {
     super.process(arguments);
 
-    if (configuration.isConnected()) {
+    if (configuration.isConfigured()) {
       println(ALREADY_CONNECTED_MESSAGE);
       return;
     }

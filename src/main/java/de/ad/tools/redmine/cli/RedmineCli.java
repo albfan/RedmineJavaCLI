@@ -1,17 +1,16 @@
 package de.ad.tools.redmine.cli;
 
 import com.taskadapter.redmineapi.RedmineManager;
-import com.taskadapter.redmineapi.RedmineManagerFactory;
-import com.taskadapter.redmineapi.internal.Transport;
-import com.taskadapter.redmineapi.internal.URIConfigurator;
 import de.ad.tools.redmine.cli.command.*;
 
+import java.io.File;
 import java.io.PrintStream;
 import java.util.*;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.ini4j.Ini;
 
 public class RedmineCli {
   static final String INVALID_ARGUMENT_MESSAGE =
@@ -40,39 +39,31 @@ public class RedmineCli {
 
     String uri = null;
     String apiKey = null;
-    if (configuration.isConnected()) {
+    if (configuration.isConfigured()) {
       uri = configuration.getServer();
       apiKey = configuration.getApiKey();
       redmineManager = redmineManagerFactory.createWithApiKey(uri, apiKey);
     }
 
-    Command help = new HelpCommand(configuration, out, commands);
-    Command connect = new ConnectCommand(configuration, out, redmineManagerFactory);
-    Command projects = new ProjectsCommand(configuration, out, redmineManager);
-    Command project = new ProjectCommand(configuration, out, redmineManager);
-    Command issues = new IssuesCommand(configuration, out, redmineManager);
-    Command issue = new IssueCommand(configuration, out, redmineManager);
-    Command history = new HistoryCommand(configuration, out, redmineManager);
-    Command list = new ListCommand(configuration, out, redmineManager);
-    Command createIssueCommand = new CreateIssueCommand(configuration, out, redmineManager);
-    Command updateIssueCommand = new UpdateIssueCommand(configuration, out, redmineManager);
-    Command open = new OpenCommand(configuration, out, redmineManager, new OpenCommand.Browser());
-    Command reset = new ResetCommand(configuration, out);
-    //TODO: Modificar redmine-java-api
-    //Command timeEntries = new TimeEntriesCommand(configuration, out, new Transport(new URIConfigurator(uri, apiKey), com.taskadapter.redmineapi.RedmineManagerFactory.createDefaultTransportConfig().client));
+    ArrayList<Command> commandList = new ArrayList<>();
+    commandList.add(new HelpCommand(configuration, out, commands));
+    commandList.add(new ConnectCommand(configuration, out, redmineManagerFactory));
+    commandList.add(new ProjectsCommand(configuration, out, redmineManager));
+    commandList.add(new ProjectCommand(configuration, out, redmineManager));
+    commandList.add(new IssuesCommand(configuration, out, redmineManager));
+    commandList.add(new IssueCommand(configuration, out, redmineManager));
+    commandList.add(new HistoryCommand(configuration, out, redmineManager));
+    commandList.add(new ListCommand(configuration, out, redmineManager));
+    commandList.add(new CreateIssueCommand(configuration, out, redmineManager));
+    commandList.add(new UpdateIssueCommand(configuration, out, redmineManager));
+    commandList.add(new OpenCommand(configuration, out, redmineManager, new OpenCommand.Browser()));
+    commandList.add(new ResetCommand(configuration, out));
+    commandList.add(new AliasCommand(configuration, out));
+    commandList.add(new TimeEntriesCommand(configuration, out));
 
-    commands.put(help.getName(), help);
-    commands.put(connect.getName(), connect);
-    commands.put(projects.getName(), projects);
-    commands.put(project.getName(), project);
-    commands.put(issues.getName(), issues);
-    commands.put(issue.getName(), issue);
-    commands.put(history.getName(), history);
-    commands.put(list.getName(), list);
-    commands.put(createIssueCommand.getName(), createIssueCommand);
-    commands.put(updateIssueCommand.getName(), updateIssueCommand);
-    commands.put(open.getName(), open);
-    commands.put(reset.getName(), reset);
+    for (Command command : commandList) {
+      commands.put(command.getName(), command);
+    }
   }
 
   public void handleCommand(String[] args) throws Exception {
@@ -83,6 +74,13 @@ public class RedmineCli {
 
   private void handleCommandInternal(String[] args) throws Exception {
     String command = getCommand(args);
+    Ini ini = new Ini(new File(Application.CONFIGURATION_FILE_NAME));
+    String aliasCommand = ini.containsKey("alias") ? ini.get("alias").get(command) : null;
+    if (aliasCommand != null) {
+
+      args = aliasCommand.split(" (?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1); //TODO: alias with quoted spaces
+      command = getCommand(args);
+    }
     String[] arguments = getArguments(args);
 
     if (StringUtils.isNumeric(command)) {

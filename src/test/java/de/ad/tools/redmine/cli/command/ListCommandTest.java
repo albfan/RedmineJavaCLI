@@ -36,7 +36,7 @@ public class ListCommandTest {
   @Before
   public void setUp() throws Exception {
     configuration = mock(Configuration.class);
-    when(configuration.isConnected()).thenReturn(true);
+    when(configuration.isConfigured()).thenReturn(true);
 
     stream = new ByteArrayOutputStream();
     out = new PrintStream(stream);

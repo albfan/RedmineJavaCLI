@@ -2,7 +2,6 @@ package de.ad.tools.redmine.cli.command;
 
 import com.taskadapter.redmineapi.IssueManager;
 import com.taskadapter.redmineapi.MembershipManager;
-import com.taskadapter.redmineapi.ProjectManager;
 import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.IssuePriority;
@@ -12,7 +11,7 @@ import com.taskadapter.redmineapi.bean.Project;
 import com.taskadapter.redmineapi.bean.Tracker;
 import com.taskadapter.redmineapi.bean.User;
 import de.ad.tools.redmine.cli.Configuration;
-import java.io.ByteArrayOutputStream;
+
 import java.io.PrintStream;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -25,7 +24,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static de.ad.tools.redmine.cli.test.TestHelper.resourceToByteArray;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -46,7 +44,7 @@ public class UpdateIssueCommandTest {
   @Before
   public void setUp() throws Exception {
     configuration = mock(Configuration.class);
-    when(configuration.isConnected()).thenReturn(true);
+    when(configuration.isConfigured()).thenReturn(true);
 
     out = mock(PrintStream.class);
 

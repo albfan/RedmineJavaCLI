@@ -72,7 +72,7 @@ public class ConnectCommandTest {
     String server = "http://test.redmine.com";
     String apiKey = "apiKey";
 
-    when(configuration.isConnected()).thenReturn(true);
+    when(configuration.isConfigured()).thenReturn(true);
 
     String[] arguments = new String[] { server, apiKey };
 

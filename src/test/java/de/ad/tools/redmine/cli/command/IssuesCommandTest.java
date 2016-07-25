@@ -5,15 +5,12 @@ import com.taskadapter.redmineapi.MembershipManager;
 import com.taskadapter.redmineapi.ProjectManager;
 import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.bean.Issue;
-import com.taskadapter.redmineapi.bean.IssueFactory;
 import com.taskadapter.redmineapi.bean.IssuePriority;
 import com.taskadapter.redmineapi.bean.IssueStatus;
 import com.taskadapter.redmineapi.bean.Membership;
 import com.taskadapter.redmineapi.bean.Project;
 import com.taskadapter.redmineapi.bean.Tracker;
-import com.taskadapter.redmineapi.bean.TrackerFactory;
 import com.taskadapter.redmineapi.bean.User;
-import com.taskadapter.redmineapi.bean.UserFactory;
 import de.ad.tools.redmine.cli.Configuration;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -56,7 +53,7 @@ public class IssuesCommandTest {
   @Before
   public void setUp() throws Exception {
     configuration = mock(Configuration.class);
-    when(configuration.isConnected()).thenReturn(true);
+    when(configuration.isConfigured()).thenReturn(true);
 
     stream = new ByteArrayOutputStream();
     out = new PrintStream(stream);

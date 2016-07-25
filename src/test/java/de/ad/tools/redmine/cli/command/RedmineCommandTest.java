@@ -25,7 +25,7 @@ public class RedmineCommandTest {
   @Before
   public void setUp() throws Exception {
     configuration = mock(Configuration.class);
-    when(configuration.isConnected()).thenReturn(true);
+    when(configuration.isConfigured()).thenReturn(true);
 
     out = mock(PrintStream.class);
 
@@ -40,7 +40,7 @@ public class RedmineCommandTest {
   public void testCommandSkipsWhenNotConnected() throws Exception {
     String[] arguments = new String[0];
 
-    when(configuration.isConnected()).thenReturn(false);
+    when(configuration.isConfigured()).thenReturn(false);
 
     String message = String.format(RedmineCommand.NOT_CONNECTED_MESSAGE,
         command.getName());

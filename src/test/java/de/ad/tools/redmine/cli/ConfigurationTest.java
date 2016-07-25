@@ -18,14 +18,14 @@ public class ConfigurationTest {
     configuration.setServer("server");
     configuration.setApiKey("apiKey");
 
-    boolean result = configuration.isConnected();
+    boolean result = configuration.isConfigured();
 
     assertThat(result).isTrue();
   }
 
   @Test
   public void testIsNotConnected() throws Exception {
-    boolean result = configuration.isConnected();
+    boolean result = configuration.isConfigured();
 
     assertThat(result).isFalse();
   }
@@ -34,7 +34,7 @@ public class ConfigurationTest {
   public void testIsNotConnectedAlthoughServerIsSet() throws Exception {
     configuration.setServer("server");
 
-    boolean result = configuration.isConnected();
+    boolean result = configuration.isConfigured();
 
     assertThat(result).isFalse();
   }
@@ -43,7 +43,7 @@ public class ConfigurationTest {
   public void testIsNotConnectedAlthoughApiKeyIsSet() throws Exception {
     configuration.setApiKey("apiKey");
 
-    boolean result = configuration.isConnected();
+    boolean result = configuration.isConfigured();
 
     assertThat(result).isFalse();
   }

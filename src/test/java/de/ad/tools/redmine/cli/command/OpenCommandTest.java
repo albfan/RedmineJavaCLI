@@ -1,19 +1,15 @@
 package de.ad.tools.redmine.cli.command;
 
-import com.taskadapter.redmineapi.ProjectManager;
 import com.taskadapter.redmineapi.RedmineManager;
-import com.taskadapter.redmineapi.bean.Project;
 import de.ad.tools.redmine.cli.Configuration;
 import java.awt.Desktop;
 import java.io.PrintStream;
 import java.net.URI;
-import java.util.List;
+
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import sun.security.krb5.internal.crypto.Des;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -34,7 +30,7 @@ public class OpenCommandTest {
   @Before
   public void setUp() throws Exception {
     configuration = mock(Configuration.class);
-    when(configuration.isConnected()).thenReturn(true);
+    when(configuration.isConfigured()).thenReturn(true);
 
     out = mock(PrintStream.class);
 

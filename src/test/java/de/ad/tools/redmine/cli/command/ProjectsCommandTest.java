@@ -8,7 +8,6 @@ import de.ad.tools.redmine.cli.Configuration;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -35,7 +34,7 @@ public class ProjectsCommandTest {
   @Before
   public void setUp() throws Exception {
     configuration = mock(Configuration.class);
-    when(configuration.isConnected()).thenReturn(true);
+    when(configuration.isConfigured()).thenReturn(true);
 
     stream = new ByteArrayOutputStream();
     out = new PrintStream(stream);

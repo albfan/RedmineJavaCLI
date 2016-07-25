@@ -30,7 +30,7 @@ class RedmineCommand extends Command {
   public void process(String[] arguments) throws Exception {
     super.process(arguments);
 
-    if (!configuration.isConnected()) {
+    if (!configuration.isConfigured()) {
       throw new Exception(
           String.format(NOT_CONNECTED_MESSAGE, getName()));
     }

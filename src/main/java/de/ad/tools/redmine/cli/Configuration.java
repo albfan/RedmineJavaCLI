@@ -24,7 +24,7 @@ public class Configuration implements Serializable {
     this.apiKey = auth;
   }
 
-  public boolean isConnected() {
+  public boolean isConfigured() {
     return server != null && apiKey != null;
   }
 

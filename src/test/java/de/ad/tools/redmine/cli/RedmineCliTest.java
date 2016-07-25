@@ -29,7 +29,7 @@ public class RedmineCliTest {
   @Before
   public void setUp() throws Exception {
     configuration = mock(Configuration.class);
-    when(configuration.isConnected()).thenReturn(true);
+    when(configuration.isConfigured()).thenReturn(true);
     when(configuration.getServer()).thenReturn("http://test.redmine.com");
     when(configuration.getApiKey()).thenReturn("1234567890");
 
@@ -43,7 +43,7 @@ public class RedmineCliTest {
   @Test
   public void testInitWhenNotConnected() throws Exception {
     configuration = mock(Configuration.class);
-    when(configuration.isConnected()).thenReturn(false);
+    when(configuration.isConfigured()).thenReturn(false);
 
     redmineCli = new RedmineCli(configuration, out, redmineManagerFactory);
   }

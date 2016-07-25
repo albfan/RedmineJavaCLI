@@ -1,16 +1,19 @@
 package de.ad.tools.redmine.cli;
 
 import de.ad.tools.redmine.cli.util.FileUtil;
+import org.ini4j.Ini;
+import org.ini4j.Profile;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 
 public class Application {
 
-  public static final String LOCAL_CONFIGURATION_FILE_NAME = System.getProperty("user.home")+"/.redmine";
+  public static final String CONFIGURATION_FILE_NAME = System.getProperty("user.home")+"/.redmine";
 
   static Application instance =
-      new Application(new ConfigurationManager(LOCAL_CONFIGURATION_FILE_NAME),
+      new Application(new ConfigurationManager(CONFIGURATION_FILE_NAME),
           new RedmineCliFactory(), System.out,
           new RedmineCli.RedmineManagerFactory());
 
@@ -44,7 +47,7 @@ public class Application {
       out.println(e.getMessage());
     }
 
-    configurationManager.persistConfiguration(configuration);
+//    configurationManager.persistConfiguration(configuration);
   }
 
   static class ConfigurationManager {
@@ -55,25 +58,31 @@ public class Application {
     }
 
     public Configuration loadConfiguration() {
+      Configuration configuration = new Configuration();
       if (!FileUtil.exists(configurationFileName)) {
-        return new Configuration();
+        return configuration;
       }
 
       try {
-        return FileUtil.readObjectFromFile(configurationFileName);
-      } catch (IOException | ClassNotFoundException e) {
+        Ini ini = new Ini(new File(configurationFileName));
+        Profile.Section config = ini.get("config");
+        configuration.setApiKey(config.get("apikey"));
+        configuration.setServer(config.get("server"));
+        return configuration;
+        //return FileUtil.readObjectFromFile(configurationFileName);
+      } catch (IOException e) {
         throw new IllegalStateException();
       }
     }
 
-    public void persistConfiguration(Configuration configuration) {
-      try {
-        FileUtil.writeObjectToFile(configuration,
-            configurationFileName);
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    }
+//    public void persistConfiguration(Configuration configuration) {
+//      try {
+//        FileUtil.writeObjectToFile(configuration,
+//            configurationFileName);
+//      } catch (IOException e) {
+//        e.printStackTrace();
+//      }
+//    }
   }
 
   static class RedmineCliFactory {
