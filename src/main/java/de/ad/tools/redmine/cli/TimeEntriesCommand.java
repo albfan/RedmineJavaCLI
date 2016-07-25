@@ -18,14 +18,11 @@ public class TimeEntriesCommand extends Command {
 
     @Override
     public void process(String[] arguments) {
-        transport.getObject(Issue.class, id, new BasicNameValuePair("include", value));
         configuration.reset();
 
         println(RESET_SUCCESS_MESSAGE);
     }
-    public TimeEntriesCommand(Configuration configuration, PrintStream out, TransportConfiguration transport) {
+    public TimeEntriesCommand(Configuration configuration, PrintStream out) {
         super(NAME, DESCRIPTION, "", ARGUMENTS, configuration, out);
-        this.transport = transport;
     }
-
 }

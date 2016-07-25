@@ -12,6 +12,7 @@ import de.ad.tools.redmine.cli.util.RedmineUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -48,30 +49,27 @@ public class UpdateIssueCommand extends RedmineCommand {
       new Option("assignee", "The assignee of the issue to update."),
       new Option("status", "The status of the issue to update."),
       new Option("tracker", "The tracker of the issue to update."),
+      new Option("doneratio", "The done ratio of the issue to update."),
       new Option("notes", "Comments about the update.") };
 
   private static final Map<String, Handler> handlers = new HashMap<>();
 
-  public UpdateIssueCommand(Configuration configuration, PrintStream out,
-      RedmineManager redmineManager) {
-    super(NAME, DESCRIPTION, LONG_DESCRIPTION, ARGUMENTS, OPTIONS,
-        configuration, out, redmineManager);
+  public UpdateIssueCommand(Configuration configuration, PrintStream out, RedmineManager redmineManager) {
+    super(NAME, DESCRIPTION, LONG_DESCRIPTION, ARGUMENTS, OPTIONS, configuration, out, redmineManager);
 
-    Handler description = new DescriptionHandler();
-    Handler subject = new SubjectHandler();
-    Handler priority = new PriorityHandler();
-    Handler assignee = new AssigneeHandler();
-    Handler status = new StatusHandler();
-    Handler tracker = new TrackerHandler();
-    Handler notes = new NotesHandler();
+    ArrayList<Handler> handlersList = new ArrayList<>();
+    handlersList.add(new DescriptionHandler());
+    handlersList.add(new SubjectHandler());
+    handlersList.add(new PriorityHandler());
+    handlersList.add(new AssigneeHandler());
+    handlersList.add(new StatusHandler());
+    handlersList.add(new TrackerHandler());
+    handlersList.add(new DoneRatioHandler());
+    handlersList.add(new NotesHandler());
 
-    handlers.put(description.getName(), description);
-    handlers.put(subject.getName(), subject);
-    handlers.put(priority.getName(), priority);
-    handlers.put(assignee.getName(), assignee);
-    handlers.put(status.getName(), status);
-    handlers.put(tracker.getName(), tracker);
-    handlers.put(notes.getName(), notes);
+    for (Handler handler : handlersList) {
+      UpdateIssueCommand.handlers.put(handler.getName(), handler);
+    }
   }
 
   @Override
@@ -211,6 +209,28 @@ public class UpdateIssueCommand extends RedmineCommand {
       newTracker.ifPresent(issue::setTracker);
       newTracker.orElseThrow(() ->
           new Exception(String.format(INVALID_TRACKER_MESSAGE, value)));
+    }
+  }
+
+  private static class DoneRatioHandler extends Handler {
+
+    @Override public String getName() {
+      return "doneratio";
+    }
+
+    @Override
+    public void handle(RedmineManager redmineManager, Issue issue, String value)
+        throws Exception {
+      try {
+        int doneratio = Integer.parseInt(value);
+        if (doneratio >= 0 && doneratio <= 100) {
+          issue.setDoneRatio(doneratio);
+        } else {
+          throw new Exception("done ratio invalid value");
+        }
+      } catch (Exception e ) {
+        throw new Exception(String.format(INVALID_TRACKER_MESSAGE, value));
+      }
     }
   }
 

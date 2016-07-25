@@ -72,7 +72,7 @@ public final class PrintUtil {
   private static void printRows(PrintStream out, String[][] table,
       String rowFormat) {
     for (String[] row : table) {
-      println(out, rowFormat, row);
+      println(out, rowFormat, (Object[]) row);
     }
   }
 

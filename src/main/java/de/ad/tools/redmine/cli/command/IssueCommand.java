@@ -108,14 +108,12 @@ public class IssueCommand extends RedmineCommand {
 
   private void printDetails(Issue issue) {
     String[][] details = new String[1][3];
-    String[] header = new String[] { "Status", "Priority", "Assignee" };
+    String[] header = new String[] { "Status", "Done Ratio", "Priority", "Assignee" };
 
-    String assignee =
-        issue.getAssignee() != null ?
-            issue.getAssignee().getFullName() : "(not assigned)";
-    details[0] =
-        new String[] { issue.getStatusName(), issue.getPriorityText(),
-            assignee };
+    String assignee = issue.getAssignee() != null
+            ? issue.getAssignee().getFullName()
+            : "(not assigned)";
+    details[0] = new String[] { issue.getStatusName(), issue.getDoneRatio().toString(), issue.getPriorityText(), assignee};
 
     printTable(header, details);
     println();
