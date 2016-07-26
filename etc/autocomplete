@@ -1,0 +1,24 @@
+#
+# Autocompletion for redmine java cli
+#
+
+#Source this file in ~/.bashrc
+_redminejavacli ()
+{
+    local cur prev
+    COMPREPLY=();
+    prev=${COMP_WORDS[COMP_CWORD - 1]};
+    cur=${COMP_WORDS[COMP_CWORD]};
+    case "$cur" in
+        -*)
+            OPTION_COMP[$prev]="${OPTION_COMP[$prev]:-"$(eval "$REDMINE_CLI_ALIAS help $prev" | grep '\--' | awk '{print $1}')"}"
+            COMPREPLY=($( compgen -W "${OPTION_COMP[$prev]}" -- $cur ))
+        ;;
+        *)
+            COMMAND_COMP="${COMMAND_COMP:-"$(eval "$REDMINE_CLI_ALIAS help" | awk '{print $1}' | grep -v '[<>:]\|^$')"}"
+            COMPREPLY=($( compgen -W "$COMMAND_COMP" -- $cur ))
+        ;;
+    esac
+}
+
+complete -F _redminejavacli $REDMINE_CLI_ALIAS

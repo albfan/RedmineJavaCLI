@@ -1,0 +1,14 @@
+#
+# Alias for redmine_java_cli
+#
+
+# Source this file in ~/.bash_aliases
+
+REDMINE_CLI_HOME="${REDMINE_CLI_HOME:-$HOME/bin/redminejavacli-dir}"
+REDMINE_CLI_JAR="$(find $REDMINE_CLI_HOME -name '*.jar' | head -n1)"
+
+#redefine this var if you use another alias
+REDMINE_CLI_ALIAS=${REDMINE_CLI_ALIAS:-rdm}
+
+alias $REDMINE_CLI_ALIAS=" java -jar $REDMINE_CLI_JAR"
+

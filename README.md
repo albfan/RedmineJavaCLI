@@ -16,18 +16,22 @@ Just type `redmine help` to see what's waiting for you:
 > redmine help
 usage: redmine <command> [<args>] [<opts>]
 
-help          [<command>]              Display general help or (if provided) command help.  
-connect       <url> <apiKey>           Connect to server using API key for authentication.  
-projects                               Display your projects.                               
-project       <key>                    Display project details.                             
-issues                                 Display issues.                                      
-issue         <id>                     Display issue details.                               
-history       <id>                     Display issue history.                               
-list          <entity>                 List the specified entity.                           
-create-issue  <projectKey> <subject>   Create a new issue.                                  
-update-issue  <id>                     Update a given issue.                                
-open          <id>                     Open issue in default browser.                       
-reset                                  Reset the current configuration.
+help          [<command>]              Display general help or (if provided) command help.
+connect       <url> <apiKey>           Connect to server using API key for authentication.
+projects                               Display your projects.                   
+project       <key>                    Display project details.                 
+issues                                 Display issues.                          
+issue         <id>                     Display issue details.                   
+history       <id>                     Display issue history.                   
+list          <entity>                 List the specified entity.               
+create-issue  <projectKey> <subject>   Create a new issue.                      
+update-issue  <id>                     Update a given issue.                    
+open          <id>                     Open issue in default browser.           
+reset                                  Reset the current configuration.         
+alias         [<key>] [<value>]        Create and configure shortcuts           
+config        [<key>] [<value>]        Create and configure cli                 
+timeEntries                            Show time entries                        
+<number>      <id>                     Alias for issue <number>. Display issue details.
 ```
 ##Example
 This is how it looks like in action.
@@ -38,6 +42,16 @@ ID    TRACKER  STATUS       PRIORITY  ASSIGNEE        UPDATED     SUBJECT
 #127  Feature  In Progress  High      (not assigned)  3 days ago  New subject
 #126  Feature  In Progress  High      John Doe        6 days ago  This is a new issue.  
 ```
+## Install
+Steps for install:
 
+- Create a dir
+
+    $ mkdir ~/bin/redminejavacli-dir
+
+- Copy jar to that dir
+
+- Source files in `/etc` to `~/.bash_aliases` and `~/.bashrc` for alias and autocompletion.
+    
 ## Alternatives
 See [RedmineCLI](https://github.com/a11n/RedmineCLI) if you are looking for smart, console-based Redmine client.
