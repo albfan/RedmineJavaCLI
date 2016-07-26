@@ -59,6 +59,7 @@ public class RedmineCli {
     commandList.add(new OpenCommand(configuration, out, redmineManager, new OpenCommand.Browser()));
     commandList.add(new ResetCommand(configuration, out));
     commandList.add(new AliasCommand(configuration, out));
+    commandList.add(new ConfigCommand(configuration, out));
     commandList.add(new TimeEntriesCommand(configuration, out));
 
     for (Command command : commandList) {
