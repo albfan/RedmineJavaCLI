@@ -15,7 +15,7 @@ _redminejavacli ()
             COMPREPLY=($( compgen -W "${OPTION_COMP[$prev]}" -- $cur ))
         ;;
         *)
-            COMMAND_COMP="${COMMAND_COMP:-"$(eval "$REDMINE_CLI_ALIAS help" | awk '{print $1}' | grep -v '[<>:]\|^$')"}"
+            COMMAND_COMP="${COMMAND_COMP:-"$(eval "$REDMINE_CLI_ALIAS help" | awk '{print $1}' | grep -v '[<>:]\|^$') $(eval "$REDMINE_CLI_ALIAS alias" | awk '{print $1}')"}"
             COMPREPLY=($( compgen -W "$COMMAND_COMP" -- $cur ))
         ;;
     esac
