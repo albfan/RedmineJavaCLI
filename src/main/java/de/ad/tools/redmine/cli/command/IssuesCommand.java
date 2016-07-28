@@ -8,6 +8,7 @@ import com.taskadapter.redmineapi.bean.IssueStatus;
 import com.taskadapter.redmineapi.bean.Project;
 import com.taskadapter.redmineapi.bean.Tracker;
 import de.ad.tools.redmine.cli.Configuration;
+import de.ad.tools.redmine.cli.util.HashMapDuplicates;
 import de.ad.tools.redmine.cli.util.RedmineUtil;
 import org.apache.commons.lang3.StringUtils;
 
@@ -18,18 +19,12 @@ import static de.ad.tools.redmine.cli.util.DateUtil.getTimeDifferenceAsText;
 
 public class IssuesCommand extends RedmineCommand {
 
-  static final String INVALID_PROJECT_MESSAGE =
-      "'%s' is not a valid project.";
-  static final String INVALID_PRIORITY_MESSAGE =
-      "'%s' is not a valid priority.";
-  static final String INVALID_ASSIGNEE_MESSAGE =
-      "'%s' is not a valid assignee.";
-  static final String INVALID_STATUS_MESSAGE =
-      "'%s' is not a valid status.";
-  static final String INVALID_TRACKER_MESSAGE =
-      "'%s' is not a valid tracker.";
-  static final String INVALID_SORT_MESSAGE =
-      "'%s' is not a valid sort.";
+  static final String INVALID_PROJECT_MESSAGE = "'%s' is not a valid project.";
+  static final String INVALID_PRIORITY_MESSAGE = "'%s' is not a valid priority.";
+  static final String INVALID_ASSIGNEE_MESSAGE = "'%s' is not a valid assignee.";
+  static final String INVALID_STATUS_MESSAGE = "'%s' is not a valid status.";
+  static final String INVALID_TRACKER_MESSAGE = "'%s' is not a valid tracker.";
+  static final String INVALID_SORT_MESSAGE = "'%s' is not a valid sort.";
 
   private static final String NAME = "issues";
   private static final String DESCRIPTION = "Display issues.";
@@ -50,19 +45,17 @@ public class IssuesCommand extends RedmineCommand {
     super(NAME, DESCRIPTION, "", ARGUMENTS, OPTIONS, configuration, out,
         redmineManager);
 
-    Handler project = new ProjectHandler();
-    Handler priority = new PriorityHandler();
-    Handler assignee = new AssigneeHandler();
-    Handler status = new StatusHandler();
-    Handler tracker = new TrackerHandler();
-    Handler sort = new SortHandler();
+    ArrayList<Handler> handlers = new ArrayList<>();
+    handlers.add(new ProjectHandler());
+    handlers.add(new PriorityHandler());
+    handlers.add(new AssigneeHandler());
+    handlers.add(new StatusHandler());
+    handlers.add(new TrackerHandler());
+    handlers.add(new SortHandler());
 
-    handlers.put(project.getName(), project);
-    handlers.put(priority.getName(), priority);
-    handlers.put(assignee.getName(), assignee);
-    handlers.put(status.getName(), status);
-    handlers.put(tracker.getName(), tracker);
-    handlers.put(sort.getName(), sort);
+    for (Handler handler : handlers) {
+      IssuesCommand.handlers.put(handler.getName(), handler);
+    }
   }
 
   @Override
@@ -89,50 +82,7 @@ public class IssuesCommand extends RedmineCommand {
   }
 
   private Map<String, String> buildParameterMapFromOptions() throws Exception {
-    //Parameter spec: http://www.redmine.org/projects/redmine/wiki/Rest_Issues
-
-    HashMap<String, String>parameters = new HashMap<String, String>() {
-
-      Set<Entry<String, String>> entries;
-      @Override
-      public Set<Entry<String, String>> entrySet() {
-        if (entries == null) {
-          entries = new AbstractSet<Entry<String, String>>() {
-
-            ArrayList<Entry<String, String>> list = new ArrayList<>();
-            @Override
-            public Iterator<Entry<String, String>> iterator() {
-              return list.iterator();
-            }
-
-            @Override
-            public int size() {
-              return list.size();
-            }
-
-            @Override
-            public boolean add(Entry<String, String> stringStringEntry) {
-              return list.add(stringStringEntry);
-            }
-          };
-        }
-        return entries;
-      }
-
-      @Override
-      public int size() {
-        return entries.size();
-      }
-
-      public String put(String key, String value) {
-        Set<Entry<String, String>> entries = entrySet();
-        StatusHandler.MyEntry entry = new StatusHandler.MyEntry();
-        entry.setKey(key);
-        entry.setValue(value);
-        entries.add(entry);
-        return value;
-      }
-    };
+    HashMap<String, String>parameters = new HashMapDuplicates();
 
     for (Option option : getOptions()) {
       if (option.buildValue() == null) {
@@ -151,8 +101,8 @@ public class IssuesCommand extends RedmineCommand {
         issue.getTracker().getName(),
         issue.getStatusName(),
         issue.getPriorityText(),
-        issue.getAssignee() != null ?
-            issue.getAssignee().getFullName() :
+        issue.getAssigneeName() != null ?
+            issue.getAssigneeName() :
             "(not assigned)",
         getTimeDifferenceAsText(issue.getUpdatedOn()) +
             " ago",
@@ -213,9 +163,7 @@ public class IssuesCommand extends RedmineCommand {
         Map<String, String> parameters, String value)
         throws Exception {
       if ("me".equalsIgnoreCase(value) || value.matches("[0-9]+")) {
-        parameters.put("f[]", "assigned_to_id");
-        parameters.put("op[assigned_to_id]","=");
-        parameters.put("v[assigned_to_id][]",value);
+        HashMapDuplicates.addFormParameterEqual(parameters, "assigned_to_id", value);
       } else {
         throw new Exception(String.format(INVALID_ASSIGNEE_MESSAGE, value));
       }
@@ -237,14 +185,13 @@ public class IssuesCommand extends RedmineCommand {
 
       if (value.contains(",")) {
         String[] split = value.trim().split(",");
-        parameters.put("f[]","status_id");
-        parameters.put("op[status_id]","=");
         for (int i = 0; i < split.length; i++) {
           String s = split[i];
           Optional<IssueStatus> statusSplit =
                   RedmineUtil.resolveStatusByName(redmineManager, s);
           if (statusSplit.isPresent()) {
-            parameters.put("v[status_id][]", String.valueOf(statusSplit.get().getId()));
+            value = String.valueOf(statusSplit.get().getId());
+            HashMapDuplicates.addFormParameterEqual(parameters, "status_id", value);
           }
         }
       } else if ("open".equalsIgnoreCase(value) || "close".equalsIgnoreCase(value)) {
@@ -258,30 +205,6 @@ public class IssuesCommand extends RedmineCommand {
       }
     }
 
-    private static class MyEntry implements Map.Entry<String, String> {
-      String key;
-      String value;
-
-      @Override
-      public String getKey() {
-        return key;
-      }
-
-      @Override
-      public String getValue() {
-        return value;
-      }
-
-      @Override
-      public String setValue(String value) {
-        this.value = value;
-        return value;
-      }
-
-      public void setKey(String key) {
-        this.key = key;
-      }
-    }
   }
 
   private static class TrackerHandler extends Handler {
@@ -318,8 +241,9 @@ public class IssuesCommand extends RedmineCommand {
         //TODO: Parse sort
         parameters.put("sort", value);
       } else {
-        throw new Exception(String.format(INVALID_TRACKER_MESSAGE, value));
+        throw new Exception(String.format(INVALID_SORT_MESSAGE, value));
       }
     }
   }
+
 }

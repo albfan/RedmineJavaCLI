@@ -2,11 +2,8 @@ package de.ad.tools.redmine.cli.util;
 
 import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.RedmineManager;
-import com.taskadapter.redmineapi.bean.IssuePriority;
-import com.taskadapter.redmineapi.bean.IssueStatus;
-import com.taskadapter.redmineapi.bean.Membership;
-import com.taskadapter.redmineapi.bean.Project;
-import com.taskadapter.redmineapi.bean.Tracker;
+import com.taskadapter.redmineapi.bean.*;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -59,5 +56,13 @@ public final class RedmineUtil {
     List<Project> projects = redmineManager.getProjectManager().getProjects();
 
     return projects.stream().filter(p -> name.equals(p.getName())).findFirst();
+  }
+
+  public static Optional<TimeEntryActivity> resolveActivityByName(
+          RedmineManager redmineManager,
+          String name) throws RedmineException {
+    List<TimeEntryActivity> timeEntryActivities = redmineManager.getTimeEntryManager().getTimeEntryActivities();
+
+    return timeEntryActivities.stream().filter(p -> name.equals(p.getName())).findFirst();
   }
 }

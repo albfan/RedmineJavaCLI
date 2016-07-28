@@ -170,7 +170,7 @@ public class UpdateIssueCommand extends RedmineCommand {
           RedmineUtil.resolveMembershipByName(redmineManager,
               issue.getProject().getId(), value);
 
-      newAssignee.ifPresent(m -> issue.setAssignee(m.getUser()));
+      newAssignee.ifPresent(m -> issue.setAssigneeId(m.getUser().getId()));
       newAssignee.orElseThrow(
           () -> new Exception(String.format(INVALID_ASSIGNEE_MESSAGE, value)));
     }

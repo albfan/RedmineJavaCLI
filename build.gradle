@@ -3,10 +3,11 @@ apply plugin: 'checkstyle'
 apply plugin: 'jacoco'
 apply plugin: 'com.github.kt3k.coveralls'
 
-version = '2.0.0'
+version = '3.0.0'
 
 repositories {
   mavenCentral()
+  maven { url "https://jitpack.io" }
 }
 
 buildscript {
@@ -30,7 +31,8 @@ jar {
 }
 
 dependencies {
-  compile 'com.taskadapter:redmine-java-api:2.2.0'
+//  compile 'com.taskadapter:redmine-java-api:2.2.0'
+  compile 'com.github.taskadapter:redmine-java-api:eb9513'
   compile 'org.slf4j:slf4j-simple:1.7.10'
   compile 'org.apache.commons:commons-lang3:3.3.2'
   compile 'org.ini4j:ini4j:0.5.4'

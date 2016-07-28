@@ -60,7 +60,7 @@ public class RedmineCli {
     commandList.add(new ResetCommand(configuration, out));
     commandList.add(new AliasCommand(configuration, out));
     commandList.add(new ConfigCommand(configuration, out));
-    commandList.add(new TimeEntriesCommand(configuration, out));
+    commandList.add(new TimeEntriesCommand(configuration, out, redmineManager));
 
     for (Command command : commandList) {
       commands.put(command.getName(), command);

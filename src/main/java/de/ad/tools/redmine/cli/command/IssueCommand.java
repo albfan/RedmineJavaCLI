@@ -82,7 +82,7 @@ public class IssueCommand extends RedmineCommand {
     printDetails(issue);
     printDescription(issue);
     if (showTimeEntries) {
-      List<TimeEntry> timeEntries = issueManager.getTimeEntriesForIssue(issue.getId());
+      List<TimeEntry> timeEntries = redmineManager.getTimeEntryManager().getTimeEntriesForIssue(issue.getId());
       printTimeEntries(timeEntries);
     }
     printJournals(issue);
@@ -110,8 +110,8 @@ public class IssueCommand extends RedmineCommand {
     String[][] details = new String[1][3];
     String[] header = new String[] { "Status", "Done Ratio", "Priority", "Assignee" };
 
-    String assignee = issue.getAssignee() != null
-            ? issue.getAssignee().getFullName()
+    String assignee = issue.getAssigneeName() != null
+            ? issue.getAssigneeName()
             : "(not assigned)";
     details[0] = new String[] { issue.getStatusName(), issue.getDoneRatio().toString(), issue.getPriorityText(), assignee};
 
