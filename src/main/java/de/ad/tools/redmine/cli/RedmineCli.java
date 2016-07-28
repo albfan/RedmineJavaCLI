@@ -75,14 +75,18 @@ public class RedmineCli {
 
   private void handleCommandInternal(String[] args) throws Exception {
     String command = getCommand(args);
+    String[] arguments = getArguments(args);
     Ini ini = new Ini(new File(Application.CONFIGURATION_FILE_NAME));
     String aliasCommand = ini.containsKey("alias") ? ini.get("alias").get(command) : null;
     if (aliasCommand != null) {
-
       args = aliasCommand.split(" (?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1); //TODO: alias with quoted spaces
       command = getCommand(args);
+      String[] argumentsAlias = getArguments(args);
+      ArrayList<String> argumentList = new ArrayList<>();
+      argumentList.addAll(Arrays.asList(argumentsAlias));
+      argumentList.addAll(Arrays.asList(arguments));
+      arguments = argumentList.toArray(new String[]{});
     }
-    String[] arguments = getArguments(args);
 
     if (StringUtils.isNumeric(command)) {
       ArrayList<String> argumentsList = new ArrayList<>(Arrays.asList(arguments));
