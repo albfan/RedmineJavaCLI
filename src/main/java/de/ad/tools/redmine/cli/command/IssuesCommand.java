@@ -147,8 +147,8 @@ public class IssuesCommand extends RedmineCommand {
 
   private String[] buildRow(Issue issue) {
     return new String[] { ""+issue.getId(),
-        issue.getTracker().getName(),
         issue.getProject().getName(),
+        issue.getTracker().getName(),
         issue.getStatusName(),
         issue.getPriorityText(),
         issue.getAssignee() != null ?
