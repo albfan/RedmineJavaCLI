@@ -180,31 +180,28 @@ public class IssuesCommand extends RedmineCommand {
     public void handle(RedmineManager redmineManager,
         Map<String, String> parameters, String value)
         throws Exception {
-      Optional<IssueStatus> status =
-          RedmineUtil.resolveStatusByName(redmineManager, value);
-
       if (value.contains(",")) {
         String[] split = value.trim().split(",");
         for (int i = 0; i < split.length; i++) {
           String s = split[i];
-          Optional<IssueStatus> statusSplit =
-                  RedmineUtil.resolveStatusByName(redmineManager, s);
-          if (statusSplit.isPresent()) {
-            value = String.valueOf(statusSplit.get().getId());
-            HashMapDuplicates.addFormParameterEqual(parameters, "status_id", value);
+          Optional<IssueStatus> status = RedmineUtil.resolveStatusByName(redmineManager, s);
+          if (status.isPresent()) {
+            String statusId = String.valueOf(status.get().getId());
+            HashMapDuplicates.addFormParameterEqual(parameters, "status_id", statusId);
           }
         }
       } else if ("open".equalsIgnoreCase(value) || "close".equalsIgnoreCase(value)) {
         parameters.put("status_id", value);
       } else {
+        Optional<IssueStatus> status = RedmineUtil.resolveStatusByName(redmineManager, value);
         if (status.isPresent()) {
-          parameters.put("status_id", String.valueOf(status.get().getId()));
+          String statusId = String.valueOf(status.get().getId());
+          parameters.put("status_id", statusId);
         } else {
           throw new Exception(String.format(INVALID_STATUS_MESSAGE, value));
         }
       }
     }
-
   }
 
   private static class TrackerHandler extends Handler {
