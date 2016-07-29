@@ -316,7 +316,14 @@ public class Command {
       if (isHasValue()) {
         Matcher matcher = optionPattern.matcher(optionStatement);
         matcher.find();
-        return matcher.group("value");
+        String value = matcher.group("value");
+        if (value.startsWith("\"") && value.endsWith("\"")) {
+          value = value.substring(1, value.length() -1);
+        }
+        if (value.startsWith("'") && value.endsWith("'")) {
+          value = value.substring(1, value.length() -1);
+        }
+        return value;
       } else {
         return "true";
       }
