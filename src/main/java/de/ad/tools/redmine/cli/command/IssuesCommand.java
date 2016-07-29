@@ -25,6 +25,9 @@ public class IssuesCommand extends RedmineCommand {
   static final String INVALID_STATUS_MESSAGE = "'%s' is not a valid status.";
   static final String INVALID_TRACKER_MESSAGE = "'%s' is not a valid tracker.";
   static final String INVALID_SORT_MESSAGE = "'%s' is not a valid sort.";
+  static final String INVALID_LIMIT_MESSAGE = "'%s' is not a valid limit.";
+  static final String INVALID_OFFSET_MESSAGE = "'%s' is not a valid offset.";
+  static final String INVALID_PAGE_MESSAGE = "'%s' is not a valid page.";
 
   private static final String NAME = "issues";
   private static final String DESCRIPTION = "Display issues.";
@@ -35,6 +38,9 @@ public class IssuesCommand extends RedmineCommand {
       new Option("assignee", "Only display issues for the specified assignee."),
       new Option("status", "Only display issues with the specified status."),
       new Option("tracker", "Only display issues for the specified tracker."),
+      new Option("limit", "Set max number of issues."),
+      new Option("offset", "Set the offset to start with."),
+      new Option("page", "Set the page to show."),
       new Option("sort", "Column to sort with. Append :desc to invert the order.")
   };
 
@@ -51,6 +57,56 @@ public class IssuesCommand extends RedmineCommand {
     handlers.add(new AssigneeHandler());
     handlers.add(new StatusHandler());
     handlers.add(new TrackerHandler());
+    handlers.add(new SortHandler());
+    handlers.add(new Handler() {
+      @Override
+      public String getName() {
+        return "limit";
+      }
+
+      @Override
+      public void handle(RedmineManager redmineManager, Map<String, String> parameters, String value) throws Exception {
+        try {
+          Integer.parseInt(value);
+          parameters.put("limit", value);
+        } catch (Exception e) {
+          throw new Exception(String.format(INVALID_LIMIT_MESSAGE, value));
+        }
+      }
+    });
+    handlers.add(new Handler() {
+      @Override
+      public String getName() {
+        return "offset";
+      }
+
+      @Override
+      public void handle(RedmineManager redmineManager, Map<String, String> parameters, String value) throws Exception {
+        try {
+          Integer.parseInt(value);
+          parameters.put("offset", value);
+        } catch (Exception e) {
+          throw new Exception(String.format(INVALID_OFFSET_MESSAGE, value));
+        }
+      }
+    });
+    handlers.add(new Handler() {
+      @Override
+      public String getName() {
+        return "page";
+      }
+
+      @Override
+      public void handle(RedmineManager redmineManager, Map<String, String> parameters, String value) throws Exception {
+        try {
+          Integer.parseInt(value);
+          parameters.put("page", value);
+        } catch (Exception e) {
+          throw new Exception(String.format(INVALID_PAGE_MESSAGE, value));
+        }
+      }
+    });
+    handlers.add(new SortHandler());
     handlers.add(new SortHandler());
 
     for (Handler handler : handlers) {
@@ -123,14 +179,16 @@ public class IssuesCommand extends RedmineCommand {
     }
 
     @Override public void handle(RedmineManager redmineManager,
-        Map<String, String> parameters, String value) throws Exception {
-      Optional<Project> project = RedmineUtil.resolveProjectByName(
-          redmineManager, value);
+      Map<String, String> parameters, String value) throws Exception {
 
-      project.ifPresent(p -> parameters.put("project_id", String.valueOf(
-          p.getId())));
-      project.orElseThrow(
-          () -> new Exception(String.format(INVALID_PROJECT_MESSAGE, value)));
+      if ("mine".equalsIgnoreCase(value)) {
+        HashMapDuplicates.addFormParameterEqual(parameters, "project_id", value);
+      } else {
+        Optional<Project> project = RedmineUtil.resolveProjectByName(redmineManager, value);
+
+        project.ifPresent(p -> HashMapDuplicates.addFormParameterEqual(parameters, "project_id", String.valueOf(p.getId())));
+        project.orElseThrow(() -> new Exception(String.format(INVALID_PROJECT_MESSAGE, value)));
+      }
     }
   }
 
@@ -164,6 +222,8 @@ public class IssuesCommand extends RedmineCommand {
         throws Exception {
       if ("me".equalsIgnoreCase(value) || value.matches("[0-9]+")) {
         HashMapDuplicates.addFormParameterEqual(parameters, "assigned_to_id", value);
+      } else if ("none".equalsIgnoreCase(value) || "nobody".equalsIgnoreCase(value)) {
+        HashMapDuplicates.addFormParameter(parameters, "assigned_to_id", null, "!*");
       } else {
         throw new Exception(String.format(INVALID_ASSIGNEE_MESSAGE, value));
       }
@@ -196,7 +256,7 @@ public class IssuesCommand extends RedmineCommand {
         Optional<IssueStatus> status = RedmineUtil.resolveStatusByName(redmineManager, value);
         if (status.isPresent()) {
           String statusId = String.valueOf(status.get().getId());
-          parameters.put("status_id", statusId);
+          HashMapDuplicates.addFormParameterEqual(parameters, "status_id", statusId);
         } else {
           throw new Exception(String.format(INVALID_STATUS_MESSAGE, value));
         }
@@ -217,7 +277,7 @@ public class IssuesCommand extends RedmineCommand {
       Optional<Tracker> tracker =
           RedmineUtil.resolveTrackerByName(redmineManager, value);
 
-      tracker.ifPresent(t -> parameters.put("tracker_id", String.valueOf(
+      tracker.ifPresent(t -> HashMapDuplicates.addFormParameterEqual(parameters, "tracker_id", String.valueOf(
           t.getId())));
       tracker.orElseThrow(() ->
           new Exception(String.format(INVALID_TRACKER_MESSAGE, value)));

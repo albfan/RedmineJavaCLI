@@ -53,6 +53,8 @@ public class HashMapDuplicates extends HashMap<String, String> {
   public static void addFormParameter(Map<String, String> parameters, String key, String value, String op) {
     parameters.put("f[]", key);
     parameters.put("op["+key+"]", op);
-    parameters.put("v["+key+"][]",value);
+    if(value != null) {
+      parameters.put("v[" + key + "][]", value);
+    }
   }
 }
