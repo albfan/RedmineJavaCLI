@@ -29,6 +29,12 @@ public class AliasCommand extends Command {
                     ini.store();
                     println(ALIAS_SUCCESS_MESSAGE);
                 } else {
+                    if (arguments.length > 2) {
+                        println("Are you trying to store an alias with spaces?");
+                        println("Use quotes for value");
+                        String elipsis = arguments.length > 3 ? "..." : "";
+                        println("Ignoring: "+arguments[2]+ elipsis);
+                    }
                     println(ini.get("alias", key));
                 }
             } else {
