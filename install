@@ -1,0 +1,26 @@
+REDMINE_CLI_HOME_DIR=${REDMINE_CLI_HOME:-~/bin/redminejavacli-dir}
+BUILD_DIR=build/libs
+REDMINE_CLI_JAR="$(find $BUILD_DIR -name '*.jar' | sort -r | head -n1)"
+if [ -z "$REDMINE_CLI_JAR" ]
+then
+  echo building RedmineJavaCLI lastest jar
+  gradle -q jar
+  REDMINE_CLI_JAR="$(find $BUILD_DIR -name '*.jar' | sort -r | head -n1)"
+  if [ -z "$REDMINE_CLI_JAR" ]
+  then
+    echo "build failed"
+    exit -1
+  fi
+fi
+
+if ! [ -d $REDMINE_CLI_HOME_DIR ]
+then
+  echo creating RedmineJavaCLI home dir
+  mkdir $REDMINE_CLI_HOME_DIR
+fi
+
+echo deleting previous jar in RedmineJavaCLI home dir
+rm -v $REDMINE_CLI_HOME_DIR/*
+
+echo copying last jar to RedmineJavaCLI home dir
+cp -v $REDMINE_CLI_JAR $REDMINE_CLI_HOME_DIR/

@@ -33,6 +33,7 @@ config        [<key>] [<value>]        Create and configure cli
 timeEntries                            Show time entries                        
 <number>      <id>                     Alias for issue <number>. Display issue details.
 ```
+
 ##Example
 This is how it looks like in action.
 ```shell
@@ -42,16 +43,21 @@ ID    TRACKER  STATUS       PRIORITY  ASSIGNEE        UPDATED     SUBJECT
 #127  Feature  In Progress  High      (not assigned)  3 days ago  New subject
 #126  Feature  In Progress  High      John Doe        6 days ago  This is a new issue.  
 ```
+
 ## Install
-Steps for install:
+- Easy way:
 
-- Create a dir
+    $ ./install
 
-    $ mkdir ~/bin/redminejavacli-dir
+- Manual way:
 
-- Copy jar to that dir
+    - Create a dir
 
-- Source files in `/etc` to `~/.bash_aliases` and `~/.bashrc` for alias and autocompletion.
+        $ mkdir ~/bin/redminejavacli-dir
+
+    - Copy jar to that dir
+
+    - Source files in `/etc` to `~/.bash_aliases` and `~/.bashrc` for alias and autocompletion.
     
 ## Alternatives
 See [RedmineCLI](https://github.com/a11n/RedmineCLI) if you are looking for smart, console-based Redmine client.
