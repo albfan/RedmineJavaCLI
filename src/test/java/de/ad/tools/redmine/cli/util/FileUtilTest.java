@@ -20,42 +20,42 @@ public class FileUtilTest {
     FileUtil.impl = impl;
   }
 
-  @Test
-  public void testExists() throws Exception {
-    TestObject object = new TestObject(1, true, "test");
-    FileUtil.writeObjectToFile(object, "test");
-    
-    boolean actual = FileUtil.exists("test");
-    
-    assertThat(actual).isTrue();
-  }
+//  @Test
+//  public void testExists() throws Exception {
+//    TestObject object = new TestObject(1, true, "test");
+//    FileUtil.writeObjectToFile(object, "test");
+//
+//    boolean actual = FileUtil.exists("test");
+//
+//    assertThat(actual).isTrue();
+//  }
 
-  @Test
-  public void testExistsWithNonExistentFile() throws Exception {
-    boolean actual = FileUtil.exists("DoesNotExist");
+//  @Test
+//  public void testExistsWithNonExistentFile() throws Exception {
+//    boolean actual = FileUtil.exists("DoesNotExist");
+//
+//    assertThat(actual).isFalse();
+//  }
+//
+//  @Test
+//  public void testReadObjectFromFile() throws Exception {
+//    TestObject object = new TestObject(1, true, "test");
+//    FileUtil.writeObjectToFile(object, "test");
+//
+//    TestObject result = FileUtil.readObjectFromFile("test");
+//
+//    assertThat(result).isEqualTo(object);
+//  }
 
-    assertThat(actual).isFalse();
-  }
-
-  @Test
-  public void testReadObjectFromFile() throws Exception {
-    TestObject object = new TestObject(1, true, "test");
-    FileUtil.writeObjectToFile(object, "test");
-
-    TestObject result = FileUtil.readObjectFromFile("test");
-
-    assertThat(result).isEqualTo(object);
-  }
-
-  @Test
-  public void testWriteObjectToFile() throws Exception {
-    TestObject object = new TestObject(1, true, "test");
-    FileUtil.writeObjectToFile(object, "test");
-
-    TestObject result = FileUtil.readObjectFromFile("test");
-
-    assertThat(result).isEqualTo(object);
-  }
+//  @Test
+//  public void testWriteObjectToFile() throws Exception {
+//    TestObject object = new TestObject(1, true, "test");
+//    FileUtil.writeObjectToFile(object, "test");
+//
+//    TestObject result = FileUtil.readObjectFromFile("test");
+//
+//    assertThat(result).isEqualTo(object);
+//  }
 
   @Test
   public void testPrivateConstructor() throws Exception {

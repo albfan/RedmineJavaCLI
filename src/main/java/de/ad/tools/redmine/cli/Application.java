@@ -47,7 +47,7 @@ public class Application {
       out.println(e.getMessage());
     }
 
-//    configurationManager.persistConfiguration(configuration);
+    configurationManager.persistConfiguration(configuration);
   }
 
   static class ConfigurationManager {
@@ -69,20 +69,26 @@ public class Application {
         configuration.setApiKey(config.get("apikey"));
         configuration.setServer(config.get("server"));
         return configuration;
-        //return FileUtil.readObjectFromFile(configurationFileName);
       } catch (IOException e) {
         throw new IllegalStateException();
       }
     }
 
-//    public void persistConfiguration(Configuration configuration) {
-//      try {
-//        FileUtil.writeObjectToFile(configuration,
-//            configurationFileName);
-//      } catch (IOException e) {
-//        e.printStackTrace();
-//      }
-//    }
+    public void persistConfiguration(Configuration configuration) {
+      try {
+        File file = new File(configurationFileName);
+        if (!file.exists()) {
+          file.createNewFile();
+        }
+        Ini ini = new Ini(file);
+        Profile.Section config = ini.get("config");
+        ini.put("config", "apikey", configuration.getApiKey());
+        ini.put("config", "server", configuration.getServer());
+        ini.store();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
   }
 
   static class RedmineCliFactory {
