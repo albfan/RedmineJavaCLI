@@ -1,5 +1,6 @@
 package de.ad.tools.redmine.cli.command;
 
+import com.taskadapter.redmineapi.internal.ResultsWrapper;
 import de.ad.tools.redmine.cli.Configuration;
 import de.ad.tools.redmine.cli.util.PrintUtil;
 
@@ -82,6 +83,15 @@ public class Command {
 
   public Option[] getOptions() {
     return options;
+  }
+
+  public void printResults(ResultsWrapper<?> resultsWrapper) {
+    Integer limit = resultsWrapper.getLimitOnServer();
+    Integer offset = resultsWrapper.getOffsetOnServer();
+    Integer total = resultsWrapper.getTotalFoundOnServer();
+    int page = (offset / limit) + (offset % limit == 0 ? 0 :1) + 1;
+    int pages = (total / limit) + (total % limit == 0 ? 0 :1);
+    println(limit+" results, page:"+page+"/"+pages);
   }
 
   protected final void println(String s, Object... args) {

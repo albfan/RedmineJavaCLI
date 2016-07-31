@@ -7,6 +7,7 @@ import com.taskadapter.redmineapi.bean.IssuePriority;
 import com.taskadapter.redmineapi.bean.IssueStatus;
 import com.taskadapter.redmineapi.bean.Project;
 import com.taskadapter.redmineapi.bean.Tracker;
+import com.taskadapter.redmineapi.internal.ResultsWrapper;
 import de.ad.tools.redmine.cli.Configuration;
 import de.ad.tools.redmine.cli.util.HashMapDuplicates;
 import de.ad.tools.redmine.cli.util.RedmineUtil;
@@ -121,7 +122,8 @@ public class IssuesCommand extends RedmineCommand {
     Map<String, String> parameters = buildParameterMapFromOptions();
 
     IssueManager issueManager = redmineManager.getIssueManager();
-    List<Issue> issues = issueManager.getIssues(parameters);
+      ResultsWrapper<Issue> issuesResultsWrapper = issueManager.getIssuesResultsWrapper(parameters);
+      List<Issue> issues = issuesResultsWrapper.getResults();
 
     final String[][] issueTable = new String[issues.size()][6];
     String[] header =
@@ -135,6 +137,7 @@ public class IssuesCommand extends RedmineCommand {
     }
 
     printTable(header, issueTable);
+    printResults(issuesResultsWrapper);
   }
 
   private Map<String, String> buildParameterMapFromOptions() throws Exception {

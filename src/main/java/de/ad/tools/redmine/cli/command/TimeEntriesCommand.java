@@ -4,6 +4,7 @@ import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.bean.Project;
 import com.taskadapter.redmineapi.bean.TimeEntry;
 import com.taskadapter.redmineapi.bean.TimeEntryActivity;
+import com.taskadapter.redmineapi.internal.ResultsWrapper;
 import de.ad.tools.redmine.cli.Configuration;
 import de.ad.tools.redmine.cli.util.HashMapDuplicates;
 import de.ad.tools.redmine.cli.util.RedmineUtil;
@@ -115,11 +116,13 @@ public class TimeEntriesCommand extends RedmineCommand {
             handlers.get(option.getName()).handle(parameters, option.buildValue());
         }
 
-        List<TimeEntry> timeEntries = redmineManager.getTimeEntryManager().getTimeEntries(parameters);
+        ResultsWrapper<TimeEntry> timeEntriesResultsWrapper = redmineManager.getTimeEntryManager().getTimeEntriesResultsWrapper(parameters);
+        List<TimeEntry> timeEntries = timeEntriesResultsWrapper.getResults();
         printHeading("TIME ENTRIES");
         for (TimeEntry timeEntry : timeEntries) {
             println(timeEntry.toString());
         }
+        printResults(timeEntriesResultsWrapper);
         println();
     }
 
