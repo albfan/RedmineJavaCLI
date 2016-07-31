@@ -1,4 +1,5 @@
-ID  TRACKER  STATUS  PRIORITY  ASSIGNEE        UPDATED      SUBJECT  
-¯¯  ¯¯¯¯¯¯¯  ¯¯¯¯¯¯  ¯¯¯¯¯¯¯¯  ¯¯¯¯¯¯¯¯        ¯¯¯¯¯¯¯      ¯¯¯¯¯¯¯  
-#2  Bug      New     Normal    (not assigned)  an hour ago  Issue 2  
-#1  Bug      New     Normal    John Doe        an hour ago  Issue 1  
+ID  PROJECT  TRACKER  STATUS  PRIORITY  ASSIGNEE        UPDATED      SUBJECT  
+¯¯  ¯¯¯¯¯¯¯  ¯¯¯¯¯¯¯  ¯¯¯¯¯¯  ¯¯¯¯¯¯¯¯  ¯¯¯¯¯¯¯¯        ¯¯¯¯¯¯¯      ¯¯¯¯¯¯¯  
+2   project  Bug      New     Normal    (not assigned)  an hour ago  Issue 2  
+1   project  Bug      New     Normal    John            an hour ago  Issue 1  
+25 results, page:1/1

@@ -3,18 +3,23 @@ package de.ad.tools.redmine.cli.command;
 import com.taskadapter.redmineapi.IssueManager;
 import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.bean.Issue;
+import com.taskadapter.redmineapi.bean.Journal;
 import com.taskadapter.redmineapi.bean.Tracker;
 import com.taskadapter.redmineapi.bean.User;
 import de.ad.tools.redmine.cli.Configuration;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mockito;
 
 import static de.ad.tools.redmine.cli.test.TestHelper.resourceToByteArray;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -101,6 +106,14 @@ public class IssueCommandTest {
     User author = mock(User.class);
     when(author.getFullName()).thenReturn("John Doe");
 
+    ArrayList<Journal> journals = new ArrayList<>();
+    Journal journal = Mockito.mock(Journal.class);
+    when(journal.getNotes()).thenReturn("a comment");
+    Date date = Mockito.mock(Date.class);
+    when(date.toString()).thenReturn("Sun Jul 31 00:00:00 UTC 2016");
+    when(journal.getCreatedOn()).thenReturn(date);
+    journals.add(journal);
+
     Issue issue = mock(Issue.class);
     when(issue.getTracker()).thenReturn(tracker);
     when(issue.getId()).thenReturn(id);
@@ -108,9 +121,11 @@ public class IssueCommandTest {
     when(issue.getCreatedOn()).thenReturn(createdOn);
     when(issue.getUpdatedOn()).thenReturn(updatedOn);
     when(issue.getAuthor()).thenReturn(author);
-    when(issue.getAssigneeName()).thenReturn(author.getFirstName());
+    when(issue.getAssigneeName()).thenReturn("John");
     when(issue.getAssigneeId()).thenReturn(1);
     when(issue.getDescription()).thenReturn("Description of #" + id);
+    when(issue.getJournals()).thenReturn(journals);
+
 
     return issue;
   }
@@ -125,6 +140,14 @@ public class IssueCommandTest {
     User author = mock(User.class);
     when(author.getFullName()).thenReturn("John Doe");
 
+    ArrayList<Journal> journals = new ArrayList<>();
+    Journal journal = Mockito.mock(Journal.class);
+    when(journal.getNotes()).thenReturn("a comment");
+    Date date = Mockito.mock(Date.class);
+    when(date.toString()).thenReturn("Sun Jul 31 00:00:00 UTC 2016");
+    when(journal.getCreatedOn()).thenReturn(date);
+    journals.add(journal);
+
     Issue issue = mock(Issue.class);
     when(issue.getTracker()).thenReturn(tracker);
     when(issue.getId()).thenReturn(id);
@@ -135,6 +158,7 @@ public class IssueCommandTest {
     when(issue.getAssigneeName()).thenReturn("John");
     when(issue.getAssigneeId()).thenReturn(1);
     when(issue.getDescription()).thenReturn("");
+    when(issue.getJournals()).thenReturn(journals);
 
     return issue;
   }

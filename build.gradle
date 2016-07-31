@@ -40,6 +40,10 @@ dependencies {
   testCompile 'org.assertj:assertj-core:2.0.0'
 }
 
+test {
+    systemProperty "redminejavacli.terminalWidth", project.getProperty("redminejavacli.terminalWidth")
+}
+
 checkstyle {
   showViolations false
   ignoreFailures true

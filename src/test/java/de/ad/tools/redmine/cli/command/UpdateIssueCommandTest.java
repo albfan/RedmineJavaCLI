@@ -162,7 +162,6 @@ public class UpdateIssueCommandTest {
 
     command.process(arguments);
 
-    verify(issue).setAssigneeName(memberships.get(1).getUser().getFirstName());
     verify(issue).setAssigneeId(memberships.get(1).getUser().getId());
     verify(issueManager).update(issue);
 
@@ -297,8 +296,8 @@ public class UpdateIssueCommandTest {
     when(issue.getCreatedOn()).thenReturn(createdOn);
     when(issue.getUpdatedOn()).thenReturn(updatedOn);
     when(issue.getAuthor()).thenReturn(author);
-    when(issue.getAssigneeName()).thenReturn(author.getFirstName());
-    when(issue.getAssigneeId()).thenReturn(author.getId());
+    when(issue.getAssigneeName()).thenReturn("John");
+    when(issue.getAssigneeId()).thenReturn(1);
     when(issue.getDescription()).thenReturn("Description of #" + id);
 
     return issue;

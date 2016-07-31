@@ -4,13 +4,8 @@ import com.taskadapter.redmineapi.IssueManager;
 import com.taskadapter.redmineapi.MembershipManager;
 import com.taskadapter.redmineapi.ProjectManager;
 import com.taskadapter.redmineapi.RedmineManager;
-import com.taskadapter.redmineapi.bean.Issue;
-import com.taskadapter.redmineapi.bean.IssuePriority;
-import com.taskadapter.redmineapi.bean.IssueStatus;
-import com.taskadapter.redmineapi.bean.Membership;
-import com.taskadapter.redmineapi.bean.Project;
-import com.taskadapter.redmineapi.bean.Tracker;
-import com.taskadapter.redmineapi.bean.User;
+import com.taskadapter.redmineapi.bean.*;
+import com.taskadapter.redmineapi.internal.ResultsWrapper;
 import de.ad.tools.redmine.cli.Configuration;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -23,11 +18,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import de.ad.tools.redmine.cli.util.HashMapDuplicates;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 
 import static de.ad.tools.redmine.cli.test.TestHelper.resourceToByteArray;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -74,9 +73,8 @@ public class IssuesCommandTest {
   public void testCommand() throws Exception {
     String[] arguments = new String[0];
 
-    List<Issue> issues = createDummyIssues(2);
-
-    when(issueManager.getIssues(any(Map.class))).thenReturn(issues);
+    ResultsWrapper<Issue> dummyIssuesResultWrapper = createDummyIssuesResultWrapper(2);
+    when(issueManager.getIssuesResultsWrapper(any(Map.class))).thenReturn(dummyIssuesResultWrapper);
 
     command.process(arguments);
 
@@ -94,39 +92,44 @@ public class IssuesCommandTest {
 
     String[] arguments = new String[] { "--project=Project 2" };
 
+    Map<String, String> parameters = new HashMapDuplicates();
+    HashMapDuplicates.addFormParameterEqual(parameters, "project_id", "2");
+    ResultsWrapper<Issue> dummyIssuesResultWrapper = createDummyIssuesResultWrapper(2);
+    when(issueManager.getIssuesResultsWrapper(parameters)).thenReturn(dummyIssuesResultWrapper);
+
     command.process(arguments);
 
-    Map<String, String> parameters = new HashMap<>();
-    parameters.put("project_id", "2");
-
-    verify(issueManager).getIssues(parameters);
+    verify(issueManager).getIssuesResultsWrapper(parameters);
   }
 
   @Test
   public void testWithPriorityOption() throws Exception {
     List<IssuePriority> priorities = createDummyPriorities();
     when(issueManager.getIssuePriorities()).thenReturn(priorities);
+    Map<String, String> parameters = new HashMapDuplicates();
+    parameters.put("priority_id", "2");
+
+    ResultsWrapper<Issue> resultsWrapper = createDummyIssuesResultWrapper(2);
+    when(issueManager.getIssuesResultsWrapper(parameters)).thenReturn(resultsWrapper);
 
     String[] arguments = new String[] { "--priority=High" };
 
     command.process(arguments);
 
-    Map<String, String> parameters = new HashMap<>();
-    parameters.put("priority_id", "2");
-
-    verify(issueManager).getIssues(parameters);
+    verify(issueManager).getIssuesResultsWrapper(parameters);
   }
 
   @Test
   public void testWithAssigneeOption() throws Exception {
     String[] arguments = new String[] { "--assignee=me" };
-
+    ResultsWrapper<Issue> dummyIssuesResultWrapper = createDummyIssuesResultWrapper(2);
+    when(issueManager.getIssuesResultsWrapper(any(Map.class))).thenReturn(dummyIssuesResultWrapper);
     command.process(arguments);
 
-    Map<String, String> parameters = new HashMap<>();
-    parameters.put("assigned_to_id", "me");
+    Map<String, String> parameters = new HashMapDuplicates();
+    HashMapDuplicates.addFormParameterEqual(parameters, "assigned_to_id", "me");
 
-    verify(issueManager).getIssues(parameters);
+    verify(issueManager).getIssuesResultsWrapper(parameters);
   }
 
   @Test
@@ -144,15 +147,17 @@ public class IssuesCommandTest {
   public void testWithStatusOption() throws Exception {
     List<IssueStatus> statuses = createDummyStatuses();
     when(issueManager.getStatuses()).thenReturn(statuses);
+    ResultsWrapper<Issue> dummyIssuesResultWrapper = createDummyIssuesResultWrapper(2);
+    when(issueManager.getIssuesResultsWrapper(any(Map.class))).thenReturn(dummyIssuesResultWrapper);
 
     String[] arguments = new String[] { "--status=Closed" };
 
     command.process(arguments);
 
-    Map<String, String> parameters = new HashMap<>();
-    parameters.put("status_id", "2");
+    Map<String, String> parameters = new HashMapDuplicates();
+    HashMapDuplicates.addFormParameterEqual(parameters, "status_id", "2");
 
-    verify(issueManager).getIssues(parameters);
+    verify(issueManager).getIssuesResultsWrapper(parameters);
   }
 
   @Test
@@ -160,14 +165,29 @@ public class IssuesCommandTest {
     List<Tracker> trackers = createDummyTrackers();
     when(issueManager.getTrackers()).thenReturn(trackers);
 
+    Map<String, String> parameters = new HashMapDuplicates();
+    HashMapDuplicates.addFormParameterEqual(parameters, "tracker_id", "2");
+
+    ResultsWrapper<Issue> dummyIssuesResultWrapper = createDummyIssuesResultWrapper(2);
+    when(issueManager.getIssuesResultsWrapper(parameters)).thenReturn(dummyIssuesResultWrapper);
+
     String[] arguments = new String[] { "--tracker=Feature" };
 
     command.process(arguments);
 
-    Map<String, String> parameters = new HashMap<>();
-    parameters.put("tracker_id", "2");
+    verify(issueManager).getIssuesResultsWrapper(parameters);
+  }
 
-    verify(issueManager).getIssues(parameters);
+  public ResultsWrapper<Issue> createDummyIssuesResultWrapper(int count) {
+
+    List<Issue> dummyIssues = createDummyIssues(count);
+    ResultsWrapper<Issue> issueResultsWrapper = (ResultsWrapper<Issue>) Mockito.mock(ResultsWrapper.class);
+
+    when(issueResultsWrapper.getLimitOnServer()).thenReturn(25);
+    when(issueResultsWrapper.getTotalFoundOnServer()).thenReturn(2);
+    when(issueResultsWrapper.getOffsetOnServer()).thenReturn(0);
+    when(issueResultsWrapper.getResults()).thenReturn(dummyIssues);
+    return issueResultsWrapper;
   }
 
   @After
@@ -183,32 +203,47 @@ public class IssuesCommandTest {
     User user = mock(User.class);
     when(user.getFullName()).thenReturn("John Doe");
 
-    Date updatedOn = Date.from(LocalDateTime.now().minusHours(1).atZone(
-        ZoneId.systemDefault()).toInstant());
+    Date updatedOn = Date.from(LocalDateTime.now().minusHours(1)
+        .atZone(ZoneId.systemDefault()).toInstant());
+
+    Project project = mock(Project.class);
+    when(project.getName()).thenReturn("project");
+
+    ArrayList<Journal> journals = new ArrayList<>();
+    Journal journal = Mockito.mock(Journal.class);
+    when(journal.getNotes()).thenReturn("a comment");
+    journals.add(journal);
 
     for (int i = 0; i < count; i++) {
-      Issue issue = mock(Issue.class);
-      when(issue.getId()).thenReturn(i + 1);
-
-      when(issue.getSubject()).thenReturn("Issue " + (i + 1));
-      when(issue.getTracker()).thenReturn(tracker);
-      when(issue.getStatusName()).thenReturn("New");
-      when(issue.getPriorityText()).thenReturn("Normal");
-      if (i % 2 == 0) {
-        when(issue.getAssigneeId()).thenReturn(1);
-        when(issue.getAssigneeName()).thenReturn("John");
-      } else {
-        when(issue.getAssigneeId()).thenReturn(null);
-        when(issue.getAssigneeName()).thenReturn(null);
-      }
-      when(issue.getUpdatedOn()).thenReturn(updatedOn);
-
+      Issue issue = createMockIssue(tracker, updatedOn, project, journals, i);
       issues.add(issue);
     }
 
     Collections.reverse(issues);
 
     return issues;
+  }
+
+  private Issue createMockIssue(Tracker tracker, Date updatedOn, Project project, ArrayList<Journal> journals, int i) {
+    Issue issue = mock(Issue.class);
+    when(issue.getId()).thenReturn(i + 1);
+
+    when(issue.getSubject()).thenReturn("Issue " + (i + 1));
+    when(issue.getProject()).thenReturn(project);
+    when(issue.getTracker()).thenReturn(tracker);
+    when(issue.getStatusName()).thenReturn("New");
+    when(issue.getPriorityText()).thenReturn("Normal");
+    if (i % 2 == 0) {
+      when(issue.getAssigneeId()).thenReturn(1);
+      when(issue.getAssigneeName()).thenReturn("John");
+    } else {
+      when(issue.getAssigneeId()).thenReturn(null);
+      when(issue.getAssigneeName()).thenReturn(null);
+    }
+    when(issue.getUpdatedOn()).thenReturn(updatedOn);
+
+    when(issue.getJournals()).thenReturn(journals);
+    return issue;
   }
 
   private List<IssuePriority> createDummyPriorities() {

@@ -39,7 +39,10 @@ public class HelpCommand extends Command {
     println("usage: redmine <command> [<args>] [<opts>]");
     println();
 
-    String[][] help = new String[commands.size()+1][3];
+    Command issue = commands.get("issue");
+    boolean hasIssueCommand = issue != null;
+    int size = commands.size() + (hasIssueCommand ?  1 : 0);
+    String[][] help = new String[size][3];
     int i = 0;
     for (Map.Entry<String, Command> commandEntry : commands.entrySet()) {
       Command command = commandEntry.getValue();
@@ -48,11 +51,11 @@ public class HelpCommand extends Command {
           createArgumentHelpString(command),
           command.getDescription() };
     }
-    Command issue = commands.get("issue");
-    help[i++] = new String[] { "<number>",
-            createArgumentHelpString(issue),
-            "Alias for issue <number>. "+issue.getDescription() };
-
+    if (hasIssueCommand) {
+      help[i++] = new String[]{"<number>",
+          createArgumentHelpString(issue),
+          "Alias for issue <number>. " + issue.getDescription()};
+    }
     printTable(help);
   }
 

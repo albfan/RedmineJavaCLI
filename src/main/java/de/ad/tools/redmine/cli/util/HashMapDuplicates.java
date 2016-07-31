@@ -57,4 +57,34 @@ public class HashMapDuplicates extends HashMap<String, String> {
       parameters.put("v[" + key + "][]", value);
     }
   }
+
+    @Override
+    public boolean equals(Object o) {
+      if (o == this) {
+        return true;
+      }
+
+      if (!(o instanceof HashMapDuplicates)) {
+        return false;
+      }
+
+      Map<?,?> m = (Map<?,?>) o;
+      if (m.size() != size()) {
+        return false;
+      }
+
+      for (Entry<String, String> entry : entries) {
+        boolean equal = false;
+        for (Entry<?, ?> entry1 : m.entrySet()) {
+          if (entry.getKey().equals(entry1.getKey()) && entry.getValue().equals(entry1.getValue())) {
+            equal = true;
+            break;
+          }
+        }
+        if (!equal) {
+          return false;
+        }
+      }
+      return true;
+    }
 }

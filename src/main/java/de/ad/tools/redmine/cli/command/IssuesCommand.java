@@ -122,8 +122,8 @@ public class IssuesCommand extends RedmineCommand {
     Map<String, String> parameters = buildParameterMapFromOptions();
 
     IssueManager issueManager = redmineManager.getIssueManager();
-      ResultsWrapper<Issue> issuesResultsWrapper = issueManager.getIssuesResultsWrapper(parameters);
-      List<Issue> issues = issuesResultsWrapper.getResults();
+    ResultsWrapper<Issue> issuesResultsWrapper = issueManager.getIssuesResultsWrapper(parameters);
+    List<Issue> issues = issuesResultsWrapper.getResults();
 
     final String[][] issueTable = new String[issues.size()][6];
     String[] header =

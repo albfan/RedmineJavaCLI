@@ -1,7 +1,6 @@
 package de.ad.tools.redmine.cli.util;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.Arrays;
@@ -104,6 +103,14 @@ public final class PrintUtil {
 
   private static int getTerminalWidth() {
     int terminalWidth;
+    String redminecliTerminalWidth = System.getProperty("redminejavacli.terminalWidth");
+    if (redminecliTerminalWidth != null) {
+      try {
+        terminalWidth = Integer.parseInt(redminecliTerminalWidth);
+        return terminalWidth;
+      } catch (Exception e) {
+      }
+    }
     try {
       Process p = Runtime.getRuntime().exec("tput cols");
       BufferedReader bri = new BufferedReader(new InputStreamReader(p.getInputStream()));

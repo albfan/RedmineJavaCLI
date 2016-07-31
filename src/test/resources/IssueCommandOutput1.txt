@@ -3,11 +3,17 @@ BUG #1
 Subject of #1
 Added by John Doe an hour ago. Updated a few moments ago.
 
-STATUS  PRIORITY  ASSIGNEE  
-¯¯¯¯¯¯  ¯¯¯¯¯¯¯¯  ¯¯¯¯¯¯¯¯  
-null    null      John Doe  
+STATUS  DONE RATIO  PRIORITY  ASSIGNEE  
+¯¯¯¯¯¯  ¯¯¯¯¯¯¯¯¯¯  ¯¯¯¯¯¯¯¯  ¯¯¯¯¯¯¯¯  
+null    0           null      John      
 
 DESCRIPTION
 ¯¯¯¯¯¯¯¯¯¯¯
 Description of #1
+
+NOTES
+¯¯¯¯¯
+Sun Jul 31 00:00:00 UTC 2016
+a comment
+---
 
