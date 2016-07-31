@@ -1,6 +1,7 @@
 REDMINE_CLI_HOME_DIR=${REDMINE_CLI_HOME:-~/bin/redminejavacli-dir}
 BUILD_DIR=build/libs
 REDMINE_CLI_JAR="$(find $BUILD_DIR -name '*.jar' | sort -r | head -n1)"
+
 if [ -z "$REDMINE_CLI_JAR" ]
 then
   echo building RedmineJavaCLI lastest jar

@@ -1,9 +1,11 @@
 package de.ad.tools.redmine.cli.util;
 
+import com.taskadapter.redmineapi.NotAuthorizedException;
 import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.bean.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,5 +66,19 @@ public final class RedmineUtil {
     List<TimeEntryActivity> timeEntryActivities = redmineManager.getTimeEntryManager().getTimeEntryActivities();
 
     return timeEntryActivities.stream().filter(p -> name.equals(p.getName())).findFirst();
+  }
+  
+  public static Optional<User> resolveUserByName(
+          RedmineManager redmineManager,
+          String name) throws RedmineException {
+    if ("me".equals(name)) {
+      User user = redmineManager.getUserManager().getCurrentUser();
+      return Optional.of(user);
+    } else {
+      HashMap<String, String> parameters = new HashMap<>();
+      parameters.put("name", name);
+      List<User> users = redmineManager.getUserManager().getUsersResultsWrapper(parameters).getResults();
+      return users.stream().findFirst();
+    }
   }
 }

@@ -150,8 +150,8 @@ public class Command {
 
     List<Option> availableOptions = Arrays.asList(getOptions());
 
-    boolean valid = false;
     for (String suppliedOption : suppliedOptions) {
+      boolean valid = false;
       for (Option availableOption : availableOptions) {
         if (availableOption.matches(suppliedOption)) {
           availableOption.setValue(availableOption.buildValue(suppliedOption));
@@ -160,8 +160,7 @@ public class Command {
         }
       }
       if (!valid) {
-        throw new IllegalArgumentException(
-                String.format(INVALID_OPTION_MESSAGE, suppliedOption));
+        throw new IllegalArgumentException(String.format(INVALID_OPTION_MESSAGE, suppliedOption));
       }
     }
   }
@@ -284,7 +283,7 @@ public class Command {
     boolean hasValue;
 
     public Option(String name, String description) {
-      this(name, description, "(?ms)^--" + name + "=(?<value>.*)$");
+      this(name, description, getRegex(name, true));
     }
 
     public Option(String name, String description, String regex) {
@@ -340,9 +339,20 @@ public class Command {
     }
 
     public static final Option buildOptionWithoutValue(String name, String description) {
-      Option option = new Option(name, description, "(?ms)^--" + name);
+      Option option = new Option(name, description, getRegex(name, false));
       option.setHasValue(false);
       return option;
+    }
+    
+    public static final Option buildOptionWithDefaultValue(String name, String description, String defaultValue) {
+      Option option = new Option(name, description, getRegex(name, true));
+      option.setHasValue(true);
+      option.setValue(defaultValue);
+      return option;
+    }
+
+    public static String getRegex(String name, boolean withValue) {
+      return "(?ms)^--" + name + (withValue ? "=(?<value>.*)$" : "");
     }
   }
 }

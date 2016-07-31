@@ -66,8 +66,10 @@ public class Application {
       try {
         Ini ini = new Ini(new File(configurationFileName));
         Profile.Section config = ini.get("config");
-        configuration.setApiKey(config.get("apikey"));
-        configuration.setServer(config.get("server"));
+        if (config != null) {
+          configuration.setApiKey(config.get("apikey"));
+          configuration.setServer(config.get("server"));
+        }
         return configuration;
       } catch (IOException e) {
         throw new IllegalStateException();
