@@ -108,7 +108,8 @@ public class IssueCommandTest {
     when(issue.getCreatedOn()).thenReturn(createdOn);
     when(issue.getUpdatedOn()).thenReturn(updatedOn);
     when(issue.getAuthor()).thenReturn(author);
-    when(issue.getAssignee()).thenReturn(author);
+    when(issue.getAssigneeName()).thenReturn(author.getFirstName());
+    when(issue.getAssigneeId()).thenReturn(1);
     when(issue.getDescription()).thenReturn("Description of #" + id);
 
     return issue;
@@ -131,7 +132,8 @@ public class IssueCommandTest {
     when(issue.getCreatedOn()).thenReturn(createdOn);
     when(issue.getUpdatedOn()).thenReturn(updatedOn);
     when(issue.getAuthor()).thenReturn(author);
-    when(issue.getAssignee()).thenReturn(null);
+    when(issue.getAssigneeName()).thenReturn("John");
+    when(issue.getAssigneeId()).thenReturn(1);
     when(issue.getDescription()).thenReturn("");
 
     return issue;

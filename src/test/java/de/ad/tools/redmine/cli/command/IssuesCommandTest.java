@@ -195,9 +195,11 @@ public class IssuesCommandTest {
       when(issue.getStatusName()).thenReturn("New");
       when(issue.getPriorityText()).thenReturn("Normal");
       if (i % 2 == 0) {
-        when(issue.getAssignee()).thenReturn(user);
+        when(issue.getAssigneeId()).thenReturn(1);
+        when(issue.getAssigneeName()).thenReturn("John");
       } else {
-        when(issue.getAssignee()).thenReturn(null);
+        when(issue.getAssigneeId()).thenReturn(null);
+        when(issue.getAssigneeName()).thenReturn(null);
       }
       when(issue.getUpdatedOn()).thenReturn(updatedOn);
 
