@@ -1,28 +1,54 @@
 package de.ad.tools.redmine.cli.util;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import jline.Terminal;
+import jline.TerminalFactory;
+
 import java.io.PrintStream;
 import java.util.Arrays;
+import java.util.HashMap;
 
 public final class PrintUtil {
+
+  public static final String ANSI_CLS        = "\u001b[2J";
+  public static final String ANSI_HOME       = "\u001b[H";
+  public static final String ANSI_BOLD       = "\u001b[1m";
+  public static final String ANSI_REVERSEON  = "\u001b[7m";
+  public static final String ANSI_NORMAL     = "\u001b[0m";
+
+  public static final String ANSI_BLACK      = "\u001b[30m";
+  public static final String ANSI_RED        = "\u001b[31m";
+  public static final String ANSI_GREEN      = "\u001b[32m";
+  public static final String ANSI_YELLOW     = "\u001b[33m";
+  public static final String ANSI_BLUE       = "\u001b[34m";
+  public static final String ANSI_MAGENTA    = "\u001b[35m";
+  public static final String ANSI_CYAN       = "\u001b[36m";
+  public static final String ANSI_LIGHT_GRAY = "\u001b[37m";
 
   private PrintUtil() {
   }
 
   public static void printTable(PrintStream out, String[][] table) {
+    printTable(out, table, null);
+  }
+
+  public static void printTable(PrintStream out, String[][] table, HashMap<Integer, String> subtotalMap) {
     int[] columnSizes = computeColumnSizes(table);
 
     String rowFormat = generateRowFormat(columnSizes);
 
-    printRows(out, table, rowFormat);
+    printRows(out, table, rowFormat, subtotalMap);
   }
 
   public static void printTable(PrintStream out, String[] header,
       String[][] table) {
+      printTable(out, header, table, null);
+  }
+
+  public static void printTable(PrintStream out, String[] header,
+      String[][] table, HashMap<Integer, String> subtotalMap) {
     String[][] tableWithHeader = addHeader(header, table);
 
-    printTable(out, tableWithHeader);
+    printTable(out, tableWithHeader, subtotalMap);
   }
 
   public static void printHeading(PrintStream out, String heading) {
@@ -68,10 +94,22 @@ public final class PrintUtil {
     return dividers;
   }
 
+
+  private static void printRows(PrintStream out, String[][] table, String rowFormat) {
+    printRows(out, table, rowFormat, null);
+  }
+
   private static void printRows(PrintStream out, String[][] table,
-      String rowFormat) {
-    for (String[] row : table) {
+                                String rowFormat, HashMap<Integer, String> subtotalMap) {
+    for (int i = 0; i < table.length; i++) {
+      String[] row = table[i];
       println(out, rowFormat, (Object[]) row);
+      if (subtotalMap != null) {
+        String subtotal = subtotalMap.get(i);
+        if (subtotal != null) {
+          println(out, subtotal);
+        }
+      }
     }
   }
 
@@ -101,7 +139,7 @@ public final class PrintUtil {
     return formatBuilder.toString();
   }
 
-  private static int getTerminalWidth() {
+  public static int getTerminalWidth() {
     int terminalWidth;
     String redminecliTerminalWidth = System.getProperty("redminejavacli.terminalWidth");
     if (redminecliTerminalWidth != null) {
@@ -111,18 +149,10 @@ public final class PrintUtil {
       } catch (Exception e) {
       }
     }
-    try {
-      Process p = Runtime.getRuntime().exec("tput cols");
-      BufferedReader bri = new BufferedReader(new InputStreamReader(p.getInputStream()));
-      terminalWidth = Integer.parseInt(bri.readLine());
-    } catch (Exception e) {
-      try {
-        int columns = Integer.parseInt(System.getenv("COLUMNS"));
-        terminalWidth = columns;
-      } catch (Exception ex) {
-        terminalWidth = -1;
-      }
-    }
+
+    Terminal terminal = TerminalFactory.get();
+    //terminal.hasWidth() or acces to getSettings()
+    terminalWidth = terminal.getWidth();
     return terminalWidth;
   }
 

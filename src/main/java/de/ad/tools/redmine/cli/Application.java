@@ -1,6 +1,7 @@
 package de.ad.tools.redmine.cli;
 
 import de.ad.tools.redmine.cli.util.FileUtil;
+import org.fusesource.jansi.AnsiConsole;
 import org.ini4j.Ini;
 import org.ini4j.Profile;
 
@@ -14,7 +15,7 @@ public class Application {
 
   static Application instance =
       new Application(new ConfigurationManager(CONFIGURATION_FILE_NAME),
-          new RedmineCliFactory(), System.out,
+          new RedmineCliFactory(), AnsiConsole.out,
           new RedmineCli.RedmineManagerFactory());
 
   private ConfigurationManager configurationManager;
@@ -36,6 +37,7 @@ public class Application {
   }
 
   void run(String... args) {
+    AnsiConsole.systemInstall();
     Configuration configuration = configurationManager.loadConfiguration();
 
     RedmineCli redmineCli = redmineCliFactory.produce(configuration, out,
@@ -83,7 +85,6 @@ public class Application {
           file.createNewFile();
         }
         Ini ini = new Ini(file);
-        Profile.Section config = ini.get("config");
         ini.put("config", "apikey", configuration.getApiKey());
         ini.put("config", "server", configuration.getServer());
         ini.store();

@@ -6,6 +6,7 @@ import de.ad.tools.redmine.cli.util.PrintUtil;
 
 import java.io.PrintStream;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -107,7 +108,11 @@ public class Command {
   }
 
   protected final void printTable(String[] header, String[][] table) {
-    PrintUtil.printTable(out, header, table);
+    printTable(header, table, null);
+  }
+
+  protected final void printTable(String[] header, String[][] table, HashMap<Integer, String> subtotalMap) {
+    PrintUtil.printTable(out, header, table, subtotalMap);
   }
 
   protected final void printHeading(String heading) {

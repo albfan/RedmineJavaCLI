@@ -7,7 +7,9 @@ import com.taskadapter.redmineapi.bean.TimeEntryActivity;
 import com.taskadapter.redmineapi.internal.ResultsWrapper;
 import de.ad.tools.redmine.cli.Configuration;
 import de.ad.tools.redmine.cli.util.HashMapDuplicates;
+import de.ad.tools.redmine.cli.util.PrintUtil;
 import de.ad.tools.redmine.cli.util.RedmineUtil;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.PrintStream;
 import java.text.ParseException;
@@ -20,7 +22,8 @@ public class TimeEntriesCommand extends RedmineCommand {
 
   static final String INVALID_PROJECT_MESSAGE = "'%s' is not a valid project.";
   static final String INVALID_ACTIVITY_MESSAGE = "'%s' is not a valid activity.";
-  static final String INVALID_ASSIGNEE_MESSAGE = "'%s' is not a valid assignee.";
+  static final String INVALID_USER_MESSAGE = "'%s' is not a valid user.";
+  static final String INVALID_SUBTOTAL_MESSAGE = "'%s' is not a valid subtotal.";
 
   private static final String NAME = "time-entries";
   private static final String DESCRIPTION = "Show time entries";
@@ -28,16 +31,20 @@ public class TimeEntriesCommand extends RedmineCommand {
   private static final Option[] OPTIONS = new Option[]{
       new Option("project", "Only display time entries for the specified project."),
       new Option("activity", "Only display time entries with specified activity."),
-      new Option("assignee", "Only display time entries for the specified assignee."),
+      new Option("user", "Only display time entries for the specified user."),
       new Option("spent-on", "Only display time entries spent on range marked."),
       Option.buildOptionWithoutValue("pretty", "Print pretty time entries."),
-      Option.buildOptionWithoutValue("time-difference", "Print time as difference from now.")
+      Option.buildOptionWithoutValue("time-difference", "Print time as difference from now."),
+      Option.buildOptionWithoutValue("color", "Print with color."),
+      new Option("subtotal-by", "Show subtotals by range specified.")
   };
 
   private static final Map<String, IHandler> handlers = new HashMap<>();
 
   private boolean pretty;
+  private boolean color;
   private boolean timeDifference;
+  private String subtotalBy;
   
   public TimeEntriesCommand(Configuration configuration, PrintStream out, RedmineManager redmineManager) {
     super(NAME, DESCRIPTION, "", ARGUMENTS, OPTIONS, configuration, out, redmineManager);
@@ -54,7 +61,7 @@ public class TimeEntriesCommand extends RedmineCommand {
 
       @Override
       public String getName() {
-        return "assignee";
+        return "user";
       }
 
       @Override
@@ -63,7 +70,7 @@ public class TimeEntriesCommand extends RedmineCommand {
         if ("me".equalsIgnoreCase(value) || value.matches("[0-9]+")) {
           HashMapDuplicates.addFormParameterEqual(parameters, "user_id", value);
         } else {
-          throw new Exception(String.format(INVALID_ASSIGNEE_MESSAGE, value));
+          throw new Exception(String.format(INVALID_USER_MESSAGE, value));
         }
       }
     });
@@ -78,6 +85,39 @@ public class TimeEntriesCommand extends RedmineCommand {
       public void handle(Map<String, String> parameters, String value)
           throws Exception {
         pretty = true;
+      }
+    });
+    handlersList.add(new IHandler() {
+
+      @Override
+      public String getName() {
+        return "color";
+      }
+
+      @Override
+      public void handle(Map<String, String> parameters, String value)
+          throws Exception {
+        color = true;
+      }
+    });
+    handlersList.add(new IHandler() {
+
+      @Override
+      public String getName() {
+        return "subtotal-by";
+      }
+
+      @Override
+      public void handle(Map<String, String> parameters, String value)
+          throws Exception {
+        if (value.equals("day") 
+            || value.equals("week")
+            || value.equals("month")
+            || value.equals("year")) {
+          subtotalBy = value;          
+        } else {
+          throw new Exception(String.format(INVALID_SUBTOTAL_MESSAGE, value));
+        }
       }
     });
     handlersList.add(new IHandler() {
@@ -148,10 +188,9 @@ public class TimeEntriesCommand extends RedmineCommand {
     printHeading("TIME ENTRIES");
     if (pretty) {
       for (TimeEntry timeEntry : timeEntries) {
-        if (pretty) {
-          println(timeEntry.toString());
-        } else {
-
+        println(timeEntry.toString());
+        if (subtotalBy != null) {
+          processSubtotal(timeEntry);
         }
       }
     } else {
@@ -159,16 +198,82 @@ public class TimeEntriesCommand extends RedmineCommand {
       String[] header =
           new String[] { "ID", "Issue", "Project", "User", "Activity", "Hours", "Spent", "Comment" };
 
+      HashMap<Integer, String> subtotalMap = new HashMap<>();
       int i = 0;
       SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
       for (TimeEntry timeEntry : timeEntries) {
         issueTable[i++] = buildRow(timeEntry, sdf);
+        if (subtotalBy != null) {
+          String subtotal = processSubtotal(timeEntry, i);
+          if (subtotal != null && color) {
+            subtotal = PrintUtil.ANSI_MAGENTA+subtotal+PrintUtil.ANSI_NORMAL;
+          }
+          subtotalMap.put(i, subtotal);
+        }
       }
 
-      printTable(header, issueTable);
+      printTable(header, issueTable, subtotalMap);
     }
     printResults(timeEntriesResultsWrapper);
     println();
+  }
+
+  String actualKey;
+  Float subtotal = 0f;
+  String subtotalName;
+  private String processSubtotal(TimeEntry timeEntry) throws Exception {
+    return processSubtotal(timeEntry, null);
+  }
+
+  private String processSubtotal(TimeEntry timeEntry, Integer pos) throws Exception {
+    Calendar instance = Calendar.getInstance();
+    instance.setTime(timeEntry.getSpentOn());
+
+    String key;
+    
+    String year = StringUtils.leftPad(""+instance.get(Calendar.YEAR), 4 ,"0");
+    String month = StringUtils.leftPad(""+instance.get(Calendar.MONTH), 2 , "0");
+    String dayMonth = StringUtils.leftPad(""+instance.get(Calendar.DAY_OF_MONTH), 2, "0");
+    if (subtotalBy.equals("year")) {
+      subtotalName = "YEAR";
+      key = year;
+    } else {
+      if (subtotalBy.equals("month")) {
+        subtotalName = "MONTH";
+        key = year+"-"+month;
+      } else {
+        if (subtotalBy.equals("day")) {
+          subtotalName = "DAY";
+          key = year+"-"+month+"-"+dayMonth;
+        } else {
+          throw new Exception(String.format(INVALID_SUBTOTAL_MESSAGE, subtotalBy));
+        }
+      }
+    }
+    
+    if (actualKey == null || actualKey.equals(key)) {
+      subtotal += timeEntry.getHours();
+      actualKey = key;
+    } else {
+      String subtotalStr = subtotal.toString();
+      int width = PrintUtil.getTerminalWidth();
+      String message = StringUtils.repeat("-", width - subtotalStr.length() - 3 - key.length() - 2) + " " + key + ": " + subtotalStr + " -";
+      if (pos == null) {
+        if (color) {
+          println(addSubtotalColor(message));
+        } else {
+          println(message);
+        }
+      }
+      subtotal = timeEntry.getHours();
+      actualKey = key;
+      return message;
+    }
+    return null;
+  }
+
+  private String addSubtotalColor(String message) {
+    return PrintUtil.ANSI_MAGENTA+message+PrintUtil.ANSI_NORMAL;
   }
 
   private String[] buildRow(TimeEntry timeEntry, SimpleDateFormat sdf) {
@@ -236,7 +341,7 @@ public class TimeEntriesCommand extends RedmineCommand {
         }
       }
       if (!validDate) {
-        throw new Exception(String.format(INVALID_ASSIGNEE_MESSAGE, value));
+        throw new Exception(String.format(INVALID_USER_MESSAGE, value));
       }
     }
   }
