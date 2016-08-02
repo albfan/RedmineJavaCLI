@@ -24,6 +24,9 @@ public class TimeEntriesCommand extends RedmineCommand {
   static final String INVALID_ACTIVITY_MESSAGE = "'%s' is not a valid activity.";
   static final String INVALID_USER_MESSAGE = "'%s' is not a valid user.";
   static final String INVALID_SUBTOTAL_MESSAGE = "'%s' is not a valid subtotal.";
+  static final String INVALID_LIMIT_MESSAGE = "'%s' is not a valid limit.";
+  static final String INVALID_OFFSET_MESSAGE = "'%s' is not a valid offset.";
+  static final String INVALID_PAGE_MESSAGE = "'%s' is not a valid page.";
 
   private static final String NAME = "time-entries";
   private static final String DESCRIPTION = "Show time entries";
@@ -36,6 +39,9 @@ public class TimeEntriesCommand extends RedmineCommand {
       Option.buildOptionWithoutValue("pretty", "Print pretty time entries."),
       Option.buildOptionWithoutValue("time-difference", "Print time as difference from now."),
       Option.buildOptionWithoutValue("color", "Print with color."),
+      new Option("limit", "Set max number of issues."),
+      new Option("offset", "Set the offset to start with."),
+      new Option("page", "Set the page to show."),
       new Option("subtotal-by", "Show subtotals by range specified.")
   };
 
@@ -161,6 +167,57 @@ public class TimeEntriesCommand extends RedmineCommand {
         Optional<TimeEntryActivity> activity = RedmineUtil.resolveActivityByName(redmineManager, value);
         activity.ifPresent(p -> HashMapDuplicates.addFormParameterEqual(parameters, "activity", String.valueOf(p.getId())));
         activity.orElseThrow(() -> new Exception(String.format(INVALID_ACTIVITY_MESSAGE, value)));
+      }
+    });
+    handlersList.add(new IHandler() {
+      @Override
+      public String getName() {
+        return "limit";
+      }
+
+      @Override
+      public void handle(Map<String, String> parameters, String value)
+              throws Exception {
+        try {
+          Integer.parseInt(value);
+          parameters.put("limit", value);
+        } catch (Exception e) {
+          throw new Exception(String.format(INVALID_LIMIT_MESSAGE, value));
+        }
+      }
+    });
+    handlersList.add(new IHandler() {
+      @Override
+      public String getName() {
+        return "offset";
+      }
+
+      @Override
+      public void handle(Map<String, String> parameters, String value)
+              throws Exception {
+        try {
+          Integer.parseInt(value);
+          parameters.put("offset", value);
+        } catch (Exception e) {
+          throw new Exception(String.format(INVALID_OFFSET_MESSAGE, value));
+        }
+      }
+    });
+    handlersList.add(new IHandler() {
+      @Override
+      public String getName() {
+        return "page";
+      }
+
+      @Override
+      public void handle(Map<String, String> parameters, String value)
+              throws Exception {
+        try {
+          Integer.parseInt(value);
+          parameters.put("page", value);
+        } catch (Exception e) {
+          throw new Exception(String.format(INVALID_PAGE_MESSAGE, value));
+        }
       }
     });
 
