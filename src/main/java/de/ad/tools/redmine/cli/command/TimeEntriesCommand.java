@@ -289,7 +289,7 @@ public class TimeEntriesCommand extends RedmineCommand {
     String key;
     
     String year = StringUtils.leftPad(""+instance.get(Calendar.YEAR), 4 ,"0");
-    String month = StringUtils.leftPad(""+instance.get(Calendar.MONTH), 2 , "0");
+    String month = StringUtils.leftPad(""+(instance.get(Calendar.MONTH)+1), 2 , "0");
     String week = StringUtils.leftPad(""+instance.get(Calendar.WEEK_OF_MONTH), 2 , "0");
     String dayMonth = StringUtils.leftPad(""+instance.get(Calendar.DAY_OF_MONTH), 2, "0");
     if (subtotalBy.equals("year")) {
@@ -306,7 +306,7 @@ public class TimeEntriesCommand extends RedmineCommand {
         } else {
           if (subtotalBy.equals("day")) {
             subtotalName = "DAY";
-            key = year + "-" + month + "-" + week+"-" + dayMonth;
+            key = year + "-" + month + "-" + dayMonth;
           } else {
             throw new Exception(String.format(INVALID_SUBTOTAL_MESSAGE, subtotalBy));
           }
@@ -320,7 +320,7 @@ public class TimeEntriesCommand extends RedmineCommand {
     } else {
       String subtotalStr = subtotal.toString();
       int width = PrintUtil.getTerminalWidth();
-      String message = StringUtils.repeat("-", width - subtotalStr.length() - 3 - key.length() - 2) + " " + key + ": " + subtotalStr + " -";
+      String message = StringUtils.repeat("-", width - subtotalStr.length() - 3 - actualKey.length() - 2) + " " + actualKey + ": " + subtotalStr + " -";
       if (pos == null) {
         if (color) {
           println(addSubtotalColor(message));
