@@ -90,9 +90,10 @@ public class Command {
     Integer limit = resultsWrapper.getLimitOnServer();
     Integer offset = resultsWrapper.getOffsetOnServer();
     Integer total = resultsWrapper.getTotalFoundOnServer();
+    int size = resultsWrapper.getResults().size();
     int page = (offset / limit) + (offset % limit == 0 ? 0 :1) + 1;
     int pages = (total / limit) + (total % limit == 0 ? 0 :1);
-    println(limit+" results, page:"+page+"/"+pages);
+    println(size+" results, page("+limit+"):"+page+"/"+pages);
   }
 
   protected final void println(String s, Object... args) {
