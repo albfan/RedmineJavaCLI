@@ -140,9 +140,9 @@ public class CreateIssueCommand extends RedmineCommand {
         throws Exception {
       Optional<Membership> newAssignee = RedmineUtil.resolveMembershipByName(
           redmineManager,
-          issue.getProject().getId(), value);
+          issue.getProjectId(), value);
 
-      newAssignee.ifPresent(m -> issue.setAssigneeId(m.getUser().getId()));
+      newAssignee.ifPresent(m -> issue.setAssigneeId(m.getUserId()));
       newAssignee.orElseThrow(
           () -> new Exception(String.format(INVALID_ASSIGNEE_MESSAGE, value)));
     }

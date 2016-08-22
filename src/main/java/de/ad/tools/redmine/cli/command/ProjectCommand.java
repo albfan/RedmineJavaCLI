@@ -74,11 +74,13 @@ public class ProjectCommand extends RedmineCommand {
 
   private void addRoleForMembership(Role role, Membership membership,
       LinkedHashMap<Role, List<User>> rolesAndMembers) {
+    User user = new User(membership.getUserId());
+    user.setFirstName(membership.getUserName());
     if (rolesAndMembers.containsKey(role)) {
-      rolesAndMembers.get(role).add(membership.getUser());
+      rolesAndMembers.get(role).add(user);
     } else {
       List<User> members = new ArrayList<User>();
-      members.add(membership.getUser());
+      members.add(user);
 
       rolesAndMembers.put(role, members);
     }

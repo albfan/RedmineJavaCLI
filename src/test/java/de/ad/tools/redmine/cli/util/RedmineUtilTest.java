@@ -133,10 +133,12 @@ public class RedmineUtilTest {
     when(user2.getFullName()).thenReturn("User Name 2");
 
     Membership membership1 = mock(Membership.class);
-    when(membership1.getUser()).thenReturn(user1);
+    when(membership1.getUserId()).thenReturn(user1.getId());
+    when(membership1.getUserName()).thenReturn(user1.getFirstName());
 
     Membership membership2 = mock(Membership.class);
-    when(membership2.getUser()).thenReturn(user2);
+    when(membership2.getUserId()).thenReturn(user2.getId());
+    when(membership2.getUserName()).thenReturn(user2.getFirstName());
 
     return Arrays.asList(membership1, membership2);
   }

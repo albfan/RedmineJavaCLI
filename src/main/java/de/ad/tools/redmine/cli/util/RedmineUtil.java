@@ -31,7 +31,7 @@ public final class RedmineUtil {
             .getMemberships(projectId);
 
     return memberships.stream()
-        .filter(m -> name.equals(m.getUser().getFullName()))
+        .filter(m -> name.equals(m.getUserName()))
         .findFirst();
   }
 
@@ -77,7 +77,7 @@ public final class RedmineUtil {
     } else {
       HashMap<String, String> parameters = new HashMap<>();
       parameters.put("name", name);
-      List<User> users = redmineManager.getUserManager().getUsersResultsWrapper(parameters).getResults();
+      List<User> users = redmineManager.getUserManager().getUsers(parameters).getResults();
       return users.stream().findFirst();
     }
   }

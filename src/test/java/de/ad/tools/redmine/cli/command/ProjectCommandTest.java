@@ -95,11 +95,14 @@ public class ProjectCommandTest {
     Membership developer1 = mock(Membership.class);
     Membership developer2 = mock(Membership.class);
     when(manager.getRoles()).thenReturn(Arrays.asList(managerRole));
-    when(manager.getUser()).thenReturn(user1);
+    when(manager.getUserId()).thenReturn(user1.getId());
+    when(manager.getUserName()).thenReturn(user1.getFirstName());
     when(developer1.getRoles()).thenReturn(Arrays.asList(developerRole));
-    when(developer1.getUser()).thenReturn(user2);
+    when(developer1.getUserId()).thenReturn(user1.getId());
+    when(developer1.getUserName()).thenReturn(user1.getFirstName());
     when(developer2.getRoles()).thenReturn(Arrays.asList(developerRole));
-    when(developer2.getUser()).thenReturn(user3);
+    when(developer2.getUserId()).thenReturn(user3.getId());
+    when(developer2.getUserName()).thenReturn(user3.getFirstName());
 
     List<Membership> memberships =
         Arrays.asList(manager, developer1, developer2);

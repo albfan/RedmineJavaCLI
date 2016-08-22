@@ -94,7 +94,8 @@ public class HistoryCommandTest {
     when(issue.getSubject()).thenReturn("Subject of #" + id);
     when(issue.getCreatedOn()).thenReturn(createdOn);
     when(issue.getUpdatedOn()).thenReturn(updatedOn);
-    when(issue.getAuthor()).thenReturn(author);
+    when(issue.getAuthorId()).thenReturn(author.getId());
+    when(issue.getAuthorName()).thenReturn(author.getFirstName());
     when(issue.getDescription()).thenReturn("Description of #" + id);
 
     Journal journal1 = mock(Journal.class);

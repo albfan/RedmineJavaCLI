@@ -74,7 +74,7 @@ public class IssuesCommandTest {
     String[] arguments = new String[0];
 
     ResultsWrapper<Issue> dummyIssuesResultWrapper = createDummyIssuesResultWrapper(2);
-    when(issueManager.getIssuesResultsWrapper(any(Map.class))).thenReturn(dummyIssuesResultWrapper);
+    when(issueManager.getIssues(any(Map.class))).thenReturn(dummyIssuesResultWrapper);
 
     command.process(arguments);
 
@@ -95,11 +95,11 @@ public class IssuesCommandTest {
     Map<String, String> parameters = new HashMapDuplicates();
     HashMapDuplicates.addFormParameterEqual(parameters, "project_id", "2");
     ResultsWrapper<Issue> dummyIssuesResultWrapper = createDummyIssuesResultWrapper(2);
-    when(issueManager.getIssuesResultsWrapper(parameters)).thenReturn(dummyIssuesResultWrapper);
+    when(issueManager.getIssues(parameters)).thenReturn(dummyIssuesResultWrapper);
 
     command.process(arguments);
 
-    verify(issueManager).getIssuesResultsWrapper(parameters);
+    verify(issueManager).getIssues(parameters);
   }
 
   @Test
@@ -110,26 +110,26 @@ public class IssuesCommandTest {
     parameters.put("priority_id", "2");
 
     ResultsWrapper<Issue> resultsWrapper = createDummyIssuesResultWrapper(2);
-    when(issueManager.getIssuesResultsWrapper(parameters)).thenReturn(resultsWrapper);
+    when(issueManager.getIssues(parameters)).thenReturn(resultsWrapper);
 
     String[] arguments = new String[] { "--priority=High" };
 
     command.process(arguments);
 
-    verify(issueManager).getIssuesResultsWrapper(parameters);
+    verify(issueManager).getIssues(parameters);
   }
 
   @Test
   public void testWithAssigneeOption() throws Exception {
     String[] arguments = new String[] { "--assignee=me" };
     ResultsWrapper<Issue> dummyIssuesResultWrapper = createDummyIssuesResultWrapper(2);
-    when(issueManager.getIssuesResultsWrapper(any(Map.class))).thenReturn(dummyIssuesResultWrapper);
+    when(issueManager.getIssues(any(Map.class))).thenReturn(dummyIssuesResultWrapper);
     command.process(arguments);
 
     Map<String, String> parameters = new HashMapDuplicates();
     HashMapDuplicates.addFormParameterEqual(parameters, "assigned_to_id", "me");
 
-    verify(issueManager).getIssuesResultsWrapper(parameters);
+    verify(issueManager).getIssues(parameters);
   }
 
   @Test
@@ -148,7 +148,7 @@ public class IssuesCommandTest {
     List<IssueStatus> statuses = createDummyStatuses();
     when(issueManager.getStatuses()).thenReturn(statuses);
     ResultsWrapper<Issue> dummyIssuesResultWrapper = createDummyIssuesResultWrapper(2);
-    when(issueManager.getIssuesResultsWrapper(any(Map.class))).thenReturn(dummyIssuesResultWrapper);
+    when(issueManager.getIssues(any(Map.class))).thenReturn(dummyIssuesResultWrapper);
 
     String[] arguments = new String[] { "--status=Closed" };
 
@@ -157,7 +157,7 @@ public class IssuesCommandTest {
     Map<String, String> parameters = new HashMapDuplicates();
     HashMapDuplicates.addFormParameterEqual(parameters, "status_id", "2");
 
-    verify(issueManager).getIssuesResultsWrapper(parameters);
+    verify(issueManager).getIssues(parameters);
   }
 
   @Test
@@ -169,13 +169,13 @@ public class IssuesCommandTest {
     HashMapDuplicates.addFormParameterEqual(parameters, "tracker_id", "2");
 
     ResultsWrapper<Issue> dummyIssuesResultWrapper = createDummyIssuesResultWrapper(2);
-    when(issueManager.getIssuesResultsWrapper(parameters)).thenReturn(dummyIssuesResultWrapper);
+    when(issueManager.getIssues(parameters)).thenReturn(dummyIssuesResultWrapper);
 
     String[] arguments = new String[] { "--tracker=Feature" };
 
     command.process(arguments);
 
-    verify(issueManager).getIssuesResultsWrapper(parameters);
+    verify(issueManager).getIssues(parameters);
   }
 
   public ResultsWrapper<Issue> createDummyIssuesResultWrapper(int count) {
@@ -229,7 +229,8 @@ public class IssuesCommandTest {
     when(issue.getId()).thenReturn(i + 1);
 
     when(issue.getSubject()).thenReturn("Issue " + (i + 1));
-    when(issue.getProject()).thenReturn(project);
+    when(issue.getProjectId()).thenReturn(project.getId());
+    when(issue.getProjectName()).thenReturn(project.getName());
     when(issue.getTracker()).thenReturn(tracker);
     when(issue.getStatusName()).thenReturn("New");
     when(issue.getPriorityText()).thenReturn("Normal");
@@ -265,10 +266,12 @@ public class IssuesCommandTest {
     when(user2.getFullName()).thenReturn("User Name 2");
 
     Membership membership1 = mock(Membership.class);
-    when(membership1.getUser()).thenReturn(user1);
+    when(membership1.getUserId()).thenReturn(user1.getId());
+    when(membership1.getUserName()).thenReturn(user1.getFirstName());
 
     Membership membership2 = mock(Membership.class);
-    when(membership2.getUser()).thenReturn(user2);
+    when(membership2.getUserId()).thenReturn(user2.getId());
+    when(membership2.getUserName()).thenReturn(user2.getFirstName());
 
     return Arrays.asList(membership1, membership2);
   }

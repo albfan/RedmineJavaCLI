@@ -122,7 +122,7 @@ public class IssuesCommand extends RedmineCommand {
     Map<String, String> parameters = buildParameterMapFromOptions();
 
     IssueManager issueManager = redmineManager.getIssueManager();
-    ResultsWrapper<Issue> issuesResultsWrapper = issueManager.getIssuesResultsWrapper(parameters);
+    ResultsWrapper<Issue> issuesResultsWrapper = issueManager.getIssues(parameters);
     List<Issue> issues = issuesResultsWrapper.getResults();
 
     final String[][] issueTable = new String[issues.size()][6];
@@ -156,7 +156,7 @@ public class IssuesCommand extends RedmineCommand {
 
   private String[] buildRow(Issue issue) {
     return new String[] { ""+issue.getId(),
-        issue.getProject().getName(),
+        issue.getProjectName(),
         issue.getTracker().getName(),
         issue.getStatusName(),
         issue.getPriorityText(),

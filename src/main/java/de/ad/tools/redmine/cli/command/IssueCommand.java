@@ -101,7 +101,7 @@ public class IssueCommand extends RedmineCommand {
       updatedText = getTimeDifferenceAsText(issue.getUpdatedOn());
       updatedText = String.format("Updated %s ago.", updatedText);
     }
-    println("Added by %s %s ago. %s", issue.getAuthor().getFullName(),
+    println("Added by %s %s ago. %s", issue.getAuthorName(),
         createdText, updatedText);
     println();
   }

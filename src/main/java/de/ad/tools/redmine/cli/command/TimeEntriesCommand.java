@@ -240,7 +240,7 @@ public class TimeEntriesCommand extends RedmineCommand {
       handlers.get(option.getName()).handle(parameters, option.buildValue());
     }
 
-    ResultsWrapper<TimeEntry> timeEntriesResultsWrapper = redmineManager.getTimeEntryManager().getTimeEntriesResultsWrapper(parameters);
+    ResultsWrapper<TimeEntry> timeEntriesResultsWrapper = redmineManager.getTimeEntryManager().getTimeEntries(parameters);
     List<TimeEntry> timeEntries = timeEntriesResultsWrapper.getResults();
     printHeading("TIME ENTRIES");
     if (pretty) {

@@ -120,7 +120,8 @@ public class IssueCommandTest {
     when(issue.getSubject()).thenReturn("Subject of #" + id);
     when(issue.getCreatedOn()).thenReturn(createdOn);
     when(issue.getUpdatedOn()).thenReturn(updatedOn);
-    when(issue.getAuthor()).thenReturn(author);
+    when(issue.getAuthorId()).thenReturn(author.getId());
+    when(issue.getAuthorName()).thenReturn(author.getFirstName());
     when(issue.getAssigneeName()).thenReturn("John");
     when(issue.getAssigneeId()).thenReturn(1);
     when(issue.getDescription()).thenReturn("Description of #" + id);
@@ -154,7 +155,8 @@ public class IssueCommandTest {
     when(issue.getSubject()).thenReturn("Subject of #" + id);
     when(issue.getCreatedOn()).thenReturn(createdOn);
     when(issue.getUpdatedOn()).thenReturn(updatedOn);
-    when(issue.getAuthor()).thenReturn(author);
+    when(issue.getAuthorId()).thenReturn(author.getId());
+    when(issue.getAuthorName()).thenReturn(author.getFirstName());
     when(issue.getAssigneeName()).thenReturn("John");
     when(issue.getAssigneeId()).thenReturn(1);
     when(issue.getDescription()).thenReturn("");

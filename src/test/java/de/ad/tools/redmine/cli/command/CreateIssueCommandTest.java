@@ -168,8 +168,9 @@ public class CreateIssueCommandTest {
     Project project1 = mock(Project.class);
     when(project1.getId()).thenReturn(1);
 
-    issueToCreate.setProject(project1);
-    
+    issueToCreate.setProjectId(project1.getId());
+    issueToCreate.setProjectName(project1.getName());
+
     List<Membership> memberships = createDummyMemberships();
     MembershipManager membershipManager = mock(MembershipManager.class);
     when(membershipManager.getMemberships(1)).thenReturn(memberships);
@@ -197,7 +198,8 @@ public class CreateIssueCommandTest {
     Project project1 = mock(Project.class);
     when(project1.getId()).thenReturn(1);
 
-    issueToCreate.setProject(project1);
+    issueToCreate.setProjectId(project1.getId());
+    issueToCreate.setProjectName(project1.getName());
     
     List<Membership> memberships = createDummyMemberships(); 
     MembershipManager membershipManager = mock(MembershipManager.class);
@@ -327,7 +329,8 @@ public class CreateIssueCommandTest {
     when(issue.getSubject()).thenReturn("Subject of #" + id);
     when(issue.getCreatedOn()).thenReturn(createdOn);
     when(issue.getUpdatedOn()).thenReturn(updatedOn);
-    when(issue.getAuthor()).thenReturn(author);
+    when(issue.getAuthorId()).thenReturn(author.getId());
+    when(issue.getAuthorName()).thenReturn(author.getFirstName());
     when(issue.getAssigneeName()).thenReturn("John");
     when(issue.getAssigneeId()).thenReturn(1);
     when(issue.getDescription()).thenReturn("Description of #" + id);
@@ -354,10 +357,12 @@ public class CreateIssueCommandTest {
     when(user2.getFullName()).thenReturn("User Name 2");
 
     Membership membership1 = mock(Membership.class);
-    when(membership1.getUser()).thenReturn(user1);
+    when(membership1.getUserId()).thenReturn(user1.getId());
+    when(membership1.getUserName()).thenReturn(user1.getFirstName());
 
     Membership membership2 = mock(Membership.class);
-    when(membership2.getUser()).thenReturn(user2);
+    when(membership2.getUserId()).thenReturn(user2.getId());
+    when(membership2.getUserName()).thenReturn(user2.getFirstName());
 
     return Arrays.asList(membership1, membership2);
   }
