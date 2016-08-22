@@ -9,14 +9,17 @@ import com.taskadapter.redmineapi.bean.Project;
 import com.taskadapter.redmineapi.bean.Tracker;
 import com.taskadapter.redmineapi.internal.ResultsWrapper;
 import de.ad.tools.redmine.cli.Configuration;
+import de.ad.tools.redmine.cli.util.DateUtil;
 import de.ad.tools.redmine.cli.util.HashMapDuplicates;
 import de.ad.tools.redmine.cli.util.RedmineUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
 
 import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
 import java.util.*;
-
-import static de.ad.tools.redmine.cli.util.DateUtil.getTimeDifferenceAsText;
 
 public class IssuesCommand extends RedmineCommand {
 
@@ -42,10 +45,12 @@ public class IssuesCommand extends RedmineCommand {
       new Option("limit", "Set max number of issues."),
       new Option("offset", "Set the offset to start with."),
       new Option("page", "Set the page to show."),
-      new Option("sort", "Column to sort with. Append :desc to invert the order.")
+      new Option("sort", "Column to sort with. Append :desc to invert the order."),
+      new Option("extra-fields", "extra fields to show on results. Format <name>:<field>[,<name>:<field>]+")
   };
 
   private static final Map<String, Handler> handlers = new HashMap<>();
+  private LinkedHashMap<String, FieldInfo> extraFields = new LinkedHashMap<>();
 
   public IssuesCommand(Configuration configuration, PrintStream out,
       RedmineManager redmineManager) {
@@ -107,11 +112,69 @@ public class IssuesCommand extends RedmineCommand {
         }
       }
     });
-    handlers.add(new SortHandler());
-    handlers.add(new SortHandler());
+    handlers.add(new Handler() {
+      @Override
+      public String getName() {
+        return "extra-fields";
+      }
+
+      @Override
+      public void handle(RedmineManager redmineManager, Map<String, String> parameters, String value) throws Exception {
+        try {
+          String[] fields = value.split("\\s*,\\s*");
+          for (String fieldInfoStr : fields) {
+            String[] split = fieldInfoStr.split(":");
+            FieldInfo fieldInfo = new FieldInfo();
+            fieldInfo.setTitle(split[0]);
+            if (split.length > 1) {
+              fieldInfo.setField(split[1]);
+            } else {
+              fieldInfo.setField(fieldInfo.getTitle());
+            }
+
+            if (split.length > 2) {
+              fieldInfo.setFormat(split[2]);
+            }
+            extraFields.put(fieldInfo.getTitle(), fieldInfo);
+          }
+        } catch (Exception e) {
+          throw new Exception(String.format(INVALID_LIMIT_MESSAGE, value));
+        }
+      }
+    });
 
     for (Handler handler : handlers) {
       IssuesCommand.handlers.put(handler.getName(), handler);
+    }
+  }
+
+  class FieldInfo {
+    String title;
+    String field;
+    String format;
+
+    public String getTitle() {
+      return title;
+    }
+
+    public void setTitle(String title) {
+      this.title = title;
+    }
+
+    public String getField() {
+      return field;
+    }
+
+    public void setField(String field) {
+      this.field = field;
+    }
+
+    public String getFormat() {
+      return format;
+    }
+
+    public void setFormat(String format) {
+      this.format = format;
     }
   }
 
@@ -126,17 +189,23 @@ public class IssuesCommand extends RedmineCommand {
     List<Issue> issues = issuesResultsWrapper.getResults();
 
     final String[][] issueTable = new String[issues.size()][6];
-    String[] header =
-        new String[] { "ID", "Project", "Tracker", "Status", "Priority",
-            "Assignee", "Updated",
-            "Subject" };
+    Vector<String> columns = new Vector<>();
+    columns.add("ID");
+    columns.add("Project");
+    columns.add("Tracker");
+    columns.add("Status");
+    columns.add("Priority");
+    columns.add("Assignee");
+    columns.add("Updated");
+    columns.addAll(extraFields.keySet());
+    columns.add("Subject");
 
     int i = 0;
     for (Issue issue : issues) {
       issueTable[i++] = buildRow(issue);
     }
 
-    printTable(header, issueTable);
+    printTable(columns.toArray(new String[]{}), issueTable);
     printResults(issuesResultsWrapper);
   }
 
@@ -155,17 +224,54 @@ public class IssuesCommand extends RedmineCommand {
   }
 
   private String[] buildRow(Issue issue) {
-    return new String[] { ""+issue.getId(),
-        issue.getProjectName(),
-        issue.getTracker().getName(),
-        issue.getStatusName(),
-        issue.getPriorityText(),
-        issue.getAssigneeName() != null ?
-            issue.getAssigneeName() :
-            "(not assigned)",
-        getTimeDifferenceAsText(issue.getUpdatedOn()) +
-            " ago",
-        issue.getSubject()};
+
+    Vector<String> columnData = new Vector<>();
+    columnData.add(""+issue.getId());
+    columnData.add(issue.getProjectName());
+    columnData.add(issue.getTracker().getName());
+    columnData.add(issue.getStatusName());
+    columnData.add(issue.getPriorityText());
+    columnData.add(getAssigneeName(issue));
+    columnData.add(getTimeDifferenceAsText(issue));
+    if (!extraFields.isEmpty()) {
+      for (String column : extraFields.keySet()) {
+        FieldInfo fieldInfo = extraFields.get(column);
+        String field = fieldInfo.getField();
+        try {
+          Method method = issue.getClass().getMethod("get" + WordUtils.capitalizeFully(field, new char[]{'_'}).replaceAll("_", ""));
+          Object data = method.invoke(issue);
+          String format = fieldInfo.getFormat();
+          if (data == null) {
+            columnData.add("");
+          } else {
+            if (format == null) {
+              columnData.add(data.toString());
+            } else {
+              if (data instanceof Date) {
+                columnData.add(new SimpleDateFormat(fieldInfo.getFormat()).format(data));
+              } else {
+                columnData.add(data.toString());
+              }
+            }
+          }
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+    columnData.add(issue.getSubject());
+
+    return columnData.toArray(new String[]{});
+  }
+
+  private String getTimeDifferenceAsText(Issue issue) {
+    return String.format("%s ago", DateUtil.getTimeDifferenceAsText(issue.getUpdatedOn()));
+  }
+
+  private String getAssigneeName(Issue issue) {
+    return issue.getAssigneeName() != null ?
+        issue.getAssigneeName() :
+        "(not assigned)";
   }
 
   private static abstract class Handler {
