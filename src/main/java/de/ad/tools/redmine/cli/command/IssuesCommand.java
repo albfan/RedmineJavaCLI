@@ -2,15 +2,12 @@ package de.ad.tools.redmine.cli.command;
 
 import com.taskadapter.redmineapi.IssueManager;
 import com.taskadapter.redmineapi.RedmineManager;
-import com.taskadapter.redmineapi.bean.Issue;
-import com.taskadapter.redmineapi.bean.IssuePriority;
-import com.taskadapter.redmineapi.bean.IssueStatus;
-import com.taskadapter.redmineapi.bean.Project;
-import com.taskadapter.redmineapi.bean.Tracker;
+import com.taskadapter.redmineapi.bean.*;
 import com.taskadapter.redmineapi.internal.ResultsWrapper;
 import de.ad.tools.redmine.cli.Configuration;
 import de.ad.tools.redmine.cli.util.DateUtil;
 import de.ad.tools.redmine.cli.util.HashMapDuplicates;
+import de.ad.tools.redmine.cli.util.PrintUtil;
 import de.ad.tools.redmine.cli.util.RedmineUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
@@ -46,11 +43,13 @@ public class IssuesCommand extends RedmineCommand {
       new Option("offset", "Set the offset to start with."),
       new Option("page", "Set the page to show."),
       new Option("sort", "Column to sort with. Append :desc to invert the order."),
-      new Option("extra-fields", "extra fields to show on results. Format <name>:<field>[,<name>:<field>]+")
+      new Option("extra-fields", "extra fields to show on results. Format <name>:<field>[,<name>:<field>]+"),
+      Option.buildOptionWithoutValue("time", "Show time entries for issues")
   };
 
   private static final Map<String, Handler> handlers = new HashMap<>();
   private LinkedHashMap<String, FieldInfo> extraFields = new LinkedHashMap<>();
+  private boolean time;
 
   public IssuesCommand(Configuration configuration, PrintStream out,
       RedmineManager redmineManager) {
@@ -142,6 +141,17 @@ public class IssuesCommand extends RedmineCommand {
         }
       }
     });
+    handlers.add(new Handler() {
+      @Override
+      public String getName() {
+        return "time";
+      }
+
+      @Override
+      public void handle(RedmineManager redmineManager, Map<String, String> parameters, String value) throws Exception {
+        time = true;
+      }
+    });
 
     for (Handler handler : handlers) {
       IssuesCommand.handlers.put(handler.getName(), handler);
@@ -200,14 +210,54 @@ public class IssuesCommand extends RedmineCommand {
     columns.addAll(extraFields.keySet());
     columns.add("Subject");
 
+    HashMap<Integer, String> subtotalMap = new HashMap<>();
     int i = 0;
     for (Issue issue : issues) {
+      String subtotal = "";
       issueTable[i++] = buildRow(issue);
+      if (time) {
+        List<TimeEntry> timeEntries = redmineManager.getTimeEntryManager().getTimeEntriesForIssue(issue.getId());
+        subtotal = buildTimeEntries(timeEntries, false);
+      }
+      if (!subtotal.isEmpty()) {
+        subtotalMap.put(i + 1, subtotal);
+      }
     }
 
-    printTable(columns.toArray(new String[]{}), issueTable);
+    printTable(columns.toArray(new String[]{}), issueTable, subtotalMap);
     printResults(issuesResultsWrapper);
   }
+
+  public String buildTimeEntries(List<TimeEntry> timeEntries, boolean decorations) {
+    String timeEntriesStr = "";
+    if (decorations) {
+      timeEntriesStr += "Time Entries"+"\n";
+    }
+    Iterator<TimeEntry> it = timeEntries.iterator();
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    while (it.hasNext()) {
+      TimeEntry timeEntry = it.next();
+      String comment = timeEntry.getComment();
+      if (!StringUtils.isBlank(comment)) {
+        comment = ": "+comment;
+      }
+      timeEntriesStr +=" -- TIME -- "
+              +"User \"" + timeEntry.getUserName() + "\" spent " + timeEntry.getHours()
+              + " hours doing " + timeEntry.getActivityName()+" on "+sdf.format(timeEntry.getSpentOn())+ comment;
+      if (it.hasNext()) {
+        timeEntriesStr +="\n";
+      }
+    }
+//    if (!timeEntries.isEmpty()) {
+//      timeEntriesStr +="\n";
+//    }
+
+    if (decorations) {
+      timeEntriesStr +="\n";
+    }
+    return timeEntriesStr;
+  }
+
 
   private Map<String, String> buildParameterMapFromOptions() throws Exception {
     HashMap<String, String>parameters = new HashMapDuplicates();
