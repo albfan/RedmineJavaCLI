@@ -2,12 +2,15 @@ package de.ad.tools.redmine.cli.command;
 
 import com.taskadapter.redmineapi.Include;
 import com.taskadapter.redmineapi.IssueManager;
+import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.RedmineManager;
 import com.taskadapter.redmineapi.bean.Issue;
 import com.taskadapter.redmineapi.bean.Journal;
 import com.taskadapter.redmineapi.bean.TimeEntry;
 import de.ad.tools.redmine.cli.Configuration;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.PrintStream;
 import java.util.*;
@@ -28,12 +31,14 @@ public class IssueCommand extends RedmineCommand {
           Option.buildOptionWithoutValue("attachments", "Show attachments."),
           Option.buildOptionWithoutValue("watchers", "Show watchers."),
           Option.buildOptionWithoutValue("time", "Show time entries."),
+          Option.buildOptionWithoutValue("raw", "Show json output for issue")
       };
 
   boolean showTimeEntries;
   private static final Map<String, IHandler> handlers = new HashMap<>();
 
   private ArrayList<Include> includes = new ArrayList<>();
+  private boolean raw;
 
   public IssueCommand(Configuration configuration, PrintStream out,
       RedmineManager redmineManager) {
@@ -56,6 +61,17 @@ public class IssueCommand extends RedmineCommand {
         showTimeEntries = true;
       }
     });
+    handlers.add(new IHandler() {
+      @Override
+      public String getName() {
+        return "raw";
+      }
+
+      @Override
+      public void handle() throws Exception {
+        raw = true;
+      }
+    });
 
     for (IHandler handler : handlers) {
       IssueCommand.handlers.put(handler.getName(), handler);
@@ -76,8 +92,26 @@ public class IssueCommand extends RedmineCommand {
     IssueManager issueManager = redmineManager.getIssueManager();
 
     Integer id = ((NumberArgument)getArguments()[0]).getValue();
-    Issue issue = issueManager.getIssueById(id, includes.toArray(new Include[includes.size()]));
 
+    if (raw) {
+      String response = issueManager.getRawIssueById(id, includes.toArray(new Include[includes.size()]));
+      printRawResponse(response);
+    } else {
+      Issue issue = issueManager.getIssueById(id, includes.toArray(new Include[includes.size()]));
+      printIssue(issue);
+    }
+  }
+
+  private void printRawResponse(String rawResponse) {
+    try {
+      JSONObject json = new JSONObject(rawResponse);
+      println(json.toString(2));
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+  }
+
+  private void printIssue(Issue issue) throws RedmineException {
     printHeader(issue);
     printDetails(issue);
     printDescription(issue);
