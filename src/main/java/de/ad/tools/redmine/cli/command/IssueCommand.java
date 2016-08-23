@@ -150,22 +150,23 @@ public class IssueCommand extends RedmineCommand {
   }
 
   private void printJournals(Issue issue) {
-    printHeading("Notes");
-
     Collection<Journal> journals = issue.getJournals();
-    for (Journal journal : journals) {
-      String notes = journal.getNotes();
-      if (!StringUtils.isBlank(notes)) {
-        notes = notes.replaceAll("<p>", "");
-        notes = notes.replaceAll("</p>", "");
-        notes = notes.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", "");
-        println(journal.getCreatedOn().toString());
-        println(notes);
-        println("---");
-      }
+    if (!journals.isEmpty()) {
+      printHeading("Notes");
+      for (Journal journal : journals) {
+        String notes = journal.getNotes();
+        if (!StringUtils.isBlank(notes)) {
+          notes = notes.replaceAll("<p>", "");
+          notes = notes.replaceAll("</p>", "");
+          notes = notes.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", "");
+          println(journal.getCreatedOn().toString());
+          println(notes);
+          println("---");
+        }
 //      if (journal.getDetails() !=null) {
 //        //TODO: Extract more info (change priority, status, percentage, ...
 //      }
+      }
     }
     println();
   }
