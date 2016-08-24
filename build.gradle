@@ -3,7 +3,7 @@ apply plugin: 'checkstyle'
 apply plugin: 'jacoco'
 apply plugin: 'com.github.kt3k.coveralls'
 
-version = '6.1.0'
+version = '6.2.0'
 
 repositories {
   mavenCentral()
@@ -32,7 +32,7 @@ jar {
 
 dependencies {
 //  compile 'com.taskadapter:redmine-java-api:3.0.0'
-  compile 'com.github.albfan:redmine-java-api:6785bc5369'
+  compile 'com.github.albfan:redmine-java-api:b2951b7'
   compile 'jline:jline:2.8'
   compile 'org.fusesource.jansi:jansi:1.13'
   compile 'org.slf4j:slf4j-simple:1.7.10'

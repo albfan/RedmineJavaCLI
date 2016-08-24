@@ -19,20 +19,13 @@ import java.util.Optional;
 
 public class UpdateIssueCommand extends RedmineCommand {
 
-  static final String INVALID_PRIORITY_MESSAGE =
-      "'%s' is not a valid priority.";
-  static final String INVALID_ASSIGNEE_MESSAGE =
-      "'%s' is not a valid assignee.";
-  static final String INVALID_STATUS_MESSAGE =
-      "'%s' is not a valid status.";
-  static final String INVALID_TRACKER_MESSAGE =
-      "'%s' is not a valid tracker.";
-  static final String INVALID_NOTES_MESSAGE =
-      "'%s' is not a valid note.";
-  static final String ISSUE_UPDATE_SUCCESS_MESSAGE =
-      "Sucessfully updated issue #%d.";
-  static final String NO_OPTION_SET_MESSAGE =
-      "At least one option needs to be set. See 'help %s' for more information.";
+  static final String INVALID_PRIORITY_MESSAGE = "'%s' is not a valid priority.";
+  static final String INVALID_ASSIGNEE_MESSAGE = "'%s' is not a valid assignee.";
+  static final String INVALID_STATUS_MESSAGE = "'%s' is not a valid status.";
+  static final String INVALID_TRACKER_MESSAGE = "'%s' is not a valid tracker.";
+  static final String INVALID_NOTES_MESSAGE = "'%s' is not a valid note.";
+  static final String ISSUE_UPDATE_SUCCESS_MESSAGE = "Sucessfully updated issue #%d.";
+  static final String NO_OPTION_SET_MESSAGE = "At least one option needs to be set. See 'help %s' for more information.";
 
   private static final String NAME = "update-issue";
   private static final String DESCRIPTION = "Update a given issue.";
@@ -50,7 +43,9 @@ public class UpdateIssueCommand extends RedmineCommand {
       new Option("status", "The status of the issue to update."),
       new Option("tracker", "The tracker of the issue to update."),
       new Option("doneratio", "The done ratio of the issue to update."),
-      new Option("notes", "Comments about the update.") };
+      new Option("notes", "Comments about the update."),
+      Option.buildOptionWithoutValue("private-issue", "Issue is private."),
+      Option.buildOptionWithoutValue("private-notes", "Comment is private.") };
 
   private static final Map<String, Handler> handlers = new HashMap<>();
 
@@ -58,14 +53,150 @@ public class UpdateIssueCommand extends RedmineCommand {
     super(NAME, DESCRIPTION, LONG_DESCRIPTION, ARGUMENTS, OPTIONS, configuration, out, redmineManager);
 
     ArrayList<Handler> handlersList = new ArrayList<>();
-    handlersList.add(new DescriptionHandler());
-    handlersList.add(new SubjectHandler());
-    handlersList.add(new PriorityHandler());
-    handlersList.add(new AssigneeHandler());
-    handlersList.add(new StatusHandler());
-    handlersList.add(new TrackerHandler());
-    handlersList.add(new DoneRatioHandler());
-    handlersList.add(new NotesHandler());
+    handlersList.add(new Handler() {
+      @Override public String getName() {
+        return "description";
+      }
+
+      @Override
+      public void handle(RedmineManager redmineManager, Issue issue, String value)
+          throws Exception {
+        issue.setDescription(value);
+      }
+    });
+    handlersList.add(new Handler() {
+      @Override public String getName() {
+        return "subject";
+      }
+
+      @Override
+      public void handle(RedmineManager redmineManager, Issue issue, String value)
+          throws Exception {
+        issue.setSubject(value);
+      }
+    });
+    handlersList.add(new Handler() {
+      @Override public String getName() {
+        return "priority";
+      }
+
+      @Override
+      public void handle(RedmineManager redmineManager, Issue issue, String value)
+          throws Exception {
+        Optional<IssuePriority> newPriority =
+            RedmineUtil.resolvePriorityByName(redmineManager, value);
+
+        newPriority.ifPresent(p -> issue.setPriorityId(p.getId()));
+        newPriority.orElseThrow(
+            () -> new Exception(String.format(INVALID_PRIORITY_MESSAGE, value)));
+      }
+    });
+    handlersList.add(new Handler() {
+      @Override public String getName() {
+        return "assignee";
+      }
+
+      @Override
+      public void handle(RedmineManager redmineManager, Issue issue, String value)
+          throws Exception {
+        Optional<Membership> newAssignee =
+            RedmineUtil.resolveMembershipByName(redmineManager,
+                issue.getProjectId(), value);
+
+        newAssignee.ifPresent(m -> issue.setAssigneeId(m.getUserId()));
+        newAssignee.orElseThrow(
+            () -> new Exception(String.format(INVALID_ASSIGNEE_MESSAGE, value)));
+      }
+    });
+    handlersList.add(new Handler() {
+      @Override public String getName() {
+        return "status";
+      }
+
+      @Override
+      public void handle(RedmineManager redmineManager, Issue issue, String value)
+          throws Exception {
+        Optional<IssueStatus> newStatus =
+            RedmineUtil.resolveStatusByName(redmineManager, value);
+
+        newStatus.ifPresent(s -> issue.setStatusId(s.getId()));
+        newStatus.orElseThrow(
+            () -> new Exception(String.format(INVALID_STATUS_MESSAGE, value)));
+      }
+    });
+    handlersList.add(new Handler() {
+      @Override public String getName() {
+        return "tracker";
+      }
+
+      @Override
+      public void handle(RedmineManager redmineManager, Issue issue, String value)
+          throws Exception {
+        Optional<Tracker> newTracker =
+            RedmineUtil.resolveTrackerByName(redmineManager, value);
+
+        newTracker.ifPresent(issue::setTracker);
+        newTracker.orElseThrow(() ->
+            new Exception(String.format(INVALID_TRACKER_MESSAGE, value)));
+      }
+    });
+    handlersList.add(new Handler() {
+      @Override public String getName() {
+        return "doneratio";
+      }
+
+      @Override
+      public void handle(RedmineManager redmineManager, Issue issue, String value)
+          throws Exception {
+        try {
+          int doneratio = Integer.parseInt(value);
+          if (doneratio >= 0 && doneratio <= 100) {
+            issue.setDoneRatio(doneratio);
+          } else {
+            throw new Exception("done ratio invalid value");
+          }
+        } catch (Exception e ) {
+          throw new Exception(String.format(INVALID_TRACKER_MESSAGE, value));
+        }
+      }
+    });
+    handlersList.add(new Handler() {
+      @Override public String getName() {
+        return "notes";
+      }
+
+      @Override
+      public void handle(RedmineManager redmineManager, Issue issue, String value)
+          throws Exception {
+        if (!StringUtils.isBlank(value)) {
+          issue.setNotes(value);
+        }else {
+            throw new Exception(String.format(INVALID_NOTES_MESSAGE, value));
+        }
+      }
+    });
+    handlersList.add(new Handler() {
+      @Override public String getName() {
+        return "private-notes";
+      }
+
+      @Override
+      public void handle(RedmineManager redmineManager, Issue issue, String value)
+              throws Exception {
+        issue.setPrivateNotes(true);
+      }
+    });
+    handlersList.add(new Handler() {
+      @Override public String getName() {
+        return "private-issue";
+      }
+
+      @Override
+      public void handle(RedmineManager redmineManager, Issue issue, String value)
+              throws Exception {
+        issue.setPrivateIssue(true);
+      }
+    });
 
     for (Handler handler : handlersList) {
       UpdateIssueCommand.handlers.put(handler.getName(), handler);
@@ -113,141 +244,4 @@ public class UpdateIssueCommand extends RedmineCommand {
         String value) throws Exception;
   }
 
-  private static class DescriptionHandler extends Handler {
-
-    @Override public String getName() {
-      return "description";
-    }
-
-    @Override
-    public void handle(RedmineManager redmineManager, Issue issue, String value)
-        throws Exception {
-      issue.setDescription(value);
-    }
-  }
-
-  private static class SubjectHandler extends Handler {
-
-    @Override public String getName() {
-      return "subject";
-    }
-
-    @Override
-    public void handle(RedmineManager redmineManager, Issue issue, String value)
-        throws Exception {
-      issue.setSubject(value);
-    }
-  }
-
-  private static class PriorityHandler extends Handler {
-
-    @Override public String getName() {
-      return "priority";
-    }
-
-    @Override
-    public void handle(RedmineManager redmineManager, Issue issue, String value)
-        throws Exception {
-      Optional<IssuePriority> newPriority =
-          RedmineUtil.resolvePriorityByName(redmineManager, value);
-
-      newPriority.ifPresent(p -> issue.setPriorityId(p.getId()));
-      newPriority.orElseThrow(
-          () -> new Exception(String.format(INVALID_PRIORITY_MESSAGE, value)));
-    }
-  }
-
-  private static class AssigneeHandler extends Handler {
-
-    @Override public String getName() {
-      return "assignee";
-    }
-
-    @Override
-    public void handle(RedmineManager redmineManager, Issue issue, String value)
-        throws Exception {
-      Optional<Membership> newAssignee =
-          RedmineUtil.resolveMembershipByName(redmineManager,
-              issue.getProjectId(), value);
-
-      newAssignee.ifPresent(m -> issue.setAssigneeId(m.getUserId()));
-      newAssignee.orElseThrow(
-          () -> new Exception(String.format(INVALID_ASSIGNEE_MESSAGE, value)));
-    }
-  }
-
-  private static class StatusHandler extends Handler {
-
-    @Override public String getName() {
-      return "status";
-    }
-
-    @Override
-    public void handle(RedmineManager redmineManager, Issue issue, String value)
-        throws Exception {
-      Optional<IssueStatus> newStatus =
-          RedmineUtil.resolveStatusByName(redmineManager, value);
-
-      newStatus.ifPresent(s -> issue.setStatusId(s.getId()));
-      newStatus.orElseThrow(
-          () -> new Exception(String.format(INVALID_STATUS_MESSAGE, value)));
-    }
-  }
-
-  private static class TrackerHandler extends Handler {
-
-    @Override public String getName() {
-      return "tracker";
-    }
-
-    @Override
-    public void handle(RedmineManager redmineManager, Issue issue, String value)
-        throws Exception {
-      Optional<Tracker> newTracker =
-          RedmineUtil.resolveTrackerByName(redmineManager, value);
-
-      newTracker.ifPresent(issue::setTracker);
-      newTracker.orElseThrow(() ->
-          new Exception(String.format(INVALID_TRACKER_MESSAGE, value)));
-    }
-  }
-
-  private static class DoneRatioHandler extends Handler {
-
-    @Override public String getName() {
-      return "doneratio";
-    }
-
-    @Override
-    public void handle(RedmineManager redmineManager, Issue issue, String value)
-        throws Exception {
-      try {
-        int doneratio = Integer.parseInt(value);
-        if (doneratio >= 0 && doneratio <= 100) {
-          issue.setDoneRatio(doneratio);
-        } else {
-          throw new Exception("done ratio invalid value");
-        }
-      } catch (Exception e ) {
-        throw new Exception(String.format(INVALID_TRACKER_MESSAGE, value));
-      }
-    }
-  }
-
-  private static class NotesHandler extends Handler {
-
-    @Override public String getName() {
-      return "notes";
-    }
-
-    @Override
-    public void handle(RedmineManager redmineManager, Issue issue, String value)
-        throws Exception {
-      if (!StringUtils.isBlank(value)) {
-        issue.setNotes(value);
-      }else {
-          throw new Exception(String.format(INVALID_NOTES_MESSAGE, value));
-      }
-    }
-  }
 }
