@@ -4,9 +4,7 @@ import com.taskadapter.redmineapi.Include;
 import com.taskadapter.redmineapi.IssueManager;
 import com.taskadapter.redmineapi.RedmineException;
 import com.taskadapter.redmineapi.RedmineManager;
-import com.taskadapter.redmineapi.bean.Issue;
-import com.taskadapter.redmineapi.bean.Journal;
-import com.taskadapter.redmineapi.bean.TimeEntry;
+import com.taskadapter.redmineapi.bean.*;
 import de.ad.tools.redmine.cli.Configuration;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
@@ -26,6 +24,7 @@ public class IssueCommand extends RedmineCommand {
       };
   private static final Option[] OPTIONS = new Option[] {
           Option.buildOptionWithoutValue("journals", "Show journals."),
+          new Option("ignore-journal-details", "Ignore list of journal details"),
           Option.buildOptionWithoutValue("changesets", "Show changesets."),
           Option.buildOptionWithoutValue("relations", "Show relations."),
           Option.buildOptionWithoutValue("attachments", "Show attachments."),
@@ -39,6 +38,7 @@ public class IssueCommand extends RedmineCommand {
 
   private ArrayList<Include> includes = new ArrayList<>();
   private boolean raw;
+  private List<String> ignoreJournalDetails = new ArrayList<>();
 
   public IssueCommand(Configuration configuration, PrintStream out,
       RedmineManager redmineManager) {
@@ -57,7 +57,7 @@ public class IssueCommand extends RedmineCommand {
       }
 
       @Override
-      public void handle() throws Exception {
+      public void handle(String value) throws Exception {
         showTimeEntries = true;
       }
     });
@@ -68,8 +68,19 @@ public class IssueCommand extends RedmineCommand {
       }
 
       @Override
-      public void handle() throws Exception {
+      public void handle(String value) throws Exception {
         raw = true;
+      }
+    });
+    handlers.add(new IHandler() {
+      @Override
+      public String getName() {
+        return "ignore-journal-details";
+      }
+
+      @Override
+      public void handle(String value) throws Exception {
+        ignoreJournalDetails =  Arrays.asList(value.toLowerCase().split("\\s*,\\s*"));
       }
     });
 
@@ -87,7 +98,7 @@ public class IssueCommand extends RedmineCommand {
         continue;
       }
 
-      handlers.get(option.getName()).handle();
+      handlers.get(option.getName()).handle(option.buildValue());
     }
     IssueManager issueManager = redmineManager.getIssueManager();
 
@@ -158,15 +169,20 @@ public class IssueCommand extends RedmineCommand {
 
     String description = issue.getDescription();
     if (description.length() > 0) {
-      description = description.replaceAll("<p>", "");
-      description = description.replaceAll("</p>", "");
-      description = description.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", "");
-      description = description.replaceAll("^\r\n", "");
+      description = removeHtml(description);
       println(description);
     } else {
       println("(not set)");
     }
     println();
+  }
+
+  private String removeHtml(String text) {
+    text = text.replaceAll("<p>", "");
+    text = text.replaceAll("</p>", "");
+    text = text.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", "");
+    text = text.replaceAll("^\r\n", "");
+    return text;
   }
 
   private void printTimeEntries(List<TimeEntry> timeEntries) {
@@ -184,25 +200,94 @@ public class IssueCommand extends RedmineCommand {
   }
 
   private void printJournals(Issue issue) {
-    Collection<Journal> journals = issue.getJournals();
+    ArrayList<Journal> journals = new ArrayList<>(issue.getJournals());
+    Collections.sort(journals, (o1, o2) -> o1.getCreatedOn().compareTo(o2.getCreatedOn()));
     if (!journals.isEmpty()) {
       printHeading("Notes");
       for (Journal journal : journals) {
         String notes = journal.getNotes();
+        println(journal.getCreatedOn().toString());
         if (!StringUtils.isBlank(notes)) {
-          notes = notes.replaceAll("<p>", "");
-          notes = notes.replaceAll("</p>", "");
-          notes = notes.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", "");
-          println(journal.getCreatedOn().toString());
+          notes = removeHtml(notes);
           println(notes);
-          println("---");
         }
-//      if (journal.getDetails() !=null) {
-//        //TODO: Extract more info (change priority, status, percentage, ...
-//      }
+        if (journal.getDetails() != null) {
+          for (JournalDetail journalDetail : journal.getDetails()) {
+            String property = journalDetail.getProperty();
+            String name = journalDetail.getName();
+            if (ignoreJournalDetails.contains(name)
+                    || name.endsWith("_id") && ignoreJournalDetails.contains(name.replaceAll("_id\\$", ""))) {
+              continue;
+            }
+            String oldValue = journalDetail.getOldValue();
+            String newValue = journalDetail.getNewValue();
+            if (name.equals("description")) {
+              name = "Description";
+              oldValue = "\n"+removeHtml(oldValue)+"\n";
+              newValue = "\n"+removeHtml(newValue);
+            } else if (name.equals("assigned_to_id")) {
+              name = "Assigned";
+              try {
+                User user = redmineManager.getUserManager().getUserById(Integer.parseInt(oldValue));
+                oldValue = user.getFullName();
+              } catch (RedmineException e) {
+                e.printStackTrace();
+              }
+              try {
+                User user = redmineManager.getUserManager().getUserById(Integer.parseInt(newValue));
+                newValue = user.getFullName();
+              } catch (RedmineException e) {
+                e.printStackTrace();
+              }
+            } else if (name.equals("priority_id")) {
+              name = "Priority";
+              try {
+                final int oldId = Integer.parseInt(oldValue);
+                Optional<IssuePriority> priority = redmineManager.getIssueManager().getIssuePriorities().stream().filter(p -> p.getId().equals(oldId)).findFirst();
+                if (priority.isPresent()) {
+                  oldValue = priority.get().getName();
+                }
+              } catch (RedmineException e) {
+                e.printStackTrace();
+              }
+              try {
+                final int newId = Integer.parseInt(newValue);
+                Optional<IssuePriority> priority = redmineManager.getIssueManager().getIssuePriorities().stream().filter(p -> p.getId().equals(newId)).findFirst();
+                if (priority.isPresent()) {
+                  newValue = priority.get().getName();
+                }
+              } catch (RedmineException e) {
+                e.printStackTrace();
+              }
+            } else if (name.equals("status_id")) {
+              name = "Status";
+              try {
+                final int oldId = Integer.parseInt(oldValue);
+                Optional<IssueStatus> priority = redmineManager.getIssueManager().getStatuses().stream().filter(p -> p.getId().equals(oldId)).findFirst();
+                if (priority.isPresent()) {
+                  oldValue = priority.get().getName();
+                }
+              } catch (RedmineException e) {
+                e.printStackTrace();
+              }
+              try {
+                final int newId = Integer.parseInt(newValue);
+                Optional<IssueStatus> priority = redmineManager.getIssueManager().getStatuses().stream().filter(p -> p.getId().equals(newId)).findFirst();
+                if (priority.isPresent()) {
+                  newValue = priority.get().getName();
+                }
+              } catch (RedmineException e) {
+                e.printStackTrace();
+              }
+            }
+
+            String setTo = oldValue == null ? " set to " : ": " + oldValue + " -> ";
+            println(name + setTo + newValue);
+          }
+        }
+        println("---");
       }
     }
-    println();
   }
 
   private static class IncludeHandler implements IHandler {
@@ -234,7 +319,7 @@ public class IssueCommand extends RedmineCommand {
     }
 
     @Override
-    public void handle() throws Exception {
+    public void handle(String value) throws Exception {
       includes.add(include);
     }
   }
@@ -242,6 +327,6 @@ public class IssueCommand extends RedmineCommand {
   interface IHandler {
     String getName();
 
-    void handle() throws Exception;
+    void handle(String value) throws Exception;
   }
 }
