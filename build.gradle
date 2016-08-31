@@ -3,7 +3,7 @@ apply plugin: 'checkstyle'
 apply plugin: 'jacoco'
 apply plugin: 'com.github.kt3k.coveralls'
 
-version = '6.4.0'
+version = '6.5.0'
 
 repositories {
   mavenCentral()

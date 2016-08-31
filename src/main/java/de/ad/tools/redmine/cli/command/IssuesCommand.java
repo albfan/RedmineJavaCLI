@@ -288,8 +288,7 @@ public class IssuesCommand extends RedmineCommand {
         FieldInfo fieldInfo = extraFields.get(column);
         String field = fieldInfo.getField();
         try {
-          Method method = issue.getClass().getMethod("get" + WordUtils.capitalizeFully(field, new char[]{'_'}).replaceAll("_", ""));
-          Object data = method.invoke(issue);
+          Object data = invokeGetter(issue, field);
           String format = fieldInfo.getFormat();
           if (data == null) {
             columnData.add("");
@@ -300,6 +299,7 @@ public class IssuesCommand extends RedmineCommand {
               if (data instanceof Date) {
                 columnData.add(new SimpleDateFormat(fieldInfo.getFormat()).format(data));
               } else {
+                data = invokeGetter(data, format);
                 columnData.add(data.toString());
               }
             }
@@ -312,6 +312,11 @@ public class IssuesCommand extends RedmineCommand {
     columnData.add(issue.getSubject());
 
     return columnData.toArray(new String[]{});
+  }
+
+  private Object invokeGetter(Object o, String field) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    Method method = o.getClass().getMethod("get" + WordUtils.capitalizeFully(field, new char[]{'_'}).replaceAll("_", ""));
+    return method.invoke(o);
   }
 
   private String getTimeDifferenceAsText(Issue issue) {
