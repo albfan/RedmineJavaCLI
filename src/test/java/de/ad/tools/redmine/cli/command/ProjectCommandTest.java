@@ -73,12 +73,18 @@ public class ProjectCommandTest {
 
   private Project createMockProject(String key) throws RedmineException {
     User user1 = mock(User.class);
+    when(user1.getFirstName()).thenReturn("Jane");
+    when(user1.getLastName()).thenReturn("Doe");
     when(user1.getFullName()).thenReturn("Jane Doe");
 
     User user2 = mock(User.class);
+    when(user2.getFirstName()).thenReturn("John");
+    when(user2.getLastName()).thenReturn("Doe");
     when(user2.getFullName()).thenReturn("John Doe");
 
     User user3 = mock(User.class);
+    when(user3.getFirstName()).thenReturn("Jason");
+    when(user3.getLastName()).thenReturn("Doe");
     when(user3.getFullName()).thenReturn("Jason Doe");
 
     Project project = mock(Project.class);
@@ -95,14 +101,19 @@ public class ProjectCommandTest {
     Membership developer1 = mock(Membership.class);
     Membership developer2 = mock(Membership.class);
     when(manager.getRoles()).thenReturn(Arrays.asList(managerRole));
-    when(manager.getUserId()).thenReturn(user1.getId());
-    when(manager.getUserName()).thenReturn(user1.getFirstName());
+    Integer user1Id = user1.getId();
+    when(manager.getUserId()).thenReturn(user1Id);
+    String user1FullName = user1.getFullName();
+    when(manager.getUserName()).thenReturn(user1FullName);
     when(developer1.getRoles()).thenReturn(Arrays.asList(developerRole));
-    when(developer1.getUserId()).thenReturn(user1.getId());
-    when(developer1.getUserName()).thenReturn(user1.getFirstName());
+    when(developer1.getUserId()).thenReturn(user1Id);
+    String fullName = user2.getFullName();
+    when(developer1.getUserName()).thenReturn(fullName);
     when(developer2.getRoles()).thenReturn(Arrays.asList(developerRole));
-    when(developer2.getUserId()).thenReturn(user3.getId());
-    when(developer2.getUserName()).thenReturn(user3.getFirstName());
+    Integer user3Id = user3.getId();
+    when(developer2.getUserId()).thenReturn(user3Id);
+    String user3FullName = user3.getFullName();
+    when(developer2.getUserName()).thenReturn(user3FullName);
 
     List<Membership> memberships =
         Arrays.asList(manager, developer1, developer2);

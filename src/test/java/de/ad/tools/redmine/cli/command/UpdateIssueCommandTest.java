@@ -152,8 +152,10 @@ public class UpdateIssueCommandTest {
     Project project1 = mock(Project.class);
     when(project1.getId()).thenReturn(1);
 
-    when(issue.getProjectId()).thenReturn(project1.getId());
-    when(issue.getProjectName()).thenReturn(project1.getName());
+    Integer id = project1.getId();
+    when(issue.getProjectId()).thenReturn(id);
+    String name = project1.getName();
+    when(issue.getProjectName()).thenReturn(name);
 
     List<Membership> memberships = createDummyMemberships();
     MembershipManager membershipManager = mock(MembershipManager.class);
@@ -180,8 +182,10 @@ public class UpdateIssueCommandTest {
     Project project = mock(Project.class);
     when(project.getId()).thenReturn(1);
 
-    when(issue.getProjectId()).thenReturn(project.getId());
-    when(issue.getProjectName()).thenReturn(project.getName());
+    Integer id = project.getId();
+    when(issue.getProjectId()).thenReturn(id);
+    String name = project.getName();
+    when(issue.getProjectName()).thenReturn(name);
 
     List<Membership> memberships = createDummyMemberships();
     MembershipManager membershipManager = mock(MembershipManager.class);
@@ -297,8 +301,10 @@ public class UpdateIssueCommandTest {
     when(issue.getSubject()).thenReturn("Subject of #" + id);
     when(issue.getCreatedOn()).thenReturn(createdOn);
     when(issue.getUpdatedOn()).thenReturn(updatedOn);
-    when(issue.getAuthorId()).thenReturn(author.getId());
-    when(issue.getAuthorName()).thenReturn(author.getFirstName());
+    Integer authorId = author.getId();
+    when(issue.getAuthorId()).thenReturn(authorId);
+    String firstName = author.getFirstName();
+    when(issue.getAuthorName()).thenReturn(firstName);
     when(issue.getAssigneeName()).thenReturn("John");
     when(issue.getAssigneeId()).thenReturn(1);
     when(issue.getDescription()).thenReturn("Description of #" + id);
@@ -325,12 +331,16 @@ public class UpdateIssueCommandTest {
     when(user2.getFullName()).thenReturn("User Name 2");
 
     Membership membership1 = mock(Membership.class);
-    when(membership1.getUserId()).thenReturn(user1.getId());
-    when(membership1.getUserName()).thenReturn(user1.getFirstName());
+    Integer id = user1.getId();
+    when(membership1.getUserId()).thenReturn(id);
+    String fullName = user1.getFullName();
+    when(membership1.getUserName()).thenReturn(fullName);
 
     Membership membership2 = mock(Membership.class);
-    when(membership2.getUserId()).thenReturn(user2.getId());
-    when(membership2.getUserName()).thenReturn(user2.getFirstName());
+    Integer user2Id = user2.getId();
+    when(membership2.getUserId()).thenReturn(user2Id);
+    String user2FullName = user2.getFullName();
+    when(membership2.getUserName()).thenReturn(user2FullName);
 
     return Arrays.asList(membership1, membership2);
   }

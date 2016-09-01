@@ -61,7 +61,7 @@ public class RedmineUtilTest {
 
     Membership expected = memberships.get(1);
     Optional<Membership> actual = RedmineUtil.resolveMembershipByName(
-        redmineManager, 1, "User Name 2");
+        redmineManager, 1, "User2");
 
     assertThat(actual.isPresent()).isTrue();
     assertThat(actual.get()).isEqualTo(expected);
@@ -128,17 +128,19 @@ public class RedmineUtilTest {
 
   private List<Membership> createDummyMemberships() {
     User user1 = mock(User.class);
-    when(user1.getFullName()).thenReturn("User Name 1");
+    when(user1.getId()).thenReturn(1);
+    when(user1.getFirstName()).thenReturn("User1");
     User user2 = mock(User.class);
-    when(user2.getFullName()).thenReturn("User Name 2");
+    when(user2.getId()).thenReturn(2);
+    when(user2.getFirstName()).thenReturn("User2");
 
     Membership membership1 = mock(Membership.class);
-    when(membership1.getUserId()).thenReturn(user1.getId());
-    when(membership1.getUserName()).thenReturn(user1.getFirstName());
+    when(membership1.getUserId()).thenReturn(1);
+    when(membership1.getUserName()).thenReturn("User1");
 
     Membership membership2 = mock(Membership.class);
-    when(membership2.getUserId()).thenReturn(user2.getId());
-    when(membership2.getUserName()).thenReturn(user2.getFirstName());
+    when(membership2.getUserId()).thenReturn(2);
+    when(membership2.getUserName()).thenReturn("User2");
 
     return Arrays.asList(membership1, membership2);
   }

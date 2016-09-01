@@ -86,7 +86,10 @@ public class HistoryCommandTest {
         LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant());
 
     User author = mock(User.class);
+    when(author.getFirstName()).thenReturn("John");
+    when(author.getLastName()).thenReturn("Doe");
     when(author.getFullName()).thenReturn("John Doe");
+    String fullName = author.getFullName();
 
     Issue issue = mock(Issue.class);
     when(issue.getTracker()).thenReturn(tracker);
@@ -94,8 +97,10 @@ public class HistoryCommandTest {
     when(issue.getSubject()).thenReturn("Subject of #" + id);
     when(issue.getCreatedOn()).thenReturn(createdOn);
     when(issue.getUpdatedOn()).thenReturn(updatedOn);
-    when(issue.getAuthorId()).thenReturn(author.getId());
-    when(issue.getAuthorName()).thenReturn(author.getFirstName());
+    when(issue.getAuthorName()).thenReturn("John Doe");
+    Integer authorId = author.getId();
+    when(issue.getAuthorId()).thenReturn(authorId);
+    when(issue.getAuthorName()).thenReturn(fullName);
     when(issue.getDescription()).thenReturn("Description of #" + id);
 
     Journal journal1 = mock(Journal.class);

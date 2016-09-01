@@ -357,12 +357,16 @@ public class CreateIssueCommandTest {
     when(user2.getFullName()).thenReturn("User Name 2");
 
     Membership membership1 = mock(Membership.class);
-    when(membership1.getUserId()).thenReturn(user1.getId());
-    when(membership1.getUserName()).thenReturn(user1.getFirstName());
+    Integer user1Id = user1.getId();
+    when(membership1.getUserId()).thenReturn(user1Id);
+    String fullName = user1.getFullName();
+    when(membership1.getUserName()).thenReturn(fullName);
 
     Membership membership2 = mock(Membership.class);
-    when(membership2.getUserId()).thenReturn(user2.getId());
-    when(membership2.getUserName()).thenReturn(user2.getFirstName());
+    Integer user2Id = user2.getId();
+    when(membership2.getUserId()).thenReturn(user2Id);
+    String fullName2 = user2.getFullName();
+    when(membership2.getUserName()).thenReturn(fullName2);
 
     return Arrays.asList(membership1, membership2);
   }

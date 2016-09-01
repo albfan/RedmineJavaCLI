@@ -67,26 +67,6 @@ public class RedmineCliTest {
   }
 
   @Test
-  public void testHandleCommandWithInvalidCommand() throws Exception {
-    String invalidCommand = "invalid";
-    String[] arguments = { invalidCommand };
-    String message = String.format(RedmineCli.INVALID_COMMAND_MESSAGE,
-        invalidCommand);
-
-    exception.expect(Exception.class);
-    exception.expectMessage(message);
-    redmineCli.handleCommand(arguments);
-  }
-
-  @Test
-  public void testHandleCommandWithHelpCommand() throws Exception {
-    String command = "help";
-    String[] arguments = { command };
-
-    redmineCli.handleCommand(arguments);
-  }
-
-  @Test
   public void testEquals() throws Exception {
     RedmineCli redmineCli1 = new RedmineCli(configuration, out,
         redmineManagerFactory);

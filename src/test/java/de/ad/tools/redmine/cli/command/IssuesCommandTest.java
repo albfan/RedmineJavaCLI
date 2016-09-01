@@ -181,12 +181,7 @@ public class IssuesCommandTest {
   public ResultsWrapper<Issue> createDummyIssuesResultWrapper(int count) {
 
     List<Issue> dummyIssues = createDummyIssues(count);
-    ResultsWrapper<Issue> issueResultsWrapper = (ResultsWrapper<Issue>) Mockito.mock(ResultsWrapper.class);
-
-    when(issueResultsWrapper.getLimitOnServer()).thenReturn(25);
-    when(issueResultsWrapper.getTotalFoundOnServer()).thenReturn(2);
-    when(issueResultsWrapper.getOffsetOnServer()).thenReturn(0);
-    when(issueResultsWrapper.getResults()).thenReturn(dummyIssues);
+    ResultsWrapper<Issue> issueResultsWrapper = new ResultsWrapper<>(25,2,0,"", dummyIssues);
     return issueResultsWrapper;
   }
 
@@ -229,8 +224,10 @@ public class IssuesCommandTest {
     when(issue.getId()).thenReturn(i + 1);
 
     when(issue.getSubject()).thenReturn("Issue " + (i + 1));
-    when(issue.getProjectId()).thenReturn(project.getId());
-    when(issue.getProjectName()).thenReturn(project.getName());
+    Integer id = project.getId();
+    when(issue.getProjectId()).thenReturn(id);
+    String name = project.getName();
+    when(issue.getProjectName()).thenReturn(name);
     when(issue.getTracker()).thenReturn(tracker);
     when(issue.getStatusName()).thenReturn("New");
     when(issue.getPriorityText()).thenReturn("Normal");
