@@ -227,17 +227,21 @@ public class IssueCommand extends RedmineCommand {
               newValue = "\n"+removeHtml(newValue);
             } else if (name.equals("assigned_to_id")) {
               name = "Assigned";
-              try {
-                User user = redmineManager.getUserManager().getUserById(Integer.parseInt(oldValue));
-                oldValue = user.getFullName();
-              } catch (RedmineException e) {
-                e.printStackTrace();
+              if (oldValue != null) {
+                try {
+                  User user = redmineManager.getUserManager().getUserById(Integer.parseInt(oldValue));
+                  oldValue = user.getFullName();
+                } catch (RedmineException e) {
+                  e.printStackTrace();
+                }
               }
-              try {
-                User user = redmineManager.getUserManager().getUserById(Integer.parseInt(newValue));
-                newValue = user.getFullName();
-              } catch (RedmineException e) {
-                e.printStackTrace();
+              if (newValue != null) {
+                try {
+                  User user = redmineManager.getUserManager().getUserById(Integer.parseInt(newValue));
+                  newValue = user.getFullName();
+                } catch (RedmineException e) {
+                  e.printStackTrace();
+                }
               }
             } else if (name.equals("priority_id")) {
               name = "Priority";
@@ -281,8 +285,14 @@ public class IssueCommand extends RedmineCommand {
               }
             }
 
-            String setTo = oldValue == null ? " set to " : ": " + oldValue + " -> ";
-            println(name + setTo + newValue);
+            if(newValue != null) {
+              String setTo = oldValue == null ? " set to " : ": " + oldValue + " -> ";
+              println(name + setTo + newValue);
+            } else {
+              if (oldValue != null) {
+                println(name + " (removed): " + oldValue);
+              }
+            }
           }
         }
         println("---");
