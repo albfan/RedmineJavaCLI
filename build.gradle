@@ -32,7 +32,7 @@ jar {
 
 dependencies {
 //  compile 'com.taskadapter:redmine-java-api:3.0.0'
-  compile 'com.github.albfan:redmine-java-api:b2951b7'
+  compile 'com.github.albfan:redmine-java-api:2b58b35'
   compile 'jline:jline:2.8'
   compile 'org.fusesource.jansi:jansi:1.13'
   compile 'org.slf4j:slf4j-simple:1.7.10'
