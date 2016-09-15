@@ -180,8 +180,10 @@ public class IssueCommand extends RedmineCommand {
   private String removeHtml(String text) {
     text = text.replaceAll("<p>", "");
     text = text.replaceAll("</p>", "");
-    text = text.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", "");
-    text = text.replaceAll("^\r\n", "");
+    text = text.replaceAll("(?s)<[^>]*>", "");
+    text = text.replaceAll("(?m)^\\s*$", "");
+    text = text.replaceAll("(?m)\\s*$", "");
+    text = text.replaceAll("(?m)^\\s*", "");
     return text;
   }
 
