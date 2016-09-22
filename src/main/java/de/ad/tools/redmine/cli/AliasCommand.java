@@ -40,7 +40,16 @@ public class AliasCommand extends Command {
             } else {
                 Profile.Section alias = ini.get("alias");
                 for (String key : alias.keySet()) {
-                    println(key+" = "+ini.get("alias", key));
+                    if (!key.endsWith(".description")) {
+                        String definition = ini.get("alias", key);
+                        String description = ini.get("alias", key+".description");
+                        if (description != null) {
+                            println(key+ " : " + description);
+                            println("   "+definition);
+                        } else {
+                            println(key + " = " + definition);
+                        }
+                    }
                 }
             }
         } catch (IOException e) {
