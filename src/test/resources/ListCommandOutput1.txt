@@ -1,4 +1,4 @@
-NAME    ID  DEFAULT  CLOSED  
-¯¯¯¯    ¯¯  ¯¯¯¯¯¯¯  ¯¯¯¯¯¯  
-New     1   X                
-Closed  2            X       
+NAME    ID  DEFAULT  CLOSED
+¯¯¯¯    ¯¯  ¯¯¯¯¯¯¯  ¯¯¯¯¯¯
+New     1   X
+Closed  2            X

@@ -9,5 +9,5 @@ And here goes another long description...
 
 usage: redmine test2 [<optional>] 
 
-<optional>  An optional argument.  
+<optional>  An optional argument.
 

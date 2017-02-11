@@ -4,6 +4,6 @@ Description
 
 MEMBERS
 ¯¯¯¯¯¯¯
-Manager:    Jane Doe             
-Developer:  John Doe, Jason Doe  
+Manager:    Jane Doe
+Developer:  John Doe, Jason Doe
 

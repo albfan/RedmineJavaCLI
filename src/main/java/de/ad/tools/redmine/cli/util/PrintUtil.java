@@ -174,6 +174,6 @@ public final class PrintUtil {
   }
 
   private static void println(PrintStream out, String s, Object... args) {
-    out.println(String.format(s, args));
+    out.println(String.format(s, args).replaceAll("\\s+$",""));
   }
 }

@@ -1,4 +1,4 @@
-NAME       KEY        
-¯¯¯¯       ¯¯¯        
-Project 1  project-1  
-Project 2  project-2  
+NAME       KEY
+¯¯¯¯       ¯¯¯
+Project 1  project-1
+Project 2  project-2

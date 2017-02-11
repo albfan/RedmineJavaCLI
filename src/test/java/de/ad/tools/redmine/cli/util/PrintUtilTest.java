@@ -28,8 +28,8 @@ public class PrintUtilTest {
 
     PrintUtil.printTable(out, table);
 
-    verify(out).println("row1,col1  row1,col2  ");
-    verify(out).println("row2,col1  row2,col2  ");
+    verify(out).println("row1,col1  row1,col2");
+    verify(out).println("row2,col1  row2,col2");
   }
 
   @Test
@@ -50,9 +50,9 @@ public class PrintUtilTest {
 
     PrintUtil.printTable(out, table);
 
-    verify(out).println("row1,col1  row1,col2  ");
-    verify(out).println("row2,col1             ");
-    verify(out).println("           row3,col2  ");
+    verify(out).println("row1,col1  row1,col2");
+    verify(out).println("row2,col1");
+    verify(out).println("           row3,col2");
   }
 
   @Test
@@ -65,10 +65,10 @@ public class PrintUtilTest {
 
     PrintUtil.printTable(out, header, table);
 
-    verify(out).println("HEADER1    HEADER2    ");
-    verify(out).println("¯¯¯¯¯¯¯    ¯¯¯¯¯¯¯    ");
-    verify(out).println("row1,col1  row1,col2  ");
-    verify(out).println("row2,col1  row2,col2  ");
+    verify(out).println("HEADER1    HEADER2");
+    verify(out).println("¯¯¯¯¯¯¯    ¯¯¯¯¯¯¯");
+    verify(out).println("row1,col1  row1,col2");
+    verify(out).println("row2,col1  row2,col2");
   }
 
   @Test

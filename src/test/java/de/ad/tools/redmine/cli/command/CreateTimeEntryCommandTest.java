@@ -105,7 +105,7 @@ public class CreateTimeEntryCommandTest {
 
     String actual = new String(stream.toByteArray());
     String expected =
-        new String(resourceToByteArray("/IssuesCommandOutput.txt"));
+        new String(resourceToByteArray("/TimeEntryCommandOutput.txt"));
 
     assertThat(actual).isEqualTo(expected);
   }
@@ -130,17 +130,6 @@ public class CreateTimeEntryCommandTest {
     String[] arguments = {"1", "1", "--user=me" };
     ResultsWrapper<Issue> dummyIssuesResultWrapper = createDummyIssuesResultWrapper(2);
     when(issueManager.getIssues(any(Map.class))).thenReturn(dummyIssuesResultWrapper);
-    command.process(arguments);
-  }
-
-  @Test
-  public void testWithInvalidAssigneeOption() throws Exception {
-    String[] arguments = new String[] {"1", "1", "--assignee=invalid" };
-
-    exception.expect(Exception.class);
-    exception.expectMessage(
-        String.format(IssuesCommand.INVALID_ASSIGNEE_MESSAGE, "invalid"));
-
     command.process(arguments);
   }
 

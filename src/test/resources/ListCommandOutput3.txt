@@ -1,4 +1,4 @@
-NAME    ID  
-¯¯¯¯    ¯¯  
-Normal  1   
-High    2   
+NAME    ID
+¯¯¯¯    ¯¯
+Normal  1
+High    2

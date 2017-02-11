@@ -9,6 +9,6 @@ And here goes a long description...
 
 usage: redmine test1 <mandatory> --option=value
 
-<mandatory>  A mandatory argument.  
+<mandatory>  A mandatory argument.
 
---option  This is an option.  
+--option  This is an option.

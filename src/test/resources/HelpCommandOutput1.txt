@@ -1,5 +1,5 @@
 usage: redmine <command> [<args>] [<opts>]
 
-test1  <mandatory>    This is a test command.            
-test2  [<optional>]   This is another test command.      
-test3                 This is yet another test command.  
+test1  <mandatory>    This is a test command.
+test2  [<optional>]   This is another test command.
+test3                 This is yet another test command.
